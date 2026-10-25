@@ -1,40 +1,27 @@
 # STATUS — RAG Studio AX Edition
 
-Last verified local development: 2026-10-26 KST; feature branch expected to be `feature/p2-keyword-retrieval`. **This document is a development snapshot, not a runtime/Production claim.** Actual GitHub SHA overrides any earlier handoff.
+Snapshot: **2026-10-26 KST**. Source of truth is live GitHub plus runnable test evidence. Project is **not released**.
 
-## Product and constraints
-- Local-first self-install workspace; private SMAX² standardization output required for final product; RAG Studio owns verified local dataset/document retrieval, readonly SQLite, evidence and dashboard; SOVIA audit is optional only after the core product works.
-- Target commercial price 149,000 KRW (early 99,000 KRW) remains a strategy hypothesis, not a launched product or proof of willingness to pay. Masterplan resides in private `hibi89/SMAX` and must not be copied here.
-- One product, three demo markets: small retail/distribution, small manufacturing/technical services, solo analysts. Five usage targets: Document, Knowledge Base, Multi-Document, Conversational, SQL+Document.
+## Product decision
+- Local-first, customer self-install. Private SMAX² standardization is a required **future producer integration**, followed by local verified RAG Studio data and document analysis/dashboard; SOVIA is a future optional audit addon, never a release blocker.
+- Product target price 149,000 KRW / promotion 99,000 KRW is an **unvalidated business hypothesis**, not sales. 3 target demos: retail, technical/manufacturing services, solo analysts. 5 target usage modes: Document, Knowledge Base, Multi-Document, Conversational, SQL+Document. Private commercial masterplan stays in private SMAX.
 
-## GitHub status and provenance
-- `main` baseline `1d809ea830678b667f9223884275f3620a40ead4` at P2 start, unchanged intentionally.
-- `develop` basis `a1fd3c65d8e244e46989b4ceb4536ff1a598a5dc` at P2 start, confirmed by live GitHub; already has P0+P1.
-- P2 task begins from that basis on `feature/p2-keyword-retrieval`, then fast-forward to `develop` only after review and successful local tests; check new SHA live after commit. No private code or customer data included.
-
-## Verified implementation
-| Item | Actual result |
+## Implementation and verification (local Linux / Node v22.16.0)
+| Unit | Verified state |
 |---|---|
-| P0 `AX_DATA_PACKAGE_V0` | Tested validator, synthetic CSV/TXT, integrity, approvals, 6 orders, 10 units, revenue 157,000 KRW |
-| P1 mixed SQL+TXT | Tested in-memory `node:sqlite` readonly fixed aggregate + line-cited synthetic refund evidence |
-| P2 document search | Tested bounded, stateless BM25 + Hangul 2/3-gram lexical retrieval across multiple SHA-verified synthetic TXT documents, citation line/source pointers, limited return-period conflict detection |
-| P0/P1 regression | 28 earlier tests unchanged and passing in same local run |
-| P2 tests | 17 additional passing local tests |
-| Local tests | Node 22.16.0, `npm test` 45 PASS / 0 FAIL / 0 SKIP; `npm run demo:search` FOUND with both return & shipping evidence |
-| ZIP import, original RAG, SMAX real producer | NOT IMPLEMENTED / NOT VERIFIED |
-| Full RAG/FAISS, conversations, PDFs, UI/dashboard, Windows installer | NOT IMPLEMENTED |
-| CI/Windows/Production/browser/SOVIA/customer sale | NOT TESTED / NOT APPLICABLE |
+| P0 package consumer | Synthetic manifest/CSV/TXT; verified paths, sizes, SHA-256, review status and sales row provenance; 16 tests |
+| P1 fixed SQLite + one TXT | In-memory database, `PRAGMA query_only=ON`, exact sales sums, single document pointer; 12 tests |
+| P2 keyword multi-document retrieval | Zero-dependency, stateless BM25 + Korean 2/3-gram lexical line search; provenance/conflict status; 17 tests |
+| **P2.1 evidence router** | `src/evidence-router.mjs` + CLI, fixed sales metric + cited return and shipping policy facts, no-answer when incomplete/conflicting, exhaustive bounded period check; **15 tests** |
+| Full regression | `npm test` **60 PASS / 0 FAIL / 0 SKIP**, `npm run demo:router` **ANSWERED** (KRW 157000; 6 orders; 10 units; return 7 calendar days; shipping 2 business days) |
+| GitHub | Base `develop` SHA `66e2436e11173133fe2c0a5c757c00e4d00812af` before P2.1. Implement on `feature/p21-evidence-router`, then integrate to `develop` only after test, remote SHA/diff review. `main` remains stable baseline `1d809ea...` |
+| Private SMAX/SOVIA | Not modified; producer/consumer real integration **unverified** |
+| Production/Windows/CI/browser | NOT APPLICABLE or NOT TESTED. No live deployment or customer sales |
 
-## Next concrete work
-- Implement P2.1 evidence-aware router bridging independently cited retrieval with existing P1 readonly aggregates; test abstention and complete citations. Improve multi-doc conflict detection; never claim definitive advice from rank alone.
-- Inspect original RAG ZIP if made available, scan secrets/licenses before cherry-picking algorithms.
-- Preserve `main` and private SMAX/SOVIA development plans; no cloud spend, external transfer or product publication.
+## Explicit limitations
+- Router only detects limited sales/return/shipping terms; the period regex is not a legal/policy interpretation engine, and retrieved quoted statements may omit context. Unsupported subquestions not in its vocabulary are not guaranteed to be recognized. Customer-facing general-purpose AI claims **prohibited**.
+- No original `rag-studio(1).zip` found in inspected GitHub/available Library. Reusing old engine requires real file, hash, secret and OSS license review, not fictional migration.
+- No external network calls, paid model, arbitrary user-supplied SQL, customer data, SMAX private code, installer or production service. `node:sqlite` experimental warning remains; Windows compatibility unverified.
 
-See `HANDOFF.md`, `docs/P2_KEYWORD_SEARCH.md` and live GitHub branch SHA for continuation. `ㄱ` = next safe implementation unit.
-
-
-## Verified GitHub integration checkpoint — 2026-10-26 KST
-- Code commit **1e8e4742200d826b92acb8a9554873f8c722e10b** verified on `feature/p2-keyword-retrieval`, then fast-forwarded to `develop` with no force. Main remained `1d809ea830678b667f9223884275f3620a40ead4`.
-- Remote Git blob hashes of P2 src/test/fixture/package/docs agree with local tested source. Author and committer: `hibi89`, email matched connected account; no credential changes.
-- Linux container Node 22.16.0: `npm test` **45 passed / 0 failed / 0 skipped** (P0 16, P1 12, P2 17); `npm run demo:search` returned verified return + shipping line citations. Production/Windows/CI/SMAX original ZIP are not tested.
-- This checkpoint documents verified **code** SHA. This docs-only update on top must be checked live for the final HEAD; avoid claiming its SHA from within itself.
+## Next safe unit
+P3 smallest local browser-accessible read-only dashboard for the synthetic package, with KPI, document cards, source line citations, missing/conflict states and local-only test. Recheck P2.1 remote source/test hashes and `develop` branch first. Then real SMAX producer adapter only when interface can be safely verified; Windows & 100-question gate before sale. No change to private SMAX's 2026-11-07 independent priority.

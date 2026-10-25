@@ -1,43 +1,36 @@
-# HANDOFF — RAG Studio AX Edition (P2 keyword search)
+# HANDOFF — RAG Studio AX Edition (P2.1)
 
-Updated 2026-10-26 KST. Live GitHub and actual local tests override this snapshot. New chat: `[RAG_STUDIO 깃헙 레포지토리 보고 작업이어가셈]`; `ㄱ` continues the next safe unit. Do not repeat planning or re-ask approved scope.
+Updated **2026-10-26 KST**; exact resume trigger: `[RAG_STUDIO 깃헙 레포지토리 보고 작업이어가셈]`, and `ㄱ` continues safely. Fresh GitHub SHA and tests override this snapshot.
 
-## 1. Goal, confirmed requirements, stack
-Build one local-first, self-installed product using **SMAX² private producer** → standard verified local data package → RAG Studio read-only DB calculations and multi-doc cited retrieval → dashboard. SOVIA independent optional audit. Three customer demos: retail, small manufacturing/service, solo consultant. Five target RAG scenarios. Target 149k KRW list / early 99k KRW hypothesis, no real sales. Stack Node 22.16+, built-in `node:sqlite`, no npm dependencies so far; synthetic only.
+## 1. Goal, requirements, technology
+Local-first/zero-fee self-installed tool: SMAX² private standardization → `AX_DATA_PACKAGE_V0` local ingestion → reliable read-only sales metrics + document evidence → dashboard. SOVIA optional audit. 3 sales demo markets, 5 RAG usage modes (Document/Knowledge Base/Multi-Document/Conversational/SQL+Document). Node >=22.16 with built-in SQLite; zero npm dependencies. Commercial target 149k KRW / early 99k KRW is not validated; private masterplan remains in private `hibi89/SMAX`.
 
-## 2. Implemented decisions and changes
-P0 verified `AX_DATA_PACKAGE_V0` fixture, hash/size/path/symlink/review validation, 6-row synthetic sales aggregation; P1 readonly SQLite fixed query plus TXT return-policy cited single mixed question; **P2** `src/document-search.mjs`, `src/search-cli.mjs`, second fixture `fixtures/ax_multi_doc_v0` including shipping policy, 17 tests and `docs/P2_KEYWORD_SEARCH.md`. Statless line-based BM25, Hangul 2/3-grams, full line/file/document citation, `NO_EVIDENCE`, `POSSIBLE_CONFLICT` where distinct return windows are retrieved. Selected on-demand lexical search over persistent vector index for zero-cost small MVP, pending real algorithm archive and benchmarks.
+## 2. Completed work and engineering decisions
+P0 synthetic verified manifest/CSV/TXT consumer, P1 verified in-memory SQLite readonly totals + return TXT citation, P2 BM25/Hangul n-gram multi-TXT retrieval/conflict heuristic, P2.1 `src/evidence-router.mjs`/`src/router-cli.mjs`/`tests/evidence-router.test.mjs`, `docs/P21_EVIDENCE_ROUTER.md` and `npm run demo:router`. Router chooses from bounded whitelisted intents; verifies entire source, finds document citations, checks duration conflicts across all verified documents (not just ranked top hits), routes fixed SQL query, and refuses incomplete/conflicted requests. Chose simple deterministic local path over an LLM router or generated SQL for accuracy/cost/safety. No private SMAX code or real customer data in public repository.
 
-## 3. Tests, commands, pass/fail, scope
-`cd repo && npm test`: **45 PASS, 0 FAIL, 0 SKIP** under Linux container Node v22.16.0 (P0=16, P1=12, P2=17). `npm run demo:search`: `FOUND`, returns 7-day return rule and shipping 2-business-day preparation, different document IDs, matching line 2 citations. `npm run demo:mixed`: P1 readonly aggregate remains. No GitHub-hosted CI, Windows, browser, actual customer, original RAG ZIP or production validation. Existing node:sqlite emits experimental warning.
+## 3. Test evidence, successes and limits
+Local Linux container Node `v22.16.0`: `npm test` **60 pass, 0 fail, 0 skip** (P0=16, P1=12, P2=17, P2.1=15). `npm run demo:router`: `ANSWERED`, 6 synthetic orders / 10 units / KRW 157000 / return 7 calendar days / shipping preparation 2 business days, CSV line 2–7 and TXT line 2 citations. Negative tests: no evidence/unsupported, modified digest, missing review approval, SQL injected question as text, conflicting same-line and >10 ranked return policies, shipping conflict, source immutability. GitHub-hosted tests, Windows, original-source migration, UI/browser, operational API, production security remain **UNVERIFIED**.
 
-## 4. Done / progress / pending / blocked
-Done P0+P1 local synthetic vertical slice plus P2 lexical multi-doc search and synthetic tests. Pending P2.1 evidence router, core 5 RAG modes, real producer handshake, original RAG reuse, PDF/DOCX, index persistence, UI/KPI dashboard, Windows install/recovery, QA gold-set. Original `rag-studio(1).zip` not found in repo or prior accessible Library search; safe-independent coding proceeded. SOVIA optional, not release blocker.
+## 4. State and stop point
+Completed: P0, P1, P2 and P2.1 **synthetic local slices** only. Next: P3 read-only local dashboard with KPI/line citation and refusal states. Pending: actual SMAX producer handshake, old RAG ZIP, PDF/DOCX, dense retrieval evaluation, Knowledge Base/Conversational broad support, persistent index, installer, gold-set, customers, sale. Original archive is unavailable; not a blocker for synthetic UI slice.
 
-## 5. Errors, attempts, pivots
-Local container's GitHub network access previously unavailable; use connected GitHub actions for commits (not blind git retries). RAG original inaccessible; do not recreate/discard without hash/license review, use synthetic independent adapter. Single-file `node:sqlite` is experimental: pass does not establish Windows production stability. No observed failed tests in P2 run. Future corpus expansion may degrade BM25 precision; benchmark and pivot to index only with evidence.
+## 5. Errors, causes and pivot
+Prior shell git host DNS failure: use authorized GitHub connector without repeated blind retries. Original RAG ZIP not accessible: no guessing or overwriting; continue independently from synthetic contracts. `node:sqlite` warns experimental, so do not guarantee Windows distribution. No P2.1 test errors observed in local 60-test run. For ambiguity, return `INSUFFICIENT_EVIDENCE` or `POSSIBLE_CONFLICT`; do not infer legal validity or universally correct policies.
 
-## 6. Repositories / branches / commit SHAs / main paths
-Repo `hibi89/RAG_STUDIO` PUBLIC, default `main` baseline `1d809ea830678b667f9223884275f3620a40ead4`. Start `develop` `a1fd3c65d8e244e46989b4ceb4536ff1a598a5dc`. New branch `feature/p2-keyword-retrieval` will be committed against that base; fetch latest ref for confirmed SHA (cannot self-reference its own future commit). Paths `src/document-search.mjs`, `src/search-cli.mjs`, `tests/document-search.test.mjs`, `fixtures/ax_multi_doc_v0`, `docs/P2_KEYWORD_SEARCH.md`, `package.json`, `STATUS.md`, `HANDOFF.md`. P0 and P1 source paths remain unchanged. `hibi89/SMAX` private and `hibi89/SOVIA_sovereign` independent.
+## 6. Repo/branches/SHAs/paths
+Public repo `hibi89/RAG_STUDIO`; default `main` remains `1d809ea830678b667f9223884275f3620a40ead4`, verified `develop` base before P2.1 `66e2436e11173133fe2c0a5c757c00e4d00812af`. P2.1 development branch `feature/p21-evidence-router`; verify actual new commit SHA live before any next work. Source `src/evidence-router.mjs`, `src/router-cli.mjs`; tests `tests/evidence-router.test.mjs`; docs `docs/P21_EVIDENCE_ROUTER.md`, `STATUS.md`, `HANDOFF.md`; rest of files preserved.
 
-## 7. Runtime/deployment info
-`node >=22.16`, `npm test`, `npm run demo:search`, `npm run demo:mixed`. No Vercel project or production URL for RAG Studio, no external API/server, GitHub Actions not configured. Deploy status NOT_APPLICABLE; actual Windows install UNVERIFIED.
+## 7. Production/deployment/runtime
+Commands `npm test`, `npm run demo:router`, `npm run demo:mixed`, `npm run demo:search` at repo root. No Docker, Vercel project, Production URL, auto deployment, mandatory external API, or hosting. Deploy classification **NOT APPLICABLE**; do not equate local tests with production.
 
-## 8. Originals/backups/auth/prohibited changes
-Existing `main` unchanged; Git history and the prior P0/P1 source are recovery reference. Samples are fake retail data with no personal info. Do not upload private SMAX code/strategy, source archive before secrets/license review, keys, `.env`, client records or logs. Existing account GitHub identity `hibi89`. No external payments/transmission/hosting approved.
+## 8. Original, backups, secrets, protected content
+Prior Git history is recovery point, and original P0/P1/P2 paths are unchanged except `package.json` new demo script. All fixtures synthetic. Private SMAX code/masterplan, tokens, .env and customer materials must not enter public repo. No real original inputs modified, no paid services, changes to repo privacy or third-party access prohibited absent approval.
 
-## 9. Next priorities/procedure/acceptance/approval
-1. Confirm feature/develop remote SHAs, verify source blobs and CI/source parity; preserve stable main.
-2. P2.1 add query router that combines trusted lexical source citations and preapproved SQLite metrics, fails closed when evidence is absent/conflicting. Keep source pointers and no arbitrary SQL; synthetic tests and CLI demo.
-3. P3 start local document+dataset viewer and evidence-backed KPI mini dashboard, following masterplan gap comparison. PDF/Word and higher search quality after original code review.
-4. Sell, deploy, upload real data, modify repo visibility, spend, change SMAX/SOVIA or legally change licensing only with user explicit approval.
+## 9. Next priority, procedure, acceptance, approvals
+1. Fetch live remote HEAD/diff; confirm all P2.1 source blobs match tested local bytes and P0/P1/P2 unchanged.
+2. Implement P3 synthetic desktop-friendly read-only dashboard/preview; show provenance and conflict/insufficient states, then run unit and real browser tests if available.
+3. Later original archive hash/secrets/licenses and SMAX handshake, three Windows PCs, 100-question benchmark, install/restart/recovery, customer-data safety and licensing/returns gates.
+4. Deployments, purchases, real customer files, private repo writes, account/security settings changes, live sale require separate explicit owner approval. Synthetic safe implementation proceeds without re-asking previously settled business goals.
 
-## 10. Updated time, verification boundary, base revision
-2026-10-26 KST. Verified local Node v22.16.0 P0+P1+P2 45 tests. GitHub P2 commit/merge and final HEAD to verify after upload; initial basis `a1fd3c65...`, no remote runtime evidence. No finished commercial product claim.
-
-
-## Verified GitHub integration checkpoint — 2026-10-26 KST
-- Code commit **1e8e4742200d826b92acb8a9554873f8c722e10b** verified on `feature/p2-keyword-retrieval`, then fast-forwarded to `develop` with no force. Main remained `1d809ea830678b667f9223884275f3620a40ead4`.
-- Remote Git blob hashes of P2 src/test/fixture/package/docs agree with local tested source. Author and committer: `hibi89`, email matched connected account; no credential changes.
-- Linux container Node 22.16.0: `npm test` **45 passed / 0 failed / 0 skipped** (P0 16, P1 12, P2 17); `npm run demo:search` returned verified return + shipping line citations. Production/Windows/CI/SMAX original ZIP are not tested.
-- This checkpoint documents verified **code** SHA. This docs-only update on top must be checked live for the final HEAD; avoid claiming its SHA from within itself.
+## 10. KST snapshot and evidence base
+2026-10-26 KST. Live `develop` before new work = `66e2436e11173133fe2c0a5c757c00e4d00812af`; local Node v22.16.0 60/60 PASS. Commit/branch-head created after this text must be checked live, so no self-referential final SHA appears here. This handoff records local P2.1, not deployed or customer-tested completion.
