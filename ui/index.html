@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>RAG Studio AX · 로컬 대시보드</title>
+<link rel="stylesheet" href="/app.css">
+<script src="/app.js" type="module"></script>
+</head>
+<body>
+<div class="layout">
+<aside class="rail">
+  <div class="logo"><div class="logo-mark">R</div><div><strong>RAG STUDIO</strong><small>AX EDITION · LOCAL</small></div></div>
+  <nav aria-label="페이지 탐색"><a href="#overview">개요 및 KPI</a><a href="#query">통합 질의</a><a href="#documents">문서와 출처</a><a href="#provenance">계산 근거</a></nav>
+  <div class="rail-foot">외부 서버 연결 없음<br>합성 데이터 테스트용 빌드 <span class="version">P3 MVP</span></div>
+</aside>
+<main>
+<header class="topbar"><div><p class="eyebrow">WORKSPACE / DATA INTELLIGENCE</p><h1>데이터와 문서, 하나의 근거로.</h1><p class="subtitle">검증된 표 데이터 집계와 문서 검색을 결합하는 로컬 분석 공간</p></div><div id="health" class="health" role="status" aria-live="polite">검증 중…</div></header>
+<section id="overview" aria-labelledby="kpiTitle" class="section">
+  <div class="section-heading"><div><p class="eyebrow">01 / OVERVIEW</p><h2 id="kpiTitle">비즈니스 지표</h2></div><span id="projectId" class="project">프로젝트 확인 중</span></div>
+  <div class="kpis">
+    <article class="kpi"><span>총 매출 <b>KRW</b></span><strong id="revenue">—</strong><small>읽기 전용 SQLite 집계</small></article>
+    <article class="kpi"><span>주문 건수</span><strong id="orders">—</strong><small>검증된 원본 데이터</small></article>
+    <article class="kpi"><span>판매 수량</span><strong id="units">—</strong><small>정수 수량 합계</small></article>
+    <article class="kpi"><span>승인 문서</span><strong id="approvedDocs">—</strong><small>SHA-256 무결성 검증</small></article>
+  </div>
+</section>
+<section id="query" class="section" aria-labelledby="queryTitle"><div class="section-heading"><div><p class="eyebrow">02 / GROUNDED INTELLIGENCE</p><h2 id="queryTitle">근거 기반 질의</h2></div></div>
+  <div class="workbench">
+  <form id="askForm"><label for="question">분석 질문 입력</label><textarea id="question" maxlength="500" rows="3" required placeholder="총 매출과 반품 기간, 배송 준비 기간은?">총 매출과 반품 기간, 배송 준비 기간은?</textarea>
+  <div class="form-actions"><div class="suggestions"><button type="button" class="suggest" data-question="총 매출 알려줘">매출 집계</button><button type="button" class="suggest" data-question="반품 기간은?">반품 기간</button><button type="button" class="suggest" data-question="배송 준비 기간은?">배송 준비</button></div><div class="buttons"><button id="askButton" type="submit">통합 질의 실행</button><button id="searchButton" type="button" class="outline">문서만 검색</button></div></div></form>
+  <div id="answerPane" class="answer-pane" aria-live="polite" aria-atomic="true"><p class="placeholder">질문을 입력하면 검증된 계산 결과와 문서 출처가 표시됩니다.</p></div>
+  </div>
+</section>
+<section id="documents" class="section" aria-labelledby="documentsTitle"><div class="section-heading"><div><p class="eyebrow">03 / DOCUMENT LIBRARY</p><h2 id="documentsTitle">문서와 출처</h2></div></div><div id="documentCards" class="documents"><p>문서를 검증 중입니다.</p></div></section>
+<section id="provenance" class="section" aria-labelledby="sourceTitle"><div class="section-heading"><div><p class="eyebrow">04 / PROVENANCE</p><h2 id="sourceTitle">매출 계산 근거</h2></div><span class="table-note">CSV 원본 행 기준</span></div><div class="table-container"><table><thead><tr><th scope="col">CSV 행</th><th scope="col">주문 ID</th><th scope="col">해당 주문금액</th><th scope="col">파일 ID</th></tr></thead><tbody id="sourceRows"><tr><td colspan="4">원본 근거 검증 중…</td></tr></tbody></table></div></section>
+<footer>RAG Studio AX Edition · 합성 데이터 실험 버전. 실사업 판단 및 법률·환불 해석에 사용하지 마세요.</footer>
+</main>
+</div>
+</body>
+</html>

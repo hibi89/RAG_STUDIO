@@ -1,42 +1,33 @@
-# HANDOFF — RAG Studio AX Edition (P2.1)
+# HANDOFF — RAG Studio AX Edition / P3 local dashboard
 
-Updated **2026-10-26 KST**; exact resume trigger: `[RAG_STUDIO 깃헙 레포지토리 보고 작업이어가셈]`, and `ㄱ` continues safely. Fresh GitHub SHA and tests override this snapshot.
+2026-10-26 KST. Exact new-chat command: `[RAG_STUDIO 깃헙 레포지토리 보고 작업이어가셈]`, `ㄱ` = next safe unit. GitHub live SHA/source/tests take priority over all historic status text.
 
-## 1. Goal, requirements, technology
-Local-first/zero-fee self-installed tool: SMAX² private standardization → `AX_DATA_PACKAGE_V0` local ingestion → reliable read-only sales metrics + document evidence → dashboard. SOVIA optional audit. 3 sales demo markets, 5 RAG usage modes (Document/Knowledge Base/Multi-Document/Conversational/SQL+Document). Node >=22.16 with built-in SQLite; zero npm dependencies. Commercial target 149k KRW / early 99k KRW is not validated; private masterplan remains in private `hibi89/SMAX`.
+## 1. Goal / confirmed requirements / stack
+One locally installed, self-operated AX tool combining SMAX² standardized source data → RAG Studio SQLite readonly metrics + verified document search → evidence-linked dashboard, with SOVIA independent optional audit. Node >=22.16, no npm packages, 0 KRW external API; synthetic first; not a commercial ready app. Product/masterplan and price strategy retained in private SMAX; do not copy private plan or code to this PUBLIC repository.
 
-## 2. Completed work and engineering decisions
-P0 synthetic verified manifest/CSV/TXT consumer, P1 verified in-memory SQLite readonly totals + return TXT citation, P2 BM25/Hangul n-gram multi-TXT retrieval/conflict heuristic, P2.1 `src/evidence-router.mjs`/`src/router-cli.mjs`/`tests/evidence-router.test.mjs`, `docs/P21_EVIDENCE_ROUTER.md` and `npm run demo:router`. Router chooses from bounded whitelisted intents; verifies entire source, finds document citations, checks duration conflicts across all verified documents (not just ranked top hits), routes fixed SQL query, and refuses incomplete/conflicted requests. Chose simple deterministic local path over an LLM router or generated SQL for accuracy/cost/safety. No private SMAX code or real customer data in public repository.
+## 2. Implemented decisions and changes
+P0 typed manifest validation (synthetic sales+TXT). P1 in-memory fixed-query SQLite aggregate. P2 BM25 Korean lexical TXT line search and multi-doc conflict. P2.1 evidence-gated query router. **P3** adds local loopback HTTP+browser UI (KPI cards/approved docs/CSV source table/composite and search form/refusal states); reuses unchanged P0–P2.1 core. No uploads, arbitrary SQL, cloud or external network. Chose loopback server over `file://` due same-origin browser access and freshness of validated package. Details: `docs/P3_LOCAL_DASHBOARD.md`.
 
-## 3. Test evidence, successes and limits
-Local Linux container Node `v22.16.0`: `npm test` **60 pass, 0 fail, 0 skip** (P0=16, P1=12, P2=17, P2.1=15). `npm run demo:router`: `ANSWERED`, 6 synthetic orders / 10 units / KRW 157000 / return 7 calendar days / shipping preparation 2 business days, CSV line 2–7 and TXT line 2 citations. Negative tests: no evidence/unsupported, modified digest, missing review approval, SQL injected question as text, conflicting same-line and >10 ranked return policies, shipping conflict, source immutability. GitHub-hosted tests, Windows, original-source migration, UI/browser, operational API, production security remain **UNVERIFIED**.
+## 3. Tests / success / failure / unverified
+Node v22.16.0 Linux: `npm test` **80 PASSED / 0 FAILED / 0 SKIPPED** (previous 60 plus 20 P3). Actual local server on 127.0.0.1:18961 GET `/api/overview` HTTP **200**; verified test for sales 157000 KRW, 6 orders, 10 units, 2 synthetic documents, 6 CSV lines. Host/Origin/body/method/error/immutability checks included. Playwright local Chromium navigation attempted once; **`net::ERR_BLOCKED_BY_ADMINISTRATOR`**, so actual UI display, JS interaction, mobile CSS, Console/Network **NOT VERIFIED**. Do NOT claim browser PASS or live app success. Windows/production/API/real source not tested.
 
-## 4. State and stop point
-Completed: P0, P1, P2 and P2.1 **synthetic local slices** only. Next: P3 read-only local dashboard with KPI/line citation and refusal states. Pending: actual SMAX producer handshake, old RAG ZIP, PDF/DOCX, dense retrieval evaluation, Knowledge Base/Conversational broad support, persistent index, installer, gold-set, customers, sale. Original archive is unavailable; not a blocker for synthetic UI slice.
+## 4. Done / ongoing / pending / stop
+DONE: P0–P2.1 source slices + P3 local HTTP/HTML/CSS/JS code and tests. STOP after P3 code test, source hash match, GitHub push/fast-forward and docs snapshot. Next: browser+Windows validation and local UI access security/token before real customer data. RAG original archive, SMAX actual producer, PDF/Word, dense retrieval, charting, license, self-installer, reliability/gold-set and paid launch outstanding.
 
-## 5. Errors, causes and pivot
-Prior shell git host DNS failure: use authorized GitHub connector without repeated blind retries. Original RAG ZIP not accessible: no guessing or overwriting; continue independently from synthetic contracts. `node:sqlite` warns experimental, so do not guarantee Windows distribution. No P2.1 test errors observed in local 60-test run. For ambiguity, return `INSUFFICIENT_EVIDENCE` or `POSSIBLE_CONFLICT`; do not infer legal validity or universally correct policies.
+## 5. Failure evidence / cause / action / pivot
+Earlier git clone in container failed external DNS; use connected GitHub tools. During P3, one HTTP Host-spoof test incorrectly used high-level fetch (browser-supplied Host overrides header), corrected to `node:http` request then full test PASS. Playwright+Chromium `Page.goto(http://127.0.0.1:18961)` blocked by administrator policy; did not bypass controls; shifted to actual HTTP/curl + static asset/API validation, label browser UNVERIFIED. Old RAG ZIP not found in prior Library/repo searches; do not overwrite/fabricate and continue independent synthetic units.
 
-## 6. Repo/branches/SHAs/paths
-Public repo `hibi89/RAG_STUDIO`; default `main` remains `1d809ea830678b667f9223884275f3620a40ead4`, verified `develop` base before P2.1 `66e2436e11173133fe2c0a5c757c00e4d00812af`. P2.1 development branch `feature/p21-evidence-router`; verify actual new commit SHA live before any next work. Source `src/evidence-router.mjs`, `src/router-cli.mjs`; tests `tests/evidence-router.test.mjs`; docs `docs/P21_EVIDENCE_ROUTER.md`, `STATUS.md`, `HANDOFF.md`; rest of files preserved.
+## 6. Repo/branches/commits/paths
+Public `https://github.com/hibi89/RAG_STUDIO`; `main` stable baseline `1d809ea830678b667f9223884275f3620a40ead4`; starting `develop` confirmed **`20575997980b511cf79ead0a1376edcff5e8f5b8`**. P3 branch `feature/p3-local-dashboard`; verify its final GitHub HEAD after current code/doc commit (cannot self-reference). Code `src/dashboard-server.mjs`, `src/dashboard-cli.mjs`, `ui/index.html`, `ui/app.js`, `ui/app.css`, `tests/dashboard.test.mjs`, `package.json`, `docs/P3_LOCAL_DASHBOARD.md`, `STATUS.md`, `HANDOFF.md`. Prior source/fixtures preserved.
 
-## 7. Production/deployment/runtime
-Commands `npm test`, `npm run demo:router`, `npm run demo:mixed`, `npm run demo:search` at repo root. No Docker, Vercel project, Production URL, auto deployment, mandatory external API, or hosting. Deploy classification **NOT APPLICABLE**; do not equate local tests with production.
+## 7. Deployment / execution / environment
+`npm test`, `npm run dashboard`, then open `http://127.0.0.1:8765` on same machine; Ctrl+C stop. No Vercel/Production URL, no CI configured, no server deployment. Node 22.16 `node:sqlite` emits experimental warning. Browser smoke script run had environment block. RAG Studio is NOT deployed.
 
-## 8. Original, backups, secrets, protected content
-Prior Git history is recovery point, and original P0/P1/P2 paths are unchanged except `package.json` new demo script. All fixtures synthetic. Private SMAX code/masterplan, tokens, .env and customer materials must not enter public repo. No real original inputs modified, no paid services, changes to repo privacy or third-party access prohibited absent approval.
+## 8. Originals/backups/credentials/protected content
+Prior `develop` commit provides versioned recovery; no real input files modified, only synthetic fixtures. GitHub connected login `hibi89` (last checked earlier); confirm author and committer at new commit. SMAX private plan/code, SOVIA code, tokens, credentials, .env, customer materials must not go to public GitHub. No upload/permission/paid/production changes.
 
-## 9. Next priority, procedure, acceptance, approvals
-1. Fetch live remote HEAD/diff; confirm all P2.1 source blobs match tested local bytes and P0/P1/P2 unchanged.
-2. Implement P3 synthetic desktop-friendly read-only dashboard/preview; show provenance and conflict/insufficient states, then run unit and real browser tests if available.
-3. Later original archive hash/secrets/licenses and SMAX handshake, three Windows PCs, 100-question benchmark, install/restart/recovery, customer-data safety and licensing/returns gates.
-4. Deployments, purchases, real customer files, private repo writes, account/security settings changes, live sale require separate explicit owner approval. Synthetic safe implementation proceeds without re-asking previously settled business goals.
+## 9. Next steps / acceptance / user approvals
+Verify P3 commit GitHub tree/source parity, then safe fast-forward to `develop`, verify SHA. P3.1: authorized browser UI and Windows responsive smoke, error states, source line click behavior; implement localhost session token/CSRF before real data; improve UI/chart. Production hosting, release, customer source use, repo privacy/authorization, paid spend, SaaS connections and sales need explicit user approval. Preserve SMAX Nov 7 independent schedule.
 
-## 10. KST snapshot and evidence base
-2026-10-26 KST. Live `develop` before new work = `66e2436e11173133fe2c0a5c757c00e4d00812af`; local Node v22.16.0 60/60 PASS. Commit/branch-head created after this text must be checked live, so no self-referential final SHA appears here. This handoff records local P2.1, not deployed or customer-tested completion.
-
-## Verified remote integration checkpoint — 2026-10-26 KST
-- `feature/p21-evidence-router` and `develop` both confirmed on **code commit** `c10e44b6c0eb39501483f69dcc5ac7f089229179` after approved fast-forward; stable `main` unchanged at `1d809ea830678b667f9223884275f3620a40ead4`.
-- GitHub compare: one commit ahead, zero behind, exactly seven expected files changed. All seven remote Git blob SHAs exactly matched locally tested files. GitHub commit author and committer connected to `hibi89`; no force update, secrets, private source, paid external services or production deployment.
-- Node v22.16.0 Linux: **60/60 pass, 0 fail**, P2.1 demo responded using two individually cited policy texts and six sales CSV rows. Only local synthetic test evidence; Windows, GitHub CI, browser, real data, real SMAX interface and production remain unverified.
-- Next atomic work: P3 synthetic local dashboard UI and browser/source-attribution tests. Verify latest develop HEAD before touching code; documentation checkpoint SHA may differ from code SHA.
+## 10. Date / verification basis / limits
+2026-10-26 KST. GitHub HEAD before P3 `20575997980b511cf79ead0a1376edcff5e8f5b8`. Linux local Node 22.16 80/80 + curl 200, Chromium blocked, not a test/production pass. After P3 GitHub commit, inspect exact new HEAD and diff in connector; this document cannot encode its own future commit SHA.
