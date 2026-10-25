@@ -1,3 +1,5 @@
+> **새 채팅 바로 재개:** `[RAG_STUDIO 깃헙 레포지토리 보고 작업이어가셈]` → [CHAT_BOOTSTRAP.md](CHAT_BOOTSTRAP.md) → [AGENTS.md](AGENTS.md) → [STATUS.md](STATUS.md) → [다음 구현 단위](docs/NEXT_IMPLEMENTATION_UNIT.md). 입력 시 GitHub 최신 조회 후 안전한 실제 코딩/테스트 단위로 진행.
+
 # RAG Studio — Local AI Data & Knowledge Workspace
 
 > 상태: **신규 저장소 초기 문서 / 소스 이식 및 제품 개발 전** (2026-10-26 KST). 이 저장소에 실행 가능한 프로그램이 있다고 가정하지 않는다.
