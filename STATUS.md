@@ -1,3 +1,5 @@
+> **P0 LATEST (2026-10-26 KST, supersedes earlier 'docs-only' / 'not remotely mirrored' entries below):** The tested Node source and all 16 tests have now been staged for this feature branch commit alongside synthetic CSV/TXT/manifest and Draft 2020-12 schema. Exact Git blob hashes for src/validate.mjs, src/summary.mjs, src/cli.mjs, tests/contract.test.mjs, fixtures/ax_sample_v0/*.csv|*.txt|manifest.json match the local sources where local npm test returned 16 PASS / 0 FAIL, demo 6 orders / 10 units / KRW 157000. The remote branch is a code mirror; GitHub-hosted CI and Windows execution remain UNVERIFIED. SMAX producer, original RAG ZIP, SQLite, retrieval, UI, SOVIA, actual customer and production are NOT DONE. Merge to develop and main is pending review.
+
 # STATUS — RAG Studio AX Edition
 
 > 검증 기준: **2026-10-26 KST**. GitHub와 실제 코드를 재조회하지 않고 이 문서만으로 현재 구현 완료를 주장하지 말 것.
