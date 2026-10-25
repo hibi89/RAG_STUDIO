@@ -25,3 +25,9 @@ Snapshot: **2026-10-26 KST**. Source of truth is live GitHub plus runnable test 
 
 ## Next safe unit
 P3 smallest local browser-accessible read-only dashboard for the synthetic package, with KPI, document cards, source line citations, missing/conflict states and local-only test. Recheck P2.1 remote source/test hashes and `develop` branch first. Then real SMAX producer adapter only when interface can be safely verified; Windows & 100-question gate before sale. No change to private SMAX's 2026-11-07 independent priority.
+
+## Verified remote integration checkpoint — 2026-10-26 KST
+- **Code + tests + initial handoff commit**: `c10e44b6c0eb39501483f69dcc5ac7f089229179`. Verified GitHub HEAD of both `feature/p21-evidence-router` and `develop` after fast-forward; `main` remains unchanged at `1d809ea830678b667f9223884275f3620a40ead4`.
+- GitHub compare `66e2436e..c10e44b6`: **ahead 1 / behind 0 / exactly 7 expected files changed**. Remote Git blob SHA of all seven files matched local Node-tested originals; account author/committer `hibi89`. No force push.
+- Linux local `npm test`: **60 passed / 0 failed / 0 skipped**; `npm run demo:router`: `ANSWERED` with source citations. GitHub CI, Windows, browser, live SMAX adapter, Production, sale remain **unverified / not applicable**.
+- This checkpoint documents the inspected code SHA; any subsequent documentation-only checkpoint must be verified from GitHub before quoting its own final HEAD.

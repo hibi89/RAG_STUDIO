@@ -34,3 +34,9 @@ Prior Git history is recovery point, and original P0/P1/P2 paths are unchanged e
 
 ## 10. KST snapshot and evidence base
 2026-10-26 KST. Live `develop` before new work = `66e2436e11173133fe2c0a5c757c00e4d00812af`; local Node v22.16.0 60/60 PASS. Commit/branch-head created after this text must be checked live, so no self-referential final SHA appears here. This handoff records local P2.1, not deployed or customer-tested completion.
+
+## Verified remote integration checkpoint — 2026-10-26 KST
+- `feature/p21-evidence-router` and `develop` both confirmed on **code commit** `c10e44b6c0eb39501483f69dcc5ac7f089229179` after approved fast-forward; stable `main` unchanged at `1d809ea830678b667f9223884275f3620a40ead4`.
+- GitHub compare: one commit ahead, zero behind, exactly seven expected files changed. All seven remote Git blob SHAs exactly matched locally tested files. GitHub commit author and committer connected to `hibi89`; no force update, secrets, private source, paid external services or production deployment.
+- Node v22.16.0 Linux: **60/60 pass, 0 fail**, P2.1 demo responded using two individually cited policy texts and six sales CSV rows. Only local synthetic test evidence; Windows, GitHub CI, browser, real data, real SMAX interface and production remain unverified.
+- Next atomic work: P3 synthetic local dashboard UI and browser/source-attribution tests. Verify latest develop HEAD before touching code; documentation checkpoint SHA may differ from code SHA.
