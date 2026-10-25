@@ -31,3 +31,7 @@ Review remote diff; P1 integrate readonly local SQLite with approved CSV data an
 
 ## 10. Snapshot
 2026-10-26 KST; inspected GitHub repository/branches/docs/SMAX private masterplan/SOVIA docs; tested Node local fixture P0 only. Basis SHA `1d809ea`; feature commit must be checked live. Distinguish local pass from GitHub mirroring and production.
+
+### Verified remote integration receipt (2026-10-26 KST)
+- P1 exact code commit SHA: `4ca33e28d9df1bb69a05cd2089b7c29c89f53f0b` on `develop` and `feature/p1-mixed-query` before this docs-only checkpoint. P0 preserved on `feature/p0-data-contract`; `main` unchanged. GitHub identity `hibi89` for author/committer.
+- GitHub source blobs exactly matched local Node 22.16.0 tested source, **28 PASS / 0 FAIL / 0 SKIP**. GitHub-hosted CI, Windows, actual service unverified.

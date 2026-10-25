@@ -19,3 +19,7 @@ Updated 2026-10-26 KST. Scope: P0 independent public consumer package (not a com
 2. Confirm original RAG ZIP from user-accessible source when available; do not overwrite its internals.
 3. P1 mixed source scenario: readonly database aggregate + TXT citation, exact test evidence, then move to UI.
 4. Preserve unchanged private SMAX 2026-11-07 schedule; SOVIA optional.
+
+## Latest integration evidence (2026-10-26 KST)
+- `feature/p1-mixed-query` and `develop` confirmed at **4ca33e28d9df1bb69a05cd2089b7c29c89f53f0b**, `main` remains `1d809ea...`; compare P0→P1 = exactly 1 commit, 8 files modified/added.
+- Code/test/docs file Git blobs checked equal to the locally tested originals. Commit identity author/committer mapped to `hibi89`. Node test: 28/28 in container; CI/Windows/production still unverified.
