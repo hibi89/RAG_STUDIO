@@ -34,3 +34,10 @@ Existing `main` unchanged; Git history and the prior P0/P1 source are recovery r
 
 ## 10. Updated time, verification boundary, base revision
 2026-10-26 KST. Verified local Node v22.16.0 P0+P1+P2 45 tests. GitHub P2 commit/merge and final HEAD to verify after upload; initial basis `a1fd3c65...`, no remote runtime evidence. No finished commercial product claim.
+
+
+## Verified GitHub integration checkpoint — 2026-10-26 KST
+- Code commit **1e8e4742200d826b92acb8a9554873f8c722e10b** verified on `feature/p2-keyword-retrieval`, then fast-forwarded to `develop` with no force. Main remained `1d809ea830678b667f9223884275f3620a40ead4`.
+- Remote Git blob hashes of P2 src/test/fixture/package/docs agree with local tested source. Author and committer: `hibi89`, email matched connected account; no credential changes.
+- Linux container Node 22.16.0: `npm test` **45 passed / 0 failed / 0 skipped** (P0 16, P1 12, P2 17); `npm run demo:search` returned verified return + shipping line citations. Production/Windows/CI/SMAX original ZIP are not tested.
+- This checkpoint documents verified **code** SHA. This docs-only update on top must be checked live for the final HEAD; avoid claiming its SHA from within itself.
