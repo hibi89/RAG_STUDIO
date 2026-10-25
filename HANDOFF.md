@@ -1,33 +1,33 @@
-# HANDOFF — RAG Studio AX Edition / P3 local dashboard
+# HANDOFF — RAG Studio AX Edition · P3.1
 
-2026-10-26 KST. Exact new-chat command: `[RAG_STUDIO 깃헙 레포지토리 보고 작업이어가셈]`, `ㄱ` = next safe unit. GitHub live SHA/source/tests take priority over all historic status text.
+Updated 2026-10-26 KST. Resume commands: `[RAG_STUDIO 깃헙 레포지토리 보고 작업이어가셈]` or `ㄱ`. Recheck live GitHub/code/test results; no background work is running.
 
-## 1. Goal / confirmed requirements / stack
-One locally installed, self-operated AX tool combining SMAX² standardized source data → RAG Studio SQLite readonly metrics + verified document search → evidence-linked dashboard, with SOVIA independent optional audit. Node >=22.16, no npm packages, 0 KRW external API; synthetic first; not a commercial ready app. Product/masterplan and price strategy retained in private SMAX; do not copy private plan or code to this PUBLIC repository.
+## 1. Goal / requirements / stack
+Local-only customer self-install data intelligence product: private SMAX² standardized package → RAG Studio verified CSV/TXT, readonly SQLite, cited search + local dashboard. SOVIA optional. 3 buyer demo markets, 5 envisioned RAG use cases, no required paid cloud. Stack Node 22.16+ built-ins; public fixtures synthetic only. Commercial price hypotheses 149k/99k KRW remain untested; strategic masterplan is private SMAX.
 
-## 2. Implemented decisions and changes
-P0 typed manifest validation (synthetic sales+TXT). P1 in-memory fixed-query SQLite aggregate. P2 BM25 Korean lexical TXT line search and multi-doc conflict. P2.1 evidence-gated query router. **P3** adds local loopback HTTP+browser UI (KPI cards/approved docs/CSV source table/composite and search form/refusal states); reuses unchanged P0–P2.1 core. No uploads, arbitrary SQL, cloud or external network. Chose loopback server over `file://` due same-origin browser access and freshness of validated package. Details: `docs/P3_LOCAL_DASHBOARD.md`.
+## 2. Completed / changed / rationale
+P0 contract/validation; P1 sqlite+TXT; P2 multi-doc lexical retrieval; P2.1 evidence router; P3 local HTTP/UI. **P3.1** implemented per-run crypto bearer token delivered only in browser fragment and protected data APIs, browser captures and removes fragment and supplies Authorization header. Fixed SQLite `GROUP BY sku` produces independent verified chart rows in UI progress bars (72k/45k/40k); refuses unapproved/mismatched files. Host and Origin guards preserved. Chosen over unauthenticated loopback; OS auth broker deferred as too complex for synthetic MVP. Exact rationale: `docs/P31_SESSION_DASHBOARD.md`.
 
-## 3. Tests / success / failure / unverified
-Node v22.16.0 Linux: `npm test` **80 PASSED / 0 FAILED / 0 SKIPPED** (previous 60 plus 20 P3). Actual local server on 127.0.0.1:18961 GET `/api/overview` HTTP **200**; verified test for sales 157000 KRW, 6 orders, 10 units, 2 synthetic documents, 6 CSV lines. Host/Origin/body/method/error/immutability checks included. Playwright local Chromium navigation attempted once; **`net::ERR_BLOCKED_BY_ADMINISTRATOR`**, so actual UI display, JS interaction, mobile CSS, Console/Network **NOT VERIFIED**. Do NOT claim browser PASS or live app success. Windows/production/API/real source not tested.
+## 3. Test commands / pass / fail / unverified
+Linux Node v22.16.0 `npm test`: **92 pass / 0 fail / 0 skipped** = preexisting 80 + new 12. Actual HTTP with launched server: anonymous overview **401**, bearer **200**; SKU totals sum 157k KRW with 6 orders, 10 units. First run 91/92 due to incorrect new-test assertion naming, test corrected and full 92 PASS. Previous Playwright local Chromium access blocked by `net::ERR_BLOCKED_BY_ADMINISTRATOR`, **no P3.1 browser rendering observed**. Windows/real API/deployed test NOT RUN.
 
-## 4. Done / ongoing / pending / stop
-DONE: P0–P2.1 source slices + P3 local HTTP/HTML/CSS/JS code and tests. STOP after P3 code test, source hash match, GitHub push/fast-forward and docs snapshot. Next: browser+Windows validation and local UI access security/token before real customer data. RAG original archive, SMAX actual producer, PDF/Word, dense retrieval, charting, license, self-installer, reliability/gold-set and paid launch outstanding.
+## 4. Done / in progress / pending / stop
+P3.1 synthetic code+test locally complete; GitHub feature push/integration is the next synchronization action until verified. Pending: real browser/Windows tests, real SMAX adapter, original RAG ZIP, PDF/Word, dense retrieval, search accuracy 100 questions, self installer and release QA. No real customers, production or sales.
 
-## 5. Failure evidence / cause / action / pivot
-Earlier git clone in container failed external DNS; use connected GitHub tools. During P3, one HTTP Host-spoof test incorrectly used high-level fetch (browser-supplied Host overrides header), corrected to `node:http` request then full test PASS. Playwright+Chromium `Page.goto(http://127.0.0.1:18961)` blocked by administrator policy; did not bypass controls; shifted to actual HTTP/curl + static asset/API validation, label browser UNVERIFIED. Old RAG ZIP not found in prior Library/repo searches; do not overwrite/fabricate and continue independent synthetic units.
+## 5. Errors / causes / attempts / pivots
+Chromium prior policy block was not bypassed or repeatedly probed; HTTP+test/static safety verification used instead. P3 initial Host-spoof test used fetch and corrected to node:http in earlier phase. P3.1 first test 91/92 was only a source code assertion mismatch, corrected for actual `element('progress')` helper. No confirmed app runtime failure. Original RAG ZIP absent; never fabricate reconstructed engine. Prior direct git networking failed; use authorized GitHub connector.
 
-## 6. Repo/branches/commits/paths
-Public `https://github.com/hibi89/RAG_STUDIO`; `main` stable baseline `1d809ea830678b667f9223884275f3620a40ead4`; starting `develop` confirmed **`20575997980b511cf79ead0a1376edcff5e8f5b8`**. P3 branch `feature/p3-local-dashboard`; verify its final GitHub HEAD after current code/doc commit (cannot self-reference). Code `src/dashboard-server.mjs`, `src/dashboard-cli.mjs`, `ui/index.html`, `ui/app.js`, `ui/app.css`, `tests/dashboard.test.mjs`, `package.json`, `docs/P3_LOCAL_DASHBOARD.md`, `STATUS.md`, `HANDOFF.md`. Prior source/fixtures preserved.
+## 6. Repo / branches / SHA / paths
+`hibi89/RAG_STUDIO` PUBLIC; before P3.1 `develop` = `52f39a80855c558340657909fe62a83bc901c9fe`; `main` = `1d809ea830678b667f9223884275f3620a40ead4`. Feature name `feature/p31-dashboard-hardening`, created from exact develop head after validation. Modified `src/dashboard-server.mjs`, `src/dashboard-cli.mjs`, `ui/{index.html,app.js,app.css}`, `tests/dashboard.test.mjs`, `docs/P31_SESSION_DASHBOARD.md`, `STATUS.md`, `HANDOFF.md`. Verify new branch SHAs after commit; do not invent future SHA. Prior `develop` commit is recovery snapshot. No force pushing.
 
-## 7. Deployment / execution / environment
-`npm test`, `npm run dashboard`, then open `http://127.0.0.1:8765` on same machine; Ctrl+C stop. No Vercel/Production URL, no CI configured, no server deployment. Node 22.16 `node:sqlite` emits experimental warning. Browser smoke script run had environment block. RAG Studio is NOT deployed.
+## 7. Runtime / deployment / environment
+At repo root `npm test`, `npm run dashboard`; open complete URL printed by launcher `http://127.0.0.1:8765/#session=<per-run-secret>`; refresh after hash removal requires reopening launch link; Ctrl+C stops. No Vercel project, no Production URL, no external API or automation. Vercel SHA match NOT APPLICABLE.
 
-## 8. Originals/backups/credentials/protected content
-Prior `develop` commit provides versioned recovery; no real input files modified, only synthetic fixtures. GitHub connected login `hibi89` (last checked earlier); confirm author and committer at new commit. SMAX private plan/code, SOVIA code, tokens, credentials, .env, customer materials must not go to public GitHub. No upload/permission/paid/production changes.
+## 8. Originals / backups / secrets / modification prohibitions
+All test packages synthetic. Never log, share or commit runtime session URL/token. No token embedded in source or static responses. SMAX private source/strategic docs never copied, SOVIA unchanged. No real data touched or uploaded. GitHub existing HEAD provides rollback by normal ref/restore; no force history change. No account/security configuration, paid service, production deployment or public sale without owner approval.
 
-## 9. Next steps / acceptance / user approvals
-Verify P3 commit GitHub tree/source parity, then safe fast-forward to `develop`, verify SHA. P3.1: authorized browser UI and Windows responsive smoke, error states, source line click behavior; implement localhost session token/CSRF before real data; improve UI/chart. Production hosting, release, customer source use, repo privacy/authorization, paid spend, SaaS connections and sales need explicit user approval. Preserve SMAX Nov 7 independent schedule.
+## 9. Next safe work / acceptance / approval
+Verify connector author/committer = owner; commit changed synthetic files to feature; compare remote Git blob digests to test artifacts and integrate via fast-forward to `develop`, preserving `main`. Then P3.2 authorized browser+Windows test and source drill-down/diagnostics. A product sale or customer input use requires separate release gates and approval. `ㄱ` authorizes subsequent safe synthetic work, not public launch.
 
-## 10. Date / verification basis / limits
-2026-10-26 KST. GitHub HEAD before P3 `20575997980b511cf79ead0a1376edcff5e8f5b8`. Linux local Node 22.16 80/80 + curl 200, Chromium blocked, not a test/production pass. After P3 GitHub commit, inspect exact new HEAD and diff in connector; this document cannot encode its own future commit SHA.
+## 10. KST update / evidence boundary / basis
+2026-10-26 KST. At start live GitHub `develop` 52f39a80855c558340657909fe62a83bc901c9fe, verified src blob parity to container copy and all 80 prior tests PASS; P3.1 local 92/92 PASS and 401/200 smoke. Any new SHA after handoff write must be retrieved directly from GitHub. GitHub CI / Windows / browser / production remain unverified.

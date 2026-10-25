@@ -1,5 +1,10 @@
 /* Static local UI. Treat all package-origin strings as untrusted: textContent only. */
 const $=(id)=>document.getElementById(id);
+// The secret is generated anew on server start. A URL fragment never reaches the server.
+const tokenMatch=/^#session=([A-Za-z0-9_-]{43})$/.exec(location.hash);
+const sessionToken=tokenMatch?.[1]??null;
+if(sessionToken)history.replaceState(null,'',location.pathname+location.search);
+
 const comma=(n)=>Number(n).toLocaleString('ko-KR');
 const element=(tag,cls,content)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(content!==undefined)e.textContent=String(content);return e;};
 function replace(parent,...children){parent.replaceChildren(...children);}
@@ -22,6 +27,21 @@ function renderOverview(data){
     return tr;
   });
   replace($('sourceRows'),...rows);
+  const skuRows=data.dataset.sku_totals??[];
+  const maxRevenue=Math.max(1,...skuRows.map(r=>Number(r.revenue_krw)));
+  const bars=skuRows.map(r=>{
+    const item=element('div','sku-row');
+    const head=element('div','sku-label');
+    head.append(element('strong','',r.sku),element('span','',`${comma(r.revenue_krw)}원 · ${r.orders}건`));
+    const bar=element('progress','sku-bar');
+    bar.max=maxRevenue;
+    bar.value=Number(r.revenue_krw);
+    bar.setAttribute('aria-label',`${r.sku} 매출 ${comma(r.revenue_krw)}원`);
+    item.append(head,bar);
+    return item;
+  });
+  replace($('skuChart'),...bars);
+
 }
 function addEvidence(parent,title,items){
   parent.append(element('p','evidence-title',title));
@@ -49,7 +69,8 @@ function renderResult(data,mode){
   if(Array.isArray(data.review_evidence)&&data.review_evidence.length)addEvidence(parent,'상충 문장: 확인 전 답변 보류',data.review_evidence);
 }
 async function api(url,options={}){
-  const response=await fetch(url,{cache:'no-store',...options});
+  if(!sessionToken)throw new Error('실행 창에 표시된 세션 전용 주소로 접속하세요.');
+  const response=await fetch(url,{cache:'no-store',...options,headers:{...options.headers,Authorization:`Bearer ${sessionToken}`}});
   let body;try{body=await response.json();}catch{throw new Error('잘못된 서버 응답');}
   if(!response.ok)throw new Error(body.error??'검증 실패');
   return body;
@@ -66,4 +87,4 @@ $('askForm').addEventListener('submit',(event)=>{event.preventDefault();void ask
 $('searchButton').addEventListener('click',()=>void ask('search'));
 for(const button of document.querySelectorAll('[data-question]'))button.addEventListener('click',()=>{$('question').value=button.dataset.question;$('question').focus();});
 try{const data=await api('/api/overview');renderOverview(data);setHealth('검증된 로컬 데이터');}
-catch{setHealth('데이터 검증 실패',true);replace($('documentCards'),element('p','', '데이터 출처를 확인할 수 없습니다.'));}
+catch(e){setHealth(sessionToken?'데이터 검증 실패':'세션 연결 필요',true);replace($('documentCards'),element('p','', '데이터 출처를 확인할 수 없습니다.'));}

@@ -13,7 +13,7 @@
 <aside class="rail">
   <div class="logo"><div class="logo-mark">R</div><div><strong>RAG STUDIO</strong><small>AX EDITION · LOCAL</small></div></div>
   <nav aria-label="페이지 탐색"><a href="#overview">개요 및 KPI</a><a href="#query">통합 질의</a><a href="#documents">문서와 출처</a><a href="#provenance">계산 근거</a></nav>
-  <div class="rail-foot">외부 서버 연결 없음<br>합성 데이터 테스트용 빌드 <span class="version">P3 MVP</span></div>
+  <div class="rail-foot">외부 서버 연결 없음<br>합성 데이터 테스트용 빌드 <span class="version">P3.1</span></div>
 </aside>
 <main>
 <header class="topbar"><div><p class="eyebrow">WORKSPACE / DATA INTELLIGENCE</p><h1>데이터와 문서, 하나의 근거로.</h1><p class="subtitle">검증된 표 데이터 집계와 문서 검색을 결합하는 로컬 분석 공간</p></div><div id="health" class="health" role="status" aria-live="polite">검증 중…</div></header>
@@ -26,6 +26,7 @@
     <article class="kpi"><span>승인 문서</span><strong id="approvedDocs">—</strong><small>SHA-256 무결성 검증</small></article>
   </div>
 </section>
+<section id="sku" class="section" aria-labelledby="skuTitle"><div class="section-heading"><div><p class="eyebrow">01-B / PRODUCT MIX</p><h2 id="skuTitle">상품별 매출</h2></div><span class="table-note">검증된 CSV · SQLite 집계</span></div><div id="skuChart" class="sku-chart" role="group" aria-label="상품별 매출 비교"><p>SKU별 집계 검증 중…</p></div></section>
 <section id="query" class="section" aria-labelledby="queryTitle"><div class="section-heading"><div><p class="eyebrow">02 / GROUNDED INTELLIGENCE</p><h2 id="queryTitle">근거 기반 질의</h2></div></div>
   <div class="workbench">
   <form id="askForm"><label for="question">분석 질문 입력</label><textarea id="question" maxlength="500" rows="3" required placeholder="총 매출과 반품 기간, 배송 준비 기간은?">총 매출과 반품 기간, 배송 준비 기간은?</textarea>
