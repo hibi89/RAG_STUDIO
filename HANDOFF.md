@@ -31,3 +31,10 @@ Verify connector author/committer = owner; commit changed synthetic files to fea
 
 ## 10. KST update / evidence boundary / basis
 2026-10-26 KST. At start live GitHub `develop` 52f39a80855c558340657909fe62a83bc901c9fe, verified src blob parity to container copy and all 80 prior tests PASS; P3.1 local 92/92 PASS and 401/200 smoke. Any new SHA after handoff write must be retrieved directly from GitHub. GitHub CI / Windows / browser / production remain unverified.
+
+
+## Remote P3.1 verification checkpoint — 2026-10-26 KST
+- Feature code commit **2bb18a7f8cb13892a79fbd0c2571271ac53df45e** verified as exactly one commit ahead of baseline develop **52f39a80855c558340657909fe62a83bc901c9fe**, zero behind; exactly 9 expected files changed.
+- All nine GitHub blob SHA values matched the locally tested code, UI, tests and documents. Commit Git author and committer both identified as **hibi89** with matching email; no force push, no private SMAX/SOVIA changes.
+- Node 22.16.0 (Linux) local `npm test`: **92 passed / 0 failed / 0 skipped**. Running local server: unauthenticated `GET /api/overview` HTTP 401, correct per-run bearer HTTP 200, exact synthetic SKU sums KRW 157,000. Not a real-browser/Windows/Production test.
+- This checkpoint document is added as a separate documentation commit. Re-fetch the latest GitHub branch SHA to see the documentation commit and whether `develop` fast-forwarded; the document cannot truthfully include its own not-yet-created SHA.

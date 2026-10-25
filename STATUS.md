@@ -30,3 +30,10 @@ Repository `hibi89/RAG_STUDIO` PUBLIC. Verified before P3.1: `develop` **52f39a8
 
 ## Next `ㄱ`
 P3.2 further UI interaction QA (authorized Windows/browser), source drill-down, safe error states, platform diagnostics. If browser access remains unavailable, continue synthetic nonbrowser acceptance and installation groundwork but mark browser unverified. No unapproved real data/cloud/release/security-policy changes. Update HANDOFF and STATUS after each substantive unit.
+
+
+## Remote P3.1 verification checkpoint — 2026-10-26 KST
+- Feature code commit **2bb18a7f8cb13892a79fbd0c2571271ac53df45e** verified as exactly one commit ahead of baseline develop **52f39a80855c558340657909fe62a83bc901c9fe**, zero behind; exactly 9 expected files changed.
+- All nine GitHub blob SHA values matched the locally tested code, UI, tests and documents. Commit Git author and committer both identified as **hibi89** with matching email; no force push, no private SMAX/SOVIA changes.
+- Node 22.16.0 (Linux) local `npm test`: **92 passed / 0 failed / 0 skipped**. Running local server: unauthenticated `GET /api/overview` HTTP 401, correct per-run bearer HTTP 200, exact synthetic SKU sums KRW 157,000. Not a real-browser/Windows/Production test.
+- This checkpoint document is added as a separate documentation commit. Re-fetch the latest GitHub branch SHA to see the documentation commit and whether `develop` fast-forwarded; the document cannot truthfully include its own not-yet-created SHA.
