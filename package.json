@@ -6,7 +6,8 @@
   "scripts": {
     "test": "node --test tests/*.test.mjs",
     "demo": "node src/cli.mjs fixtures/ax_sample_v0",
-    "demo:mixed": "node src/mixed-cli.mjs fixtures/ax_sample_v0 \"총 매출과 반품 규정을 알려줘\""
+    "demo:mixed": "node src/mixed-cli.mjs fixtures/ax_sample_v0 \"총 매출과 반품 규정을 알려줘\"",
+    "demo:search": "node src/search-cli.mjs fixtures/ax_multi_doc_v0 \"반품 신청 기간과 배송 준비 기간\""
   },
   "engines": {
     "node": ">=22.16.0"

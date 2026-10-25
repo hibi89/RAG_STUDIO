@@ -1,25 +1,33 @@
 # STATUS — RAG Studio AX Edition
 
-Updated 2026-10-26 KST. Scope: P0 independent public consumer package (not a commercial MVP).
+Last verified local development: 2026-10-26 KST; feature branch expected to be `feature/p2-keyword-retrieval`. **This document is a development snapshot, not a runtime/Production claim.** Actual GitHub SHA overrides any earlier handoff.
 
-## Implementation (feature/p0-data-contract)
-- Added JSON interchange schema, a synthetic six-row sales CSV (KRW 157000; units 10) plus policy TXT, deterministic manifest with SHA256 and file metadata.
-- Added built-in Node.js read-only package validator and narrowly scoped sales aggregation CLI; strict package version, path, symlink, digest/size, review and provenance checks.
-- Local test evidence: Node v22.16.0; `npm test` => **16 PASS / 0 FAIL / 0 SKIP**; `npm run demo` => six rows, 10 units, 157000 KRW and a document file/source pointer. These are local synthetic tests, NOT Windows/production integration tests.
-- Repo base before change `1d809ea830678b667f9223884275f3620a40ead4`, main/develop/feature all identical at inspection. This feature branch commit is to be verified from GitHub; main/develop remain unchanged.
+## Product and constraints
+- Local-first self-install workspace; private SMAX² standardization output required for final product; RAG Studio owns verified local dataset/document retrieval, readonly SQLite, evidence and dashboard; SOVIA audit is optional only after the core product works.
+- Target commercial price 149,000 KRW (early 99,000 KRW) remains a strategy hypothesis, not a launched product or proof of willingness to pay. Masterplan resides in private `hibi89/SMAX` and must not be copied here.
+- One product, three demo markets: small retail/distribution, small manufacturing/technical services, solo analysts. Five usage targets: Document, Knowledge Base, Multi-Document, Conversational, SQL+Document.
 
-## Explicitly not done
-- Original RAG ZIP/source: not present in inspected repo; Library search did not identify the archive itself. No secret/license inspection or source migration.
-- Private SMAX actual producer contract/functional handshake: UNVERIFIED. No copy of Private source.
-- SQL/SQLite, RAG/BM25/FAISS, UI/dashboard, ZIP importer, Windows installer, SOVIA plugin, CI, production and user installation: NOT IMPLEMENTED/NOT TESTED.
-- No paid services, customer inputs, external data transfer or marketing publication.
+## GitHub status and provenance
+- `main` baseline `1d809ea830678b667f9223884275f3620a40ead4` at P2 start, unchanged intentionally.
+- `develop` basis `a1fd3c65d8e244e46989b4ceb4536ff1a598a5dc` at P2 start, confirmed by live GitHub; already has P0+P1.
+- P2 task begins from that basis on `feature/p2-keyword-retrieval`, then fast-forward to `develop` only after review and successful local tests; check new SHA live after commit. No private code or customer data included.
 
-## Next
-1. Independently review `feature/p0-data-contract`, verify remote HEAD and no secret leakage; integrate to `develop` only after review.
-2. Confirm original RAG ZIP from user-accessible source when available; do not overwrite its internals.
-3. P1 mixed source scenario: readonly database aggregate + TXT citation, exact test evidence, then move to UI.
-4. Preserve unchanged private SMAX 2026-11-07 schedule; SOVIA optional.
+## Verified implementation
+| Item | Actual result |
+|---|---|
+| P0 `AX_DATA_PACKAGE_V0` | Tested validator, synthetic CSV/TXT, integrity, approvals, 6 orders, 10 units, revenue 157,000 KRW |
+| P1 mixed SQL+TXT | Tested in-memory `node:sqlite` readonly fixed aggregate + line-cited synthetic refund evidence |
+| P2 document search | Tested bounded, stateless BM25 + Hangul 2/3-gram lexical retrieval across multiple SHA-verified synthetic TXT documents, citation line/source pointers, limited return-period conflict detection |
+| P0/P1 regression | 28 earlier tests unchanged and passing in same local run |
+| P2 tests | 17 additional passing local tests |
+| Local tests | Node 22.16.0, `npm test` 45 PASS / 0 FAIL / 0 SKIP; `npm run demo:search` FOUND with both return & shipping evidence |
+| ZIP import, original RAG, SMAX real producer | NOT IMPLEMENTED / NOT VERIFIED |
+| Full RAG/FAISS, conversations, PDFs, UI/dashboard, Windows installer | NOT IMPLEMENTED |
+| CI/Windows/Production/browser/SOVIA/customer sale | NOT TESTED / NOT APPLICABLE |
 
-## Latest integration evidence (2026-10-26 KST)
-- `feature/p1-mixed-query` and `develop` confirmed at **4ca33e28d9df1bb69a05cd2089b7c29c89f53f0b**, `main` remains `1d809ea...`; compare P0→P1 = exactly 1 commit, 8 files modified/added.
-- Code/test/docs file Git blobs checked equal to the locally tested originals. Commit identity author/committer mapped to `hibi89`. Node test: 28/28 in container; CI/Windows/production still unverified.
+## Next concrete work
+- Implement P2.1 evidence-aware router bridging independently cited retrieval with existing P1 readonly aggregates; test abstention and complete citations. Improve multi-doc conflict detection; never claim definitive advice from rank alone.
+- Inspect original RAG ZIP if made available, scan secrets/licenses before cherry-picking algorithms.
+- Preserve `main` and private SMAX/SOVIA development plans; no cloud spend, external transfer or product publication.
+
+See `HANDOFF.md`, `docs/P2_KEYWORD_SEARCH.md` and live GitHub branch SHA for continuation. `ㄱ` = next safe implementation unit.

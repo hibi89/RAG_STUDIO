@@ -1,37 +1,36 @@
-# HANDOFF — RAG Studio AX Edition (P0)
+# HANDOFF — RAG Studio AX Edition (P2 keyword search)
 
-> 2026-10-26 KST; latest actual source and GitHub branch head override this snapshot. Exact resume: `[RAG_STUDIO 깃헙 레포지토리 보고 작업이어가셈]` or `ㄱ`.
+Updated 2026-10-26 KST. Live GitHub and actual local tests override this snapshot. New chat: `[RAG_STUDIO 깃헙 레포지토리 보고 작업이어가셈]`; `ㄱ` continues the next safe unit. Do not repeat planning or re-ask approved scope.
 
-## 1. Product / requirements / technology
-Local-first self-install AX data+knowledge workspace. SMAX² output standardization required, RAG+readonly DB+dashboard core, SOVIA independent optional audit. One product, 3 demo markets (retail, technical-service/manufacturing, solo analyst); 5 target RAG scenarios. Price targets 149000 KRW, early 99000 KRW, future SOVIA option; **not on sale**. Product masterplan is Private SMAX, do not disclose.
+## 1. Goal, confirmed requirements, stack
+Build one local-first, self-installed product using **SMAX² private producer** → standard verified local data package → RAG Studio read-only DB calculations and multi-doc cited retrieval → dashboard. SOVIA independent optional audit. Three customer demos: retail, small manufacturing/service, solo consultant. Five target RAG scenarios. Target 149k KRW list / early 99k KRW hypothesis, no real sales. Stack Node 22.16+, built-in `node:sqlite`, no npm dependencies so far; synthetic only.
 
-## 2. Completed scope and rationale
-P0 standalone **public consumer** v0 developed from synthetic data, without needing inaccessible old RAG ZIP. Shape schema + hash/provenance manifest, approved 6-row CSV and returns TXT, readonly Node built-in validator and narrow sales summary CLI. No API spend or customer data. Chose Node built-ins (zero npm dependency) instead of Python+external schema lib, aligned with existing SMAX JS tooling; this is not an integrated SMAX adapter.
+## 2. Implemented decisions and changes
+P0 verified `AX_DATA_PACKAGE_V0` fixture, hash/size/path/symlink/review validation, 6-row synthetic sales aggregation; P1 readonly SQLite fixed query plus TXT return-policy cited single mixed question; **P2** `src/document-search.mjs`, `src/search-cli.mjs`, second fixture `fixtures/ax_multi_doc_v0` including shipping policy, 17 tests and `docs/P2_KEYWORD_SEARCH.md`. Statless line-based BM25, Hangul 2/3-grams, full line/file/document citation, `NO_EVIDENCE`, `POSSIBLE_CONFLICT` where distinct return windows are retrieved. Selected on-demand lexical search over persistent vector index for zero-cost small MVP, pending real algorithm archive and benchmarks.
 
-## 3. Test command/results/limitations
-Node v22.16.0: run `npm test` at repo root => 16 pass, 0 fail, 0 skip on synthetic P0; run `npm run demo` => 6 orders, units 10, revenue 157000 KRW, line-linked evidence and policy TXT source. Windows install/SMAX handshake/actual source migration/DB/LLM/API/browser/production all UNVERIFIED. Schema document and custom parser both present; third-party JSON Schema compliance engine not run.
+## 3. Tests, commands, pass/fail, scope
+`cd repo && npm test`: **45 PASS, 0 FAIL, 0 SKIP** under Linux container Node v22.16.0 (P0=16, P1=12, P2=17). `npm run demo:search`: `FOUND`, returns 7-day return rule and shipping 2-business-day preparation, different document IDs, matching line 2 citations. `npm run demo:mixed`: P1 readonly aggregate remains. No GitHub-hosted CI, Windows, browser, actual customer, original RAG ZIP or production validation. Existing node:sqlite emits experimental warning.
 
-## 4. Done / in progress / pending / blockers
-DONE: P0 local data-contract consumer demo and tests. PENDING: actual ZIP, private producer integration, SQL+document E2E, UI/dashboard/installer, benchmark/security/sale readiness. RAG ZIP not found in inspected repository/Library search; source migration blocked until owner provides accessible original, but synthetic P1 can continue.
+## 4. Done / progress / pending / blocked
+Done P0+P1 local synthetic vertical slice plus P2 lexical multi-doc search and synthetic tests. Pending P2.1 evidence router, core 5 RAG modes, real producer handshake, original RAG reuse, PDF/DOCX, index persistence, UI/KPI dashboard, Windows install/recovery, QA gold-set. Original `rag-studio(1).zip` not found in repo or prior accessible Library search; safe-independent coding proceeded. SOVIA optional, not release blocker.
 
-## 5. Failure/recovery
-GitHub repo contains docs only at base; external git network in local container unavailable (`Could not resolve host: github.com`), so remote changes use authorized GitHub connector. No retry loop; local tests independently run. For original archive, do not fabricate or silently rewrite. If future producer violates v0, fail with explicit review state and build a versioned adapter.
+## 5. Errors, attempts, pivots
+Local container's GitHub network access previously unavailable; use connected GitHub actions for commits (not blind git retries). RAG original inaccessible; do not recreate/discard without hash/license review, use synthetic independent adapter. Single-file `node:sqlite` is experimental: pass does not establish Windows production stability. No observed failed tests in P2 run. Future corpus expansion may degrade BM25 precision; benchmark and pivot to index only with evidence.
 
-## 6. Repo / branches / basis SHA
-Public `hibi89/RAG_STUDIO`; main/develop/feature/p0-data-contract basis `1d809ea830678b667f9223884275f3620a40ead4` at start. P0 is feature-branch-only until review. Major paths `contracts/`, `fixtures/ax_sample_v0/`, `src/`, `tests/`, `docs/DATA_CONTRACT.md`. Check latest branch HEAD after commit.
+## 6. Repositories / branches / commit SHAs / main paths
+Repo `hibi89/RAG_STUDIO` PUBLIC, default `main` baseline `1d809ea830678b667f9223884275f3620a40ead4`. Start `develop` `a1fd3c65d8e244e46989b4ceb4536ff1a598a5dc`. New branch `feature/p2-keyword-retrieval` will be committed against that base; fetch latest ref for confirmed SHA (cannot self-reference its own future commit). Paths `src/document-search.mjs`, `src/search-cli.mjs`, `tests/document-search.test.mjs`, `fixtures/ax_multi_doc_v0`, `docs/P2_KEYWORD_SEARCH.md`, `package.json`, `STATUS.md`, `HANDOFF.md`. P0 and P1 source paths remain unchanged. `hibi89/SMAX` private and `hibi89/SOVIA_sovereign` independent.
 
-## 7. Runtime / deployments
-Node >=20; `npm test`; `npm run demo`; no npm installation needed. Vercel project/Production URL: NOT APPLICABLE; local no-server library/CLI demo, no deployment.
+## 7. Runtime/deployment info
+`node >=22.16`, `npm test`, `npm run demo:search`, `npm run demo:mixed`. No Vercel project or production URL for RAG Studio, no external API/server, GitHub Actions not configured. Deploy status NOT_APPLICABLE; actual Windows install UNVERIFIED.
 
-## 8. Sources/backup/secrets
-Existing main/develop/base SHA preserved; public fixture entirely synthetic. Private SMAX doc is strategy source, code not copied. Unknown `rag-studio(1).zip` remains uninspected. Never expose keys, customer files or local private scripts; no customer backups required (no original modified).
+## 8. Originals/backups/auth/prohibited changes
+Existing `main` unchanged; Git history and the prior P0/P1 source are recovery reference. Samples are fake retail data with no personal info. Do not upload private SMAX code/strategy, source archive before secrets/license review, keys, `.env`, client records or logs. Existing account GitHub identity `hibi89`. No external payments/transmission/hosting approved.
 
-## 9. Priority / acceptance / approval
-Review remote diff; P1 integrate readonly local SQLite with approved CSV data and deterministic TXT BM25 retrieval, evidence-linked mixed answer. Then compare to original design and fill UI. Sale, data transmission, spending, production deployment, privacy/permission changes require user approval, but synthetic safe code/test work can continue.
+## 9. Next priorities/procedure/acceptance/approval
+1. Confirm feature/develop remote SHAs, verify source blobs and CI/source parity; preserve stable main.
+2. P2.1 add query router that combines trusted lexical source citations and preapproved SQLite metrics, fails closed when evidence is absent/conflicting. Keep source pointers and no arbitrary SQL; synthetic tests and CLI demo.
+3. P3 start local document+dataset viewer and evidence-backed KPI mini dashboard, following masterplan gap comparison. PDF/Word and higher search quality after original code review.
+4. Sell, deploy, upload real data, modify repo visibility, spend, change SMAX/SOVIA or legally change licensing only with user explicit approval.
 
-## 10. Snapshot
-2026-10-26 KST; inspected GitHub repository/branches/docs/SMAX private masterplan/SOVIA docs; tested Node local fixture P0 only. Basis SHA `1d809ea`; feature commit must be checked live. Distinguish local pass from GitHub mirroring and production.
-
-### Verified remote integration receipt (2026-10-26 KST)
-- P1 exact code commit SHA: `4ca33e28d9df1bb69a05cd2089b7c29c89f53f0b` on `develop` and `feature/p1-mixed-query` before this docs-only checkpoint. P0 preserved on `feature/p0-data-contract`; `main` unchanged. GitHub identity `hibi89` for author/committer.
-- GitHub source blobs exactly matched local Node 22.16.0 tested source, **28 PASS / 0 FAIL / 0 SKIP**. GitHub-hosted CI, Windows, actual service unverified.
+## 10. Updated time, verification boundary, base revision
+2026-10-26 KST. Verified local Node v22.16.0 P0+P1+P2 45 tests. GitHub P2 commit/merge and final HEAD to verify after upload; initial basis `a1fd3c65...`, no remote runtime evidence. No finished commercial product claim.
