@@ -1,0 +1,276 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AX_DATA_PACKAGE_V0 public interchange contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "project_id",
+    "created_at_utc",
+    "files",
+    "datasets",
+    "documents",
+    "review_items",
+    "processing_summary"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "AX_DATA_PACKAGE_V0"
+    },
+    "project_id": {
+      "$ref": "#/$defs/id"
+    },
+    "created_at_utc": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    },
+    "files": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 100,
+      "items": {
+        "$ref": "#/$defs/file"
+      }
+    },
+    "datasets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/dataset"
+      }
+    },
+    "documents": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/document"
+      }
+    },
+    "review_items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/review"
+      }
+    },
+    "processing_summary": {
+      "$ref": "#/$defs/summary"
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$"
+    },
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "file_id",
+        "relative_path",
+        "kind",
+        "sha256",
+        "size_bytes",
+        "import_status"
+      ],
+      "properties": {
+        "file_id": {
+          "$ref": "#/$defs/id"
+        },
+        "relative_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": [
+            "dataset",
+            "document"
+          ]
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "import_status": {
+          "enum": [
+            "ACCEPTED",
+            "NEEDS_REVIEW",
+            "REJECTED"
+          ]
+        }
+      }
+    },
+    "column": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "type",
+        "source_column",
+        "review_status"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "enum": [
+            "string",
+            "integer",
+            "decimal"
+          ]
+        },
+        "source_column": {
+          "type": "string",
+          "minLength": 1
+        },
+        "review_status": {
+          "enum": [
+            "APPROVED",
+            "NEEDS_REVIEW",
+            "UNKNOWN"
+          ]
+        }
+      }
+    },
+    "dataset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dataset_id",
+        "file_id",
+        "row_count",
+        "provenance_mode",
+        "columns"
+      ],
+      "properties": {
+        "dataset_id": {
+          "$ref": "#/$defs/id"
+        },
+        "file_id": {
+          "$ref": "#/$defs/id"
+        },
+        "row_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "provenance_mode": {
+          "const": "csv_line_1_based"
+        },
+        "columns": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/column"
+          }
+        }
+      }
+    },
+    "document": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_id",
+        "file_id",
+        "language",
+        "source_title",
+        "page_info",
+        "index_status"
+      ],
+      "properties": {
+        "document_id": {
+          "$ref": "#/$defs/id"
+        },
+        "file_id": {
+          "$ref": "#/$defs/id"
+        },
+        "language": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "page_info": {
+          "type": "string",
+          "minLength": 1
+        },
+        "index_status": {
+          "enum": [
+            "NOT_INDEXED",
+            "INDEXED"
+          ]
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "item_id",
+        "source_file_id",
+        "reason_code",
+        "status"
+      ],
+      "properties": {
+        "item_id": {
+          "$ref": "#/$defs/id"
+        },
+        "source_file_id": {
+          "$ref": "#/$defs/id"
+        },
+        "reason_code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "OPEN",
+            "RESOLVED"
+          ]
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "accepted",
+        "needs_review",
+        "rejected",
+        "failed_file_ids",
+        "unsupported"
+      ],
+      "properties": {
+        "accepted": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "needs_review": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rejected": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed_file_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "unsupported": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

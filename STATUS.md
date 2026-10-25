@@ -39,3 +39,10 @@ Private `hibi89/SMAX`의 2026-11-07 집중 개발 일정과 브랜치/기능을 
 
 ## 핸드오프
 정확한 새 채팅 문장: **`[RAG_STUDIO 깃헙 레포지토리 보고 작업이어가셈]`** → `CHAT_BOOTSTRAP.md` → `AGENTS.md` → `STATUS.md` → `HANDOFF.md` → `docs/NEXT_IMPLEMENTATION_UNIT.md` → Private SMAX masterplan → 코드 확인/실행.
+
+
+## 2026-10-26 P0 incremental execution update
+- Synthetic AX_DATA_PACKAGE_V0 schema and sample CSV/TXT/manifest, npm script scaffold committed on feature/p0-data-contract; producer is still unverified. Repo base 1d809ea.
+- Independently in local container, complete candidate validator/aggregator/CLI and 16 unit tests **passed on Node 22.16.0** (npm test, pass 16, fail 0), demo: six orders/10 units/157000 KRW plus policy source pointer.
+- IMPORTANT: the local code/test source is currently an exported verified ZIP artifact, **not yet mirrored to GitHub**. Do not claim remote P0 implementation PASS until uploaded and checked. Original RAG ZIP not located; no SMAX source copied. No production/Windows/LLM/DB.
+- Next: commit local candidate src/ and tests/ exact files, independently run regression, review feature branch and update handoff. Do not merge while feature incomplete.

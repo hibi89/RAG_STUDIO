@@ -32,3 +32,10 @@
 4. 실제 동작 검증 후 UI·대시보드·설치기와 선택형 모니터링 순서로 확장.
 
 **현재 작업은 기획 문서 등록뿐**. 외부 결제, 클라우드 게시, 고객 자료 접근, GitHub Private 소스 공개, 프로그램 실행은 실시하지 않았다.
+
+
+## 2026-10-26 P0 incremental execution update
+- Synthetic AX_DATA_PACKAGE_V0 schema and sample CSV/TXT/manifest, npm script scaffold committed on feature/p0-data-contract; producer is still unverified. Repo base 1d809ea.
+- Independently in local container, complete candidate validator/aggregator/CLI and 16 unit tests **passed on Node 22.16.0** (npm test, pass 16, fail 0), demo: six orders/10 units/157000 KRW plus policy source pointer.
+- IMPORTANT: the local code/test source is currently an exported verified ZIP artifact, **not yet mirrored to GitHub**. Do not claim remote P0 implementation PASS until uploaded and checked. Original RAG ZIP not located; no SMAX source copied. No production/Windows/LLM/DB.
+- Next: commit local candidate src/ and tests/ exact files, independently run regression, review feature branch and update handoff. Do not merge while feature incomplete.

@@ -1,0 +1,81 @@
+{
+  "schema_version": "AX_DATA_PACKAGE_V0",
+  "project_id": "synthetic-shop-001",
+  "created_at_utc": "2026-10-26T00:00:00Z",
+  "files": [
+    {
+      "file_id": "file-sales",
+      "relative_path": "sales.csv",
+      "kind": "dataset",
+      "sha256": "8213907ae23423c34db415c0e31f8113eccceed9fdbc2bb4557e1b6ea31e03b9",
+      "size_bytes": 204,
+      "import_status": "ACCEPTED"
+    },
+    {
+      "file_id": "file-policy",
+      "relative_path": "returns_policy.txt",
+      "kind": "document",
+      "sha256": "906d20338fc26e3e755abd24ed04cc62b9fd8d51c079805b073e4609d360a950",
+      "size_bytes": 256,
+      "import_status": "ACCEPTED"
+    }
+  ],
+  "datasets": [
+    {
+      "dataset_id": "dataset-sales",
+      "file_id": "file-sales",
+      "row_count": 6,
+      "provenance_mode": "csv_line_1_based",
+      "columns": [
+        {
+          "name": "order_id",
+          "type": "string",
+          "source_column": "order_id",
+          "review_status": "APPROVED"
+        },
+        {
+          "name": "sku",
+          "type": "string",
+          "source_column": "sku",
+          "review_status": "APPROVED"
+        },
+        {
+          "name": "quantity",
+          "type": "integer",
+          "source_column": "quantity",
+          "review_status": "APPROVED"
+        },
+        {
+          "name": "unit_price_krw",
+          "type": "integer",
+          "source_column": "unit_price_krw",
+          "review_status": "APPROVED"
+        },
+        {
+          "name": "amount_krw",
+          "type": "integer",
+          "source_column": "amount_krw",
+          "review_status": "APPROVED"
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "document_id": "document-returns",
+      "file_id": "file-policy",
+      "language": "ko",
+      "source_title": "합성 반품 규정",
+      "page_info": "lines:1-4",
+      "index_status": "NOT_INDEXED"
+    }
+  ],
+  "review_items": [],
+  "processing_summary": {
+    "accepted": 2,
+    "needs_review": 0,
+    "rejected": 0,
+    "failed_file_ids": [],
+    "unsupported": []
+  }
+}
