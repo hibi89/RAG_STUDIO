@@ -1,11 +1,14 @@
 {
-  "name": "rag-studio-contract-p0",
-  "version": "0.0.1",
+  "name": "rag-studio-ax-slice",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
     "test": "node --test tests/*.test.mjs",
-    "demo": "node src/cli.mjs fixtures/ax_sample_v0"
+    "demo": "node src/cli.mjs fixtures/ax_sample_v0",
+    "demo:mixed": "node src/mixed-cli.mjs fixtures/ax_sample_v0 \"총 매출과 반품 규정을 알려줘\""
   },
-  "engines": {"node": ">=20"}
+  "engines": {
+    "node": ">=22.16.0"
+  }
 }

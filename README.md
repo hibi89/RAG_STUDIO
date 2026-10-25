@@ -2,7 +2,7 @@
 
 # RAG Studio — Local AI Data & Knowledge Workspace
 
-> 상태: **신규 저장소 초기 문서 / 소스 이식 및 제품 개발 전** (2026-10-26 KST). 이 저장소에 실행 가능한 프로그램이 있다고 가정하지 않는다.
+> 상태: **P0 표준계약과 P1 합성 SQL+TXT 실행 기능 구현 중** (2026-10-26 KST). 고객용 RAG 엔진·SMAX 실연동·설치기·배포는 미완성. `main`은 문서 기준 브랜치.
 
 ## 방향
 RAG Studio는 로컬 PC에서 고객이 승인한 업무 자료를 구조화·검색·분석하고, 문서 출처와 정확한 데이터 집계를 결합해 활용 가능한 대시보드를 만드는 제품을 목표로 한다.
@@ -47,3 +47,6 @@ SMAX의 기존 사장님 SELF 출시 일정 및 기술 지원 범위를 본 통�
 원본 RAG ZIP의 안전한 확인/이식 → SMAX 표준 데이터 계약 fixture 작성 → CSV 1종+문서 1종 통합 데모 → 읽기 전용 집계·문서 인용 → 대시보드·자동 설치·검증.
 
 세부 작업과 상태는 HANDOFF.md에 유지한다.
+
+## 합성 P1 SQLite + 문서 혼합 질의 (개발 브랜치)
+`feature/p1-mixed-query`에서 Node.js 22.16 이상으로 `npm test`, `npm run demo:mixed`를 실행한다. 정형 CSV의 정확한 SQLite 집계(157000원/6건/10개)와 검증된 TXT의 반품 규정 2행 근거를 결합한다. **Node 22 내장 SQLite는 실험적이며 Windows 설치·프로덕션은 미검증**이다. [P1 범위/검증](docs/P1_SQL_DOCUMENT_SLICE.md).

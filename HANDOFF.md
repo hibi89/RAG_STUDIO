@@ -1,45 +1,33 @@
-> **Verified code commit:** `fa123f0e31de34aa358ae6f3a6f6f64ae14312ee` on `feature/p0-data-contract`; verified directly from GitHub branch HEAD. Local Node 22.16.0: `npm test` 16 pass / 0 fail / 0 skip, `npm run demo` 6 orders, 10 units, KRW 157000. Verified remote Git blob equality with tested local fixture, sources, tests and package.json. No GitHub-hosted test execution/Windows/production verification. `main` and `develop` intentionally untouched. No secrets/private SMAX code included. Next: review P0 and integrate to develop, then read-only SQLite + TXT-backed mixed question P1.
+# HANDOFF — RAG Studio AX Edition (P0)
 
-> **P0 LATEST (2026-10-26 KST, supersedes earlier 'docs-only' / 'not remotely mirrored' entries below):** The tested Node source and all 16 tests have now been staged for this feature branch commit alongside synthetic CSV/TXT/manifest and Draft 2020-12 schema. Exact Git blob hashes for src/validate.mjs, src/summary.mjs, src/cli.mjs, tests/contract.test.mjs, fixtures/ax_sample_v0/*.csv|*.txt|manifest.json match the local sources where local npm test returned 16 PASS / 0 FAIL, demo 6 orders / 10 units / KRW 157000. The remote branch is a code mirror; GitHub-hosted CI and Windows execution remain UNVERIFIED. SMAX producer, original RAG ZIP, SQLite, retrieval, UI, SOVIA, actual customer and production are NOT DONE. Merge to develop and main is pending review.
+> 2026-10-26 KST; latest actual source and GitHub branch head override this snapshot. Exact resume: `[RAG_STUDIO 깃헙 레포지토리 보고 작업이어가셈]` or `ㄱ`.
 
-> **정확한 새 채팅 호출:** `[RAG_STUDIO 깃헙 레포지토리 보고 작업이어가셈]` — [CHAT_BOOTSTRAP.md](CHAT_BOOTSTRAP.md)의 정해진 순서에 따라 저장소·비공개 SMAX 전략·SOVIA 현황 복원 후 다음 안전한 **실제 개발 단위**까지 수행. 중복 기획 설명·불필요한 사용자 질문으로 종료하지 않는다.
+## 1. Product / requirements / technology
+Local-first self-install AX data+knowledge workspace. SMAX² output standardization required, RAG+readonly DB+dashboard core, SOVIA independent optional audit. One product, 3 demo markets (retail, technical-service/manufacturing, solo analyst); 5 target RAG scenarios. Price targets 149000 KRW, early 99000 KRW, future SOVIA option; **not on sale**. Product masterplan is Private SMAX, do not disclose.
 
-# HANDOFF — RAG Studio AX Edition
+## 2. Completed scope and rationale
+P0 standalone **public consumer** v0 developed from synthetic data, without needing inaccessible old RAG ZIP. Shape schema + hash/provenance manifest, approved 6-row CSV and returns TXT, readonly Node built-in validator and narrow sales summary CLI. No API spend or customer data. Chose Node built-ins (zero npm dependency) instead of Python+external schema lib, aligned with existing SMAX JS tooling; this is not an integrated SMAX adapter.
 
-> 2026-10-26 KST | **문서만 등록**, 제품 코드·테스트·배포는 아직 없음. 사용자 지시: 채택된 전략/시장/가격을 GitHub에 보존하고 향후 채팅에서 참조.
+## 3. Test command/results/limitations
+Node v22.16.0: run `npm test` at repo root => 16 pass, 0 fail, 0 skip on synthetic P0; run `npm run demo` => 6 orders, units 10, revenue 157000 KRW, line-linked evidence and policy TXT source. Windows install/SMAX handshake/actual source migration/DB/LLM/API/browser/production all UNVERIFIED. Schema document and custom parser both present; third-party JSON Schema compliance engine not run.
 
-## 새 채팅에서 첫 순서
-1. GitHub `hibi89/RAG_STUDIO` 실제 상태(브랜치/README/HANDOFF/최근 커밋)를 확인한다.
-2. **반드시 Private `hibi89/SMAX/docs/RAG_STUDIO_AX_EDITION_MASTERPLAN_20261026.md`**를 확인한다: 2026-10-26 채택된 가격, 3개 고객시장, 5개 RAG 활용 유형, 아키텍처, 통합 계약, 판매·품질 정책의 정본. [마스터플랜](https://github.com/hibi89/SMAX/blob/main/docs/RAG_STUDIO_AX_EDITION_MASTERPLAN_20261026.md).
-3. SMAX의 `CHAT_BOOTSTRAP.md`, `HANDOFF.md`, `STATUS.md` 및 frontend/backend 실제 구현 상태를 확인한다. `2026-11-07` 기존 SMAX 집중 개발 한도를 이 프로젝트 때문에 임의 변경하지 않는다.
-4. SOVIA의 `RESUME.md`, `HANDOFF.md`, `STATUS.md`를 읽고 감사 엔진의 실제 구현 상태를 재확인한다. SOVIA는 **옵션**, 첫 출시 블로커가 아니다.
-5. RAG 원본 ZIP/로컬 원본 소스가 이 저장소에 없는 경우 구현 완료로 가정하지 않는다. 원본 소스·시크릿·라이선스 확인 후 안전한 이식 계획부터 시작한다.
+## 4. Done / in progress / pending / blockers
+DONE: P0 local data-contract consumer demo and tests. PENDING: actual ZIP, private producer integration, SQL+document E2E, UI/dashboard/installer, benchmark/security/sale readiness. RAG ZIP not found in inspected repository/Library search; source migration blocked until owner provides accessible original, but synthetic P1 can continue.
 
-## 확인된 의사결정(기획 확정, 기능 구현과 다름)
-- **필수**: SMAX² 표준화 + RAG Studio + 로컬 데이터셋/DB + 대시보드. **선택**: SOVIA 감사.
-- 상품: `RAG Studio AX Edition` (임시 상용명). **목표 정가 149,000원 / 출시 초반 99,000원(초기 30건 제안)**. SOVIA +99,000원 및 번들 229,000원은 미래 가설. 가격/라이선스는 실판매 전 검증.
-- **주력 타깃 3개**: ① 소형 쇼핑몰·유통업 ② 소형 제조·기술 서비스업 ③ 1인 사업자·컨설턴트·분석가. 이는 시장 지불의사 실측 순위가 아니라 우선 개발·시연 대상.
-- **RAG 활용 5개**: Document, Knowledge Base, Multi-Document, Conversational, SQL+Document. 기존 BM25/FAISS/RRF/MMR 하이브리드 활용. SQL+Document가 핵심 차별화 후보.
-- **판매/운영**: 셀프 설치만, 기술 원격 설치·전화/메시지 코칭 상품 제외, 고객 문서 수집·유료 API 필수·중앙 서버 의존 금지. 고객의 개인정보/원본 보호, 기능 결함 대응 절차는 유지.
-- **출시 전**: 한국어 정답세트/혼합 질의 100문항, Windows 3대 설치, ZIP 공격/오류 입력/계산 검증, 무료 경쟁 제품 실측, 라이선스·환불·지원조건 확인.
+## 5. Failure/recovery
+GitHub repo contains docs only at base; external git network in local container unavailable (`Could not resolve host: github.com`), so remote changes use authorized GitHub connector. No retry loop; local tests independently run. For original archive, do not fabricate or silently rewrite. If future producer violates v0, fail with explicit review state and build a versioned adapter.
 
-## 범위 차단: 아직 안 되는 것
-- Public 저장소의 기술적 상태는 **README와 HANDOFF만 존재**하는 단계. 소스/DB/설치기/대시보드 완성 주장 불가.
-- 자동 ZIP 표준화는 지원되는 형식과 검증된 템플릿부터, 사용자에게 모호한 열의 의미를 확인해야 한다. 전 업종·전 형식 자동 해결을 광고하지 않는다.
-- SQL은 우선 **읽기 전용 검증된 집계**. 외부 ERP 수정, 임의 자동화 실행, 실시간 SOVIA 차단/100% 안전 보장 금지.
-- 민감한 판매전략·SMAX 비공개 코드·실고객 입력자료·키를 Public `RAG_STUDIO`에 복제하지 않는다.
+## 6. Repo / branches / basis SHA
+Public `hibi89/RAG_STUDIO`; main/develop/feature/p0-data-contract basis `1d809ea830678b667f9223884275f3620a40ead4` at start. P0 is feature-branch-only until review. Major paths `contracts/`, `fixtures/ax_sample_v0/`, `src/`, `tests/`, `docs/DATA_CONTRACT.md`. Check latest branch HEAD after commit.
 
-## 다음 가장 작은 엔지니어링 단위
-1. GitHub에 RAG 원본 코드가 없으면 안전한 이식 경로만 문서화한다. 이미 다른 로컬에 있는 원본 ZIP을 확인 없이 재작성하지 않는다.
-2. SMAX→RAG 표준 입력 패키지 계약 `AX_DATA_PACKAGE_V0`와 합성 CSV 1개·문서 1개 fixture를 정하고 소비자 계약 테스트 작성.
-3. `CSV 정형 집계 ↔ PDF/TXT 근거 검색` 1개 혼합 질문에 대한 종단 간 작동 경로 구현 및 계산·근거 정확성 테스트.
-4. 실제 동작 검증 후 UI·대시보드·설치기와 선택형 모니터링 순서로 확장.
+## 7. Runtime / deployments
+Node >=20; `npm test`; `npm run demo`; no npm installation needed. Vercel project/Production URL: NOT APPLICABLE; local no-server library/CLI demo, no deployment.
 
-**현재 작업은 기획 문서 등록뿐**. 외부 결제, 클라우드 게시, 고객 자료 접근, GitHub Private 소스 공개, 프로그램 실행은 실시하지 않았다.
+## 8. Sources/backup/secrets
+Existing main/develop/base SHA preserved; public fixture entirely synthetic. Private SMAX doc is strategy source, code not copied. Unknown `rag-studio(1).zip` remains uninspected. Never expose keys, customer files or local private scripts; no customer backups required (no original modified).
 
+## 9. Priority / acceptance / approval
+Review remote diff; P1 integrate readonly local SQLite with approved CSV data and deterministic TXT BM25 retrieval, evidence-linked mixed answer. Then compare to original design and fill UI. Sale, data transmission, spending, production deployment, privacy/permission changes require user approval, but synthetic safe code/test work can continue.
 
-## 2026-10-26 P0 incremental execution update
-- Synthetic AX_DATA_PACKAGE_V0 schema and sample CSV/TXT/manifest, npm script scaffold committed on feature/p0-data-contract; producer is still unverified. Repo base 1d809ea.
-- Independently in local container, complete candidate validator/aggregator/CLI and 16 unit tests **passed on Node 22.16.0** (npm test, pass 16, fail 0), demo: six orders/10 units/157000 KRW plus policy source pointer.
-- IMPORTANT: the local code/test source is currently an exported verified ZIP artifact, **not yet mirrored to GitHub**. Do not claim remote P0 implementation PASS until uploaded and checked. Original RAG ZIP not located; no SMAX source copied. No production/Windows/LLM/DB.
-- Next: commit local candidate src/ and tests/ exact files, independently run regression, review feature branch and update handoff. Do not merge while feature incomplete.
+## 10. Snapshot
+2026-10-26 KST; inspected GitHub repository/branches/docs/SMAX private masterplan/SOVIA docs; tested Node local fixture P0 only. Basis SHA `1d809ea`; feature commit must be checked live. Distinguish local pass from GitHub mirroring and production.
