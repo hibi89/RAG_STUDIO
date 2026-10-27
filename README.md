@@ -230,3 +230,6 @@ PDF는 실제 추출 페이지 표시, DOCX는 문단 표시를 검증된 임시
 
 ## P5.41 — 인용 문장 원문 직접 확인
 기존 PDF·DOCX 검색의 '문서 출처 찾기'를 누르면, 단순 문서 카드가 아니라 **서버가 SHA-256을 재검증한 정확한 인용 행**을 표시하고 강조합니다. 출처에는 합성 미리보기 문서 순서와 PDF 추출 페이지 / DOCX 추출 문단을 구분해 표시합니다. 원문과 인용이 다르면 표시를 거부합니다. [기능과 한계](docs/P541_VERIFIED_CITATION_JUMP.md). 판매 승인·고객 문서 소유권 입증·실제 PDF 좌표 확인 기능은 아닙니다.
+
+## P5.42 — Windows에서 PDF·DOCX 파일 선택으로 로컬 검색 열기
+Windows **개발본 저장소**에서 Node.js 22.23+와 고정 의존성을 한 번 설치(`npm ci --ignore-scripts --no-audit --no-fund`)한 뒤 `RUN_NATIVE_DOCUMENT_PICKER_WINDOWS.cmd`를 더블클릭합니다. 기본 Windows 파일 선택창에서 PDF·DOCX **2~4개**를 고르면 로컬 RAG 대시보드가 브라우저에서 열리며 출처 페이지/문단까지 인용할 수 있습니다. 파일 경로를 별도 명령행에 입력할 필요가 없습니다. 이 기능은 **고정 공개 합성 AX 패키지 위에 선택 파일의 미승인 텍스트를 임시로 미리보는 것**이며, 고객 데이터 인입·원본 사용권 인증 또는 자체 설치형 EXE가 아닙니다. 기존 포터블 합성 ZIP에는 PDF/DOCX 파서 의존성이 없으므로 이 도구를 ZIP만으로 실행할 수 없습니다. [사용법·한계](docs/P542_WINDOWS_NATIVE_PICKER.md) · [Windows 515/515 PASS](https://github.com/hibi89/RAG_STUDIO/actions/runs/40548815545).

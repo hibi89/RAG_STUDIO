@@ -30,3 +30,7 @@ Only the bundled, verified **public synthetic AX project** `fixtures/ax_multi_do
 The new `.github/workflows/p542-verify.yml` validates Linux Node22.16 and Windows Node22.23 `npm test` plus original Gold100, Negative20, Heldout24, P5.37 smoke, `node --check` and existing router demo. CI can verify PowerShell syntax but GitHub hosted runners do **not** validate an actual interactive file-dialog click on a personal Windows PC. Do not claim signed native installer, customer dataset authorization or Production deployment.
 
 The safe fallback remains `npm run preview:document -- ./fixtures/ax_multi_doc_v0 <file1.pdf> <file2.docx>` (manually supplied paths). The existing single-file command remains unchanged.
+
+## Verified code/CI checkpoint (2026-10-28 KST)
+Source SHA `a87b2f8e9f369864f620fc1393610ff98d9ba0b6`; [GitHub Actions #40548815545](https://github.com/hibi89/RAG_STUDIO/actions/runs/40548815545) completed/success. Windows Node22.23 **515 PASS, 0 FAIL, 0 SKIP**; Linux Node22.16 **513 PASS, 0 FAIL, 2 platform-specific SKIP**. Original Gold100, Negative20, Heldout24 and P5.37 wizard regressions passed on both systems. Strict PowerShell syntax on Windows checked, actual standard dialog click on personal Windows PC not exercised.
+Prior [#40548665882](https://github.com/hibi89/RAG_STUDIO/actions/runs/40548665882) failed only static check matching forbidden command-name words in a comment; edited comment without broadening code or disabling the safety assertion. Do not use that failed run as functional evidence.
