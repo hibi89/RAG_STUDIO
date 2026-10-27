@@ -1,6 +1,6 @@
 # P5.42 Windows PowerShell 5.1 native dialog, invoked by double-click CMD.
 # Paths are serialized to UTF-8 JSON piped to a FIXED Node script via stdin.
-# Never call Invoke-Expression, Start-Process with selected paths, or shell expansion.
+# File-dialog paths must never be expanded into native shell commands.
 $ErrorActionPreference = 'Stop'
 if ($args.Count -ne 0) {
     [Console]::Error.WriteLine('PICKER_UNEXPECTED_ARGUMENTS')
