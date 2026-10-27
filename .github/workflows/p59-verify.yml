@@ -1,0 +1,36 @@
+name: P5.9 ZIP review intent synthetic gate
+on:
+  push:
+    branches:
+      - feature/p59-zip-review-boundary
+    paths:
+      - .github/workflows/p59-verify.yml
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout public synthetic source only
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Node 22.16.0
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Syntax of new modules
+        run: |
+          node --check src/zip-review-intent.mjs
+          node --check tests/p59-zip-review-intent.test.mjs
+      - name: Full repository regression
+        run: npm test
+      - name: Earlier synthetic gate regressions
+        run: |
+          npm run doctor
+          npm run test:gold
+          npm run test:negative
+          npm run test:heldout
+      - name: Existing actual Chromium local dashboard smoke
+        run: node scripts/p32-browser-smoke.mjs
