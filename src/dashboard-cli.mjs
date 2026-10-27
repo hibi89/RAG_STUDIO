@@ -10,4 +10,10 @@ try{
   console.log('RAG Studio P3.1 — browser launch URL (session-specific; do not share):');
   console.log(dashboardLaunchUrl(server));
   console.log('Synthetic verified package; stop with Ctrl+C. No external API or uploads.');
-}catch(err){console.error(`Dashboard startup failed: ${err.message}`);process.exitCode=1;}
+}catch(err){
+  // Only fixed diagnostics: filesystem exceptions may contain private local paths.
+  if(err?.code==='EADDRINUSE')console.error('Dashboard startup blocked: loopback port already in use.');
+  else if(err?.code==='EACCES'||err?.code==='EPERM')console.error('Dashboard startup blocked: loopback port permission denied.');
+  else console.error('Dashboard startup blocked: package, runtime or port validation failed.');
+  process.exitCode=1;
+}
