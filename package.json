@@ -15,7 +15,8 @@
     "demo:smax:review": "node scripts/p41-synthetic-review.mjs",
     "demo:smax:export": "node scripts/p42-synthetic-export-demo.mjs",
     "test:gold": "node scripts/p5-gold-eval.mjs",
-    "test:negative": "node scripts/p52-negative-evidence.mjs"
+    "test:negative": "node scripts/p52-negative-evidence.mjs",
+    "test:heldout": "node scripts/p53-heldout.mjs"
   },
   "engines": {
     "node": ">=22.16.0"
