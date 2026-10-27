@@ -3,6 +3,7 @@ import {resolveCitation,citationKey} from './provenance.js';
 const $=(id)=>document.getElementById(id);
 let currentOverview=null;
 let highlighted=null;
+let docRequestSequence=0;
 // The secret is generated anew on server start. A URL fragment never reaches the server.
 const tokenMatch=/^#session=([A-Za-z0-9_-]{43})$/.exec(location.hash);
 const sessionToken=tokenMatch?.[1]??null;
@@ -13,6 +14,8 @@ const element=(tag,cls,content)=>{const e=document.createElement(tag);if(cls)e.c
 function replace(parent,...children){parent.replaceChildren(...children);}
 function setHealth(text,bad=false){$('health').textContent=text;$('health').classList.toggle('error',bad);}
 function renderOverview(data){
+  docRequestSequence++;
+  if($('documentViewer'))$('documentViewer').textContent='문서를 선택하면 검증된 원문 행을 표시합니다.';
   currentOverview=data;
   $('projectId').textContent=`${data.project_id} · ${data.schema_version}`;
   $('revenue').textContent=`${comma(data.dataset.revenue_krw)}원`;
@@ -24,6 +27,12 @@ function renderOverview(data){
     c.dataset.provenanceKey=citationKey({kind:'document',document_id:d.document_id,file_id:d.file_id});
     c.tabIndex=-1;
     c.append(element('strong','',d.source_title),element('p','',`출처: ${d.document_id} · ${d.file_id}`),element('p','',d.page_info),element('span','approved',d.import_status==='ACCEPTED'?'검증됨':'검토 필요'));
+    if(d.import_status==='ACCEPTED'){
+      const open=element('button','outline','검증된 원문 보기');
+      open.type='button';
+      open.addEventListener('click',()=>void openDocument(d.document_id,1));
+      c.append(open);
+    }
     return c;
   });
   replace($('documentCards'),...docs);
@@ -50,6 +59,42 @@ function renderOverview(data){
   });
   replace($('skuChart'),...bars);
 
+}
+/** Render only manifest-selected, SHA-verified source lines. Responses never become HTML. */
+async function openDocument(id,start){
+  const viewer=$('documentViewer');
+  if(!viewer)return;
+  const request=++docRequestSequence;
+  replace(viewer,element('p','placeholder','문서 원본을 다시 검증 중입니다…'));
+  try{
+    const data=await api('/api/documents?document_id='+encodeURIComponent(id)+'&start='+start);
+    if(request!==docRequestSequence)return; // A project switch or later click superseded this response.
+    if(data.status!=='VERIFIED_SOURCE_LINES'||data.document_id!==id||!Array.isArray(data.lines))
+      throw new Error('INVALID_DOCUMENT_RESPONSE');
+    const title=element('h3','',data.source_title);
+    const note=element('p','project-hint','검증된 TXT/Markdown 원문 행 · '+data.file_id+' · 전체 '+data.total_lines+'행');
+    const rows=element('ol','document-lines');
+    rows.start=data.start;
+    for(const line of data.lines){
+      const li=element('li','',line.text||' ');
+      li.value=line.line;
+      rows.append(li);
+    }
+    const controls=element('div','document-nav');
+    if(start>1){
+      const previous=element('button','outline','이전 40행');
+      previous.type='button';previous.addEventListener('click',()=>void openDocument(id,Math.max(1,start-40)));
+      controls.append(previous);
+    }
+    if(data.next_start){
+      const next=element('button','outline','다음 40행');
+      next.type='button';next.addEventListener('click',()=>void openDocument(id,data.next_start));
+      controls.append(next);
+    }
+    replace(viewer,title,note,rows,controls);
+  }catch{
+    if(request===docRequestSequence)replace(viewer,element('p','smax-warning','이 문서를 검증하거나 표시할 수 없습니다. 원본 무결성 및 세션을 확인하세요.'));
+  }
 }
 function showCitation(item){
   if(highlighted){highlighted.classList.remove('source-active');highlighted=null;}

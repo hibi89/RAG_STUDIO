@@ -62,6 +62,26 @@ function overview(root){
     };
   });
 }
+/** P5.16: only already-verified, accepted TXT/Markdown documents. One bounded page. */
+function documentPage(root,docId,start){
+  const pkg=loadPackage(root); // Verify all source hashes on every read.
+  const d=pkg.manifest.documents.find(x=>x.document_id===docId);
+  if(!d)return {error:'DOCUMENT_NOT_FOUND',statusCode:404};
+  const file=pkg.fileMap.get(d.file_id);
+  if(file?.import_status!=='ACCEPTED'||!(/\.(txt|md)$/i).test(file.relative_path))
+    return {error:'DOCUMENT_NOT_SUPPORTED',statusCode:422};
+  const source=pkg.textMap.get(d.file_id);
+  if(typeof source!=='string')return {error:'DOCUMENT_NOT_SUPPORTED',statusCode:422};
+  const lines=source.replace(/\r\n/g,'\n').split('\n');
+  if(lines.length>10000||lines.some(x=>x.length>4096))
+    return {error:'DOCUMENT_TOO_LARGE',statusCode:422};
+  if(start>lines.length)return {error:'PAGE_OUT_OF_RANGE',statusCode:400};
+  return {status:'VERIFIED_SOURCE_LINES',document_id:d.document_id,
+    file_id:d.file_id,source_title:d.source_title,page_info:d.page_info,
+    start,total_lines:lines.length,
+    lines:lines.slice(start-1,start+39).map((text,i)=>({line:start+i,text})),
+    next_start:start+40<=lines.length?start+40:null};
+}
 async function readJson(req){
   const ct=req.headers['content-type']??'';
   if(!/^application\/json(?:\s*;|\s*$)/i.test(ct)) throw Object.assign(new Error('Content-Type must be application/json'),{statusCode:415});
@@ -202,6 +222,24 @@ export function createDashboardServer({packageRoot,projectRoots=null}){
     if(req.method==='GET'&&route==='/api/overview'){
       try{return respond(res,200,overview(selected.root));}
       catch{return respond(res,422,{error:'PACKAGE_UNVERIFIED',reason:'Data source failed validation or supported dataset checks'});}
+    }
+    if(req.method==='GET'&&route==='/api/documents'){
+      // Only exact document identifiers; no file paths, search roots or arbitrary reads.
+      const input=new URL(req.url,'http://127.0.0.1').searchParams;
+      const keys=[...input.keys()];
+      if(keys.length<1||keys.length>2||new Set(keys).size!==keys.length||
+         keys.some(k=>!['document_id','start'].includes(k))||
+         !input.has('document_id')||
+         !/^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$/.test(input.get('document_id'))||
+         (input.has('start')&&!/^[1-9][0-9]{0,4}$/.test(input.get('start'))))
+        return respond(res,400,{error:'INVALID_DOCUMENT_CHOICE'});
+      const start=Number(input.get('start')??'1');
+      if(start>10000)return respond(res,400,{error:'INVALID_DOCUMENT_CHOICE'});
+      try{
+        const result=documentPage(selected.root,input.get('document_id'),start);
+        if(result.error)return respond(res,result.statusCode,{error:result.error});
+        return respond(res,200,result);
+      }catch{return respond(res,422,{error:'PACKAGE_UNVERIFIED'});}
     }
     if(req.method==='POST'&&route==='/api/smax-preview'){
       // Deliberately distinct from /api/query: larger limited payload, same bearer,
