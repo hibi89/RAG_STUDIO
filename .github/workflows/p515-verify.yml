@@ -1,0 +1,38 @@
+name: P5.15 explicit local AX workspace switcher
+on:
+  push:
+    branches:
+      - feature/p515-local-workspace-switcher
+    paths:
+      - .github/workflows/p515-verify.yml
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Restore locked OSS dependencies without scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Syntax
+        run: |
+          node --check src/dashboard-server.mjs
+          node --check src/workspace-cli.mjs
+          node --check ui/app.js
+          node --check tests/p515-project-workspace.test.mjs
+      - name: Full native tests and actual localhost multi-project subprocess E2E
+        run: npm test
+      - name: Existing evidence regressions
+        run: |
+          npm run doctor
+          npm run test:gold
+          npm run test:negative
+          npm run test:heldout
