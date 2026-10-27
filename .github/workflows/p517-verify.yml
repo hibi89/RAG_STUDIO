@@ -25,6 +25,7 @@ jobs:
           node --check src/dashboard-server.mjs
           node --check ui/app.js
           node --check tests/p517-followup.test.mjs
+          node --check scripts/p517-browser-smoke.mjs
       - name: Full regression
         run: npm test
       - name: Evidence safety checks
@@ -33,3 +34,7 @@ jobs:
           npm run test:gold
           npm run test:negative
           npm run test:heldout
+      - name: Actual Chromium two-turn follow-up (runner-dependent)
+        continue-on-error: true
+        timeout-minutes: 2
+        run: node scripts/p517-browser-smoke.mjs
