@@ -24,7 +24,7 @@ export function verifyPortableMvp(root=HERE){
   const names=new Set();
   for(const f of manifest.files){
    const name=f?.relative_path;
-   if(typeof name!=='string'||!/^[a-z0-9_.-]+(?:\/[a-z0-9_.-]+)+$/u.test(name)||
+   if(typeof name!=='string'||!/^[A-Za-z0-9_.-]+(?:\/[A-Za-z0-9_.-]+)*$/u.test(name)||
      name.includes('..')||names.has(name)||!Number.isInteger(f.bytes)||
      f.bytes<1||f.bytes>2*1024*1024||!/^[a-f0-9]{64}$/u.test(f.sha256))throw Error('ENTRY_INVALID');
    names.add(name);
