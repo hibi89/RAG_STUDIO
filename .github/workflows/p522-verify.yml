@@ -32,5 +32,6 @@ jobs:
           npm run test:gold
           npm run test:negative
           npm run test:heldout
+      # Include stricter all-assets-allowlist and symlink coverage in the full Node suite.
       - name: No-model explicit BM25 fallback smoke
         run: node scripts/p522-offline-dense-cli.mjs "$PWD/fixtures/ax_multi_doc_v0" '반품 신청 기간은?'
