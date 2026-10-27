@@ -17,6 +17,16 @@
 </aside>
 <main>
 <header class="topbar"><div><p class="eyebrow">WORKSPACE / DATA INTELLIGENCE</p><h1>데이터와 문서, 하나의 근거로.</h1><p class="subtitle">검증된 표 데이터 집계와 문서 검색을 결합하는 로컬 분석 공간</p></div><div id="health" class="health" role="status" aria-live="polite">검증 중…</div></header>
+<section id="projects" class="section" aria-labelledby="projectsTitle">
+  <div class="section-heading"><div><p class="eyebrow">00 / WORKSPACE</p><h2 id="projectsTitle">로컬 프로젝트 선택</h2></div><span class="table-note">실행할 때 지정한 폴더만 표시</span></div>
+  <div class="workbench project-chooser">
+    <label for="projectSelect">검증된 AX 데이터 패키지</label>
+    <div class="project-controls"><select id="projectSelect" aria-label="로컬 프로젝트" disabled><option>프로젝트 목록을 확인 중입니다</option></select>
+    <button id="projectSwitch" type="button" disabled>선택한 프로젝트 열기</button></div>
+    <p id="projectStatus" class="project-hint" role="status" aria-live="polite">실행 시 지정된 프로젝트를 확인 중입니다.</p>
+    <p class="project-hint">이 화면에서는 임의 폴더를 탐색하거나 SMAX 미승인 데이터를 가져오지 않습니다. 전환해도 원본은 수정하지 않습니다.</p>
+  </div>
+</section>
 <section id="overview" aria-labelledby="kpiTitle" class="section">
   <div class="section-heading"><div><p class="eyebrow">01 / OVERVIEW</p><h2 id="kpiTitle">비즈니스 지표</h2></div><span id="projectId" class="project">프로젝트 확인 중</span></div>
   <div class="kpis">
