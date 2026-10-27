@@ -29,6 +29,7 @@ function setHealth(text,bad=false){$('health').textContent=text;$('health').clas
 function renderOverview(data){
   ++knowledgeRequestGeneration;
   knowledgeIds.clear();
+  for(const id of ['knowledgeSearch','knowledgeCompare'])if($(id))$(id).disabled=false;
   if($('knowledgeResult'))$('knowledgeResult').textContent='문서를 다시 선택해 검색하거나 대조하세요.';
   if($('knowledgeCount'))$('knowledgeCount').textContent='선택된 문서 0개';
   ++queryRequestSequence;
@@ -58,6 +59,7 @@ function renderOverview(data){
           knowledgeIds.add(d.document_id);
         }else knowledgeIds.delete(d.document_id);
         ++knowledgeRequestGeneration;
+        for(const id of ['knowledgeSearch','knowledgeCompare'])if($(id))$(id).disabled=false;
         if($('knowledgeCount'))$('knowledgeCount').textContent='선택된 문서 '+knowledgeIds.size+'개';
         if($('knowledgeResult'))$('knowledgeResult').textContent='선택한 문서 범위가 변경됐습니다. 새 검색을 실행하세요.';
       });
@@ -292,6 +294,7 @@ async function loadProjects(){
   button.addEventListener('click',async()=>{
     ++queryRequestSequence; // Discard any in-flight answer from previous workspace.
     ++knowledgeRequestGeneration; // Reject stale knowledge replies during switch.
+    for(const id of ['knowledgeSearch','knowledgeCompare'])if($(id))$(id).disabled=true;
     for(const id of ['askButton','searchButton'])$(id).disabled=true;
     if($('followupButton'))$('followupButton').disabled=true;
     button.disabled=true;
@@ -317,6 +320,7 @@ async function loadProjects(){
     }finally{
       button.disabled=false;
       for(const id of ['askButton','searchButton'])$(id).disabled=false;
+      for(const id of ['knowledgeSearch','knowledgeCompare'])if($(id))$(id).disabled=false;
       setFollowupState();
     }
   });

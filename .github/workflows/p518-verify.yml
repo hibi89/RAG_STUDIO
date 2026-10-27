@@ -26,6 +26,7 @@ jobs:
           node --check src/document-search.mjs
           node --check ui/app.js
           node --check tests/p518-knowledge.test.mjs
+          node --check tests/p518-ui.test.mjs
           node --check scripts/p518-browser-smoke.mjs
       - name: Whole unit and live-loopback suite
         run: npm test
