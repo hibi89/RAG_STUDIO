@@ -24,3 +24,8 @@ Checkpoint: 2026-10-27 KST. Public synthetic data only. This is not a product re
 ## Reproduce
 - Linux: npm ci --ignore-scripts --no-audit --no-fund; CI-only npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.64.1; node scripts/p530-csv-browser-e2e.mjs; npm test; npm run doctor; npm run test:gold; npm run test:negative; npm run test:heldout.
 - Windows hosted runner: npm ci --ignore-scripts; node scripts/windows-preflight.mjs; npm test as a separate step; npm run doctor as a separate step. Do not treat preflight success as full Windows QA.
+
+## Resolution addendum (2026-10-27)
+
+Follow-up identity matrix #40520743005 proved source of 10 failures: on Windows Node22.16 lstat.dev=0 vs fstat.dev nonzero for same fixture/temp file. Windows Node22.23 and24.11 both show equality and **441/441 tests pass**. Linux Node22.16 still passes. No source-integrity guard was removed.
+Acceptance workflow #40521393391 exact SHA efda0cb1eae1ceff65e6506e8c1c01155e4ec907 shows both Linux real Chrome **11/11**, Linux Node **441/441** and Windows hosted Node22.23 **441/441** fully green. Previous 431/441 Windows failure remains relevant ONLY to tested Node22.16 setup. Product's declared global >=22.16 threshold is not a verified Windows support guarantee; product min-version policy still needs owner approval. No customer ready claim.

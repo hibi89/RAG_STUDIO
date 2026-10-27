@@ -127,6 +127,10 @@ SHA-256으로 검증된 **로컬 모델 파일**이 별도로 제공될 때에�
 
 GitHub Actions에서 Chrome 155 실제 브라우저 11/11 PASS와 Linux Node 전체 441/441 PASS 확인. Windows 호스트의 합성 사전검사는 PASS지만 Windows 회귀 테스트는 431/441로 FAIL이며, 현재 출시 차단 상태입니다. 상세 근거: [P5.30 검사 보고](docs/P530_REAL_BROWSER_WINDOWS_GATE.md). 기능 브랜치에서만 보존하며 기존 develop/main은 변경하지 않습니다.
 
+## P5.31 — Windows 실행 환경별 검증 결과
+
+Windows Node 22.16.0에서는 파일 장치번호 API 불일치로 회귀 테스트 10개가 실패했습니다. Node **22.23.0 및 24.11.0은 Windows 441/441 PASS**였으며, Linux 실제 Chrome CSV 선택 11/11 PASS도 재확인했습니다. 검증 코드 자체는 완화하지 않았고 **Windows CI에서만** 22.23.0으로 검사합니다. 기존 제품 최소 Node 22.16 표기는 유지되어 있으나 Windows 22.16은 호환성 미충족입니다. 실제 판매용 버전 정책과 설치 검증은 별도 승인 대상입니다. [실증 보고](docs/P531_IDENTITY_DIAGNOSTICS.md).
+
 ## P5.29 — 브라우저 로컬 CSV 구조 검토 (개발자 미리보기)
 
 `npm run demo:zip`으로 로컬 대시보드를 연 후 **CSV 구조 검토** 메뉴에서 1MiB 이하 UTF-8 CSV 1개를 선택합니다. 컬럼·후보 타입·오류 위치를 표시하지만 모든 필드는 `NEEDS_REVIEW`이며 승인, SQLite 반입, 기존 KPI 변경은 하지 않습니다. [제약/테스트](docs/P529_BROWSER_CSV_REVIEW.md).
