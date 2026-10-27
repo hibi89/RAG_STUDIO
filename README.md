@@ -222,3 +222,8 @@ Run `RUN_LOCAL_SMAX_APPROVAL_PLAN.cmd` on Windows Node22.23+; supply the three r
 
 ## P5.39 — SKU별 고정 SQL 질의 + CSV 원본 출처
 인증된 로컬 대시보드에서 `SKU별 매출 알려줘`, `SKU별 주문 건수 알려줘`, `SKU N-02 매출 알려줘`처럼 제한된 문장을 실행하면 읽기 전용 SQLite가 검증된 매출·주문·수량과 원본 CSV 행 인용을 반환합니다. 미등록 SKU/불명확한 질문은 거부합니다. [기능 설명](docs/P539_FIXED_SKU_SQL_QUERY.md) · [Linux·Windows 491/491 PASS](https://github.com/hibi89/RAG_STUDIO/actions/runs/40542300601). 여전히 공개 합성 데이터 전용이며 실제 고객 데이터, 자유 SQL, Native SMAX 승인 또는 판매 배포는 지원하지 않습니다.
+
+## P5.40 — PDF/DOCX 복수 문서 통합 검색
+기존 P5.12 단일 파일 미리보기에 더해, 2–4개 PDF/DOCX 경로를 함께 지정해 동일한 로컬 세션에서 검색할 수 있습니다.
+`npm run preview:document -- ./fixtures/ax_multi_doc_v0 /absolute/a.pdf /absolute/b.docx`
+PDF는 실제 추출 페이지 표시, DOCX는 문단 표시를 검증된 임시 TXT 인용으로 제공합니다. **사용자 파일·권리 승인/고객 데이터 영구 반입은 지원하지 않습니다.** [작업 범위](docs/P540_MULTIDOC_NATIVE_SEARCH.md) · [Linux/Windows 각각 501 PASS](https://github.com/hibi89/RAG_STUDIO/actions/runs/40544130047).

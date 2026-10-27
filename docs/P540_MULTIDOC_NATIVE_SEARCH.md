@@ -28,3 +28,7 @@ No image-only/scanned PDF OCR; no PDF visual bbox, embedded charts/tables extrac
 
 ## Next gate
 After complete green CI, integrate guarded fast-forward into `develop`, keep `main` stable. Only then evaluate practical local launch ergonomics and end-to-end user flows; UI styling remains last.
+
+## Confirmed cross-platform checkpoint
+- Functional source and docs SHA `c885a5aa62fd039915970a98c17941e701037ca9`; [Actions #40544130047](https://github.com/hibi89/RAG_STUDIO/actions/runs/40544130047) completed/success. Linux22.16 full **501/501 PASS**, Windows22.23 full **501/501 PASS**, zero failed/skipped. Both Gold100, Negative20, Heldout24, synthetic router demo, P5.37 preview wizard, CLI/module syntax passed. 10 new P5.40 tests included.
+- No real user physical Windows acceptance, interactive Chrome/Edge screenshot QA, customer consent/data, native PDF visual review or production release was tested; these are explicitly outside this milestone.
