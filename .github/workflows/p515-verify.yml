@@ -29,6 +29,7 @@ jobs:
           node --check ui/app.js
           node --check tests/p515-project-workspace.test.mjs
           node --check tests/p515-project-ui.test.mjs
+          node --check scripts/p515-browser-smoke.mjs
       - name: Full native tests and actual localhost multi-project subprocess E2E
         run: npm test
       - name: Existing evidence regressions
@@ -37,3 +38,7 @@ jobs:
           npm run test:gold
           npm run test:negative
           npm run test:heldout
+      - name: Actual Chromium 2-project selector (runner-dependent)
+        continue-on-error: true
+        timeout-minutes: 2
+        run: node scripts/p515-browser-smoke.mjs
