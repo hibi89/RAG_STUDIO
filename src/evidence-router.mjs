@@ -8,13 +8,15 @@ import {searchDocuments} from './document-search.mjs';
 const MAX_DOC_LINES = 10_000;
 const MAX_LINE = 4_096;
 const RETURNS = /반품|환불/u;
-const SHIPPING = /배송|발송/u;
+const RETURN_SCOPE = /신청|기간|규정|정책|가능|이내|언제/u;
+const SHIPPING = /(?:배송|발송)\s*준비/u;
+const UNSUPPORTED_FEES = /(?:배송|발송)\s*(?:비|비용|료|요금)|(?:반품|환불)\s*(?:금액|비|비용|수수료)/u;
 const SALES = /매출|매상|주문\s*(?:건수|수)|판매\s*수량/u;
 
 function intents(question) {
   return Object.freeze({
     sales: SALES.test(question),
-    returns: RETURNS.test(question),
+    returns: RETURNS.test(question) && RETURN_SCOPE.test(question),
     shipping: SHIPPING.test(question),
   });
 }
@@ -73,6 +75,12 @@ function computeSales(root) {
 /** Bounded synthetic-domain router. Never answers a partially supported multi-part question. */
 export function routeQuestion(root, question) {
   if(typeof question!=='string'||!question.trim()||question.length>500) fail('router: question must be 1..500 characters');
+  // Fees/refund amounts are outside the time-period vocabulary. Abstain
+  // entirely instead of answering only a supported fragment of a mixed query.
+  if(UNSUPPORTED_FEES.test(question)) return {
+    status:'NOT_SUPPORTED',answer:null,
+    reason:'Fees and refund amounts are outside the supported synthetic intents'
+  };
   const request=intents(question);
   if(!request.sales&&!request.returns&&!request.shipping){
     return {status:'NOT_SUPPORTED',answer:null,reason:'Supported: sales total, return period, shipping preparation period',requested:request};
