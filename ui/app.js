@@ -7,6 +7,8 @@ let docRequestSequence=0;
 let queryRequestSequence=0;
 let previousAnsweredQuestion=null;
 let activeProjectKey=null;
+const knowledgeIds=new Set();
+let knowledgeRequestGeneration=0;
 function setFollowupState(){
   const button=$('followupButton');
   if(button)button.disabled=!previousAnsweredQuestion||!activeProjectKey;
@@ -25,6 +27,10 @@ const element=(tag,cls,content)=>{const e=document.createElement(tag);if(cls)e.c
 function replace(parent,...children){parent.replaceChildren(...children);}
 function setHealth(text,bad=false){$('health').textContent=text;$('health').classList.toggle('error',bad);}
 function renderOverview(data){
+  ++knowledgeRequestGeneration;
+  knowledgeIds.clear();
+  if($('knowledgeResult'))$('knowledgeResult').textContent='문서를 다시 선택해 검색하거나 대조하세요.';
+  if($('knowledgeCount'))$('knowledgeCount').textContent='선택된 문서 0개';
   ++queryRequestSequence;
   previousAnsweredQuestion=null;
   setFollowupState();
@@ -42,6 +48,21 @@ function renderOverview(data){
     c.tabIndex=-1;
     c.append(element('strong','',d.source_title),element('p','',`출처: ${d.document_id} · ${d.file_id}`),element('p','',d.page_info),element('span','approved',d.import_status==='ACCEPTED'?'검증됨':'검토 필요'));
     if(d.import_status==='ACCEPTED'){
+      const selection=element('label','doc-select');
+      const pick=element('input');
+      pick.type='checkbox';pick.checked=false;
+      pick.setAttribute('aria-label',d.source_title+' 지식베이스 포함');
+      pick.addEventListener('change',()=>{
+        if(pick.checked){
+          if(knowledgeIds.size>=8){pick.checked=false;return;}
+          knowledgeIds.add(d.document_id);
+        }else knowledgeIds.delete(d.document_id);
+        ++knowledgeRequestGeneration;
+        if($('knowledgeCount'))$('knowledgeCount').textContent='선택된 문서 '+knowledgeIds.size+'개';
+        if($('knowledgeResult'))$('knowledgeResult').textContent='선택한 문서 범위가 변경됐습니다. 새 검색을 실행하세요.';
+      });
+      selection.append(pick,element('span','','지식베이스 포함'));
+      c.append(selection);
       const open=element('button','outline','검증된 원문 보기');
       open.type='button';
       open.addEventListener('click',()=>void openDocument(d.document_id,1));
@@ -204,6 +225,45 @@ async function ask(mode){
     }
   }
 }
+/** Selected IDs originate only from the current manifest UI; never raw disk paths. */
+async function runKnowledge(action){
+  const pane=$('knowledgeResult');
+  if(!pane)return;
+  const question=$('knowledgeQuestion')?.value??'';
+  const ids=[...knowledgeIds];
+  if(ids.length<(action==='compare'?2:1)||!activeProjectKey){
+    pane.textContent='현재 프로젝트에서 '+(action==='compare'?'서로 다른 문서 2개 이상':'문서 1개 이상')+'를 선택하세요.';
+    return;
+  }
+  if(action==='search'&&(!question.trim()||question.length>500)){
+    pane.textContent='검색어를 1~500자 이내로 입력하세요.';return;
+  }
+  const version=++knowledgeRequestGeneration;
+  const controls=[$('knowledgeSearch'),$('knowledgeCompare')].filter(Boolean);
+  controls.forEach(x=>x.disabled=true);
+  pane.textContent='검증된 문서의 출처를 다시 확인 중입니다.';
+  try{
+    const input={action,project_key:activeProjectKey,document_ids:ids};
+    if(action==='search')input.question=question;
+    const res=await api('/api/knowledge',{method:'POST',
+      headers:{'Content-Type':'application/json'},body:JSON.stringify(input)});
+    if(version!==knowledgeRequestGeneration)return;
+    const warning=res.status!=='FOUND'&&res.status!=='COMPARISON_READY';
+    const nodes=[element('strong',warning?'smax-warning':'',res.status)];
+    nodes.push(element('p','',res.answer??(res.reason??'지원되는 근거가 없습니다.')));
+    const items=action==='compare'?(res.comparison?.length?res.comparison:res.review_evidence??[]):res.evidence??[];
+    for(const hit of items){
+      nodes.push(element('p','kb-claim',
+        (hit.source_title??hit.document_id)+' · '+hit.line+'행 · '+
+        (hit.domain?hit.domain+' '+hit.period+' '+hit.unit+' · ':'')+(hit.quote??'')));
+    }
+    replace(pane,...nodes);
+  }catch{
+    if(version===knowledgeRequestGeneration)pane.textContent='검증에 실패했습니다. 선택한 문서와 현재 프로젝트를 확인하세요.';
+  }finally{if(version===knowledgeRequestGeneration)controls.forEach(x=>x.disabled=false);}
+}
+if($('knowledgeForm'))$('knowledgeForm').addEventListener('submit',e=>{e.preventDefault();void runKnowledge('search');});
+if($('knowledgeCompare'))$('knowledgeCompare').addEventListener('click',()=>void runKnowledge('compare'));
 $('askForm').addEventListener('submit',(event)=>{event.preventDefault();void ask('query');});
 $('searchButton').addEventListener('click',()=>void ask('search'));
 if($('followupButton'))$('followupButton').addEventListener('click',()=>void ask('conversation'));
@@ -231,6 +291,7 @@ async function loadProjects(){
     :'실행 시 지정한 로컬 프로젝트 '+list.projects.length+'개 중 선택할 수 있습니다.';
   button.addEventListener('click',async()=>{
     ++queryRequestSequence; // Discard any in-flight answer from previous workspace.
+    ++knowledgeRequestGeneration; // Reject stale knowledge replies during switch.
     for(const id of ['askButton','searchButton'])$(id).disabled=true;
     if($('followupButton'))$('followupButton').disabled=true;
     button.disabled=true;

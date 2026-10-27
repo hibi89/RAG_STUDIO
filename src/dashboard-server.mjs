@@ -12,6 +12,7 @@ import {withReadOnlySales} from './mixed-question.mjs';
 import {routeQuestion} from './evidence-router.mjs';
 import {answerFollowUp} from './conversation.mjs';
 import {searchDocuments} from './document-search.mjs';
+import {knowledgeSearch,knowledgeCompare} from './knowledge-base.mjs';
 import {previewSmaxSales} from './smax-sales-preview.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
@@ -98,6 +99,31 @@ async function readJson(req){
   if(!obj||Array.isArray(obj)||typeof obj!=='object'||Object.keys(obj).length!==1||typeof obj.question!=='string'||!obj.question.trim()||obj.question.length>500)
     throw Object.assign(new Error('Provide question text (1–500 characters)'),{statusCode:400});
   return obj.question;
+}
+/** P5.18: bounded untrusted client collection; never accepts a path or manifest overrides. */
+async function readKnowledgeRequest(req){
+ if(!/^application\/json(?:\s*;|\s*$)/i.test(req.headers['content-type']??''))
+   throw Object.assign(new Error('INVALID_MEDIA_TYPE'),{statusCode:415});
+ let bytes=0;const chunks=[];
+ for await(const chunk of req){
+   bytes+=chunk.length;
+   if(bytes>4096)throw Object.assign(new Error('PAYLOAD_TOO_LARGE'),{statusCode:413});
+   chunks.push(chunk);
+ }
+ let obj;
+ try{obj=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(Buffer.concat(chunks)));}
+ catch{throw Object.assign(new Error('INVALID_JSON'),{statusCode:400});}
+ if(!obj||typeof obj!=='object'||Array.isArray(obj)||!['search','compare'].includes(obj.action)||
+   typeof obj.project_key!=='string'||!/^[a-f0-9]{32}$/.test(obj.project_key)||
+   !Array.isArray(obj.document_ids)||obj.document_ids.length<1||obj.document_ids.length>8||
+   obj.document_ids.some(x=>typeof x!=='string'||!/^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$/.test(x))||
+   new Set(obj.document_ids).size!==obj.document_ids.length||
+   (obj.action==='compare'&&obj.document_ids.length<2)||
+   (obj.action==='search'&&(typeof obj.question!=='string'||!obj.question.trim()||obj.question.length>500))||
+   Object.keys(obj).length!==(obj.action==='search'?4:3)||
+   Object.keys(obj).some(x=>!(obj.action==='search'?['action','project_key','document_ids','question']:['action','project_key','document_ids']).includes(x)))
+   throw Object.assign(new Error('INVALID_KNOWLEDGE_REQUEST'),{statusCode:400});
+ return obj;
 }
 /** P5.17: exact small JSON contract. Never accept a session-controlled filesystem path. */
 async function readFollowUp(req){
@@ -265,6 +291,22 @@ export function createDashboardServer({packageRoot,projectRoots=null}){
         if(result.error)return respond(res,result.statusCode,{error:result.error});
         return respond(res,200,result);
       }catch{return respond(res,422,{error:'PACKAGE_UNVERIFIED'});}
+    }
+    if(req.method==='POST'&&route==='/api/knowledge'){
+      const origin=req.headers.origin;
+      if(origin&&origin!==`http://127.0.0.1:${port}`&&origin!==`http://localhost:${port}`)
+        return respond(res,403,{error:'FORBIDDEN_ORIGIN'});
+      try{
+        const input=await readKnowledgeRequest(req);
+        if(input.project_key!==selected.key)return respond(res,409,{error:'WORKSPACE_CHANGED'});
+        const output=input.action==='search'
+          ?knowledgeSearch(selected.root,input.document_ids,input.question)
+          :knowledgeCompare(selected.root,input.document_ids);
+        return respond(res,200,output);
+      }catch(e){
+        if(e.statusCode)return respond(res,e.statusCode,{error:e.message});
+        return respond(res,422,{error:'KNOWLEDGE_UNVERIFIED'});
+      }
     }
     if(req.method==='POST'&&route==='/api/conversation'){
       const origin=req.headers.origin;

@@ -24,9 +24,10 @@ export function tokenize(text) {
   return terms;
 }
 
-function segmentsFromApprovedText(pkg) {
+function segmentsFromApprovedText(pkg,allowed=null) {
   const result=[];
   for (const d of pkg.manifest.documents) {
+    if(allowed!==null&&!allowed.has(d.document_id))continue;
     const file=pkg.fileMap.get(d.file_id);
     if (file?.import_status!=='ACCEPTED' || !SUPPORTED_TEXT.test(file.relative_path)) continue;
     const value=pkg.textMap.get(d.file_id);
@@ -55,11 +56,25 @@ function semanticPeriodConflict(question,evidence) {
 }
 
 /** Every citation points to an approved, SHA-verified package file and one-based line. */
-export function searchDocuments(root,question,{limit=5}={}) {
+export function searchDocuments(root,question,{limit=5,documentIds=null}={}) {
   if(typeof question!=='string' || !question.trim() || question.length>500) fail('search: question must be 1..500 characters');
   if(!Number.isInteger(limit)||limit<1||limit>10) fail('search: limit must be 1..10');
   const pkg=loadPackage(root);
-  const chunks=segmentsFromApprovedText(pkg);
+  let allowed=null;
+  if(documentIds!==null){
+    if(!Array.isArray(documentIds)||documentIds.length<1||documentIds.length>8||
+      new Set(documentIds).size!==documentIds.length||
+      documentIds.some(id=>typeof id!=='string'||!/^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$/.test(id)))
+      fail('search: invalid document selection');
+    allowed=new Set(documentIds);
+    for(const id of allowed){
+      const item=pkg.manifest.documents.find(d=>d.document_id===id);
+      const file=item&&pkg.fileMap.get(item.file_id);
+      if(file?.import_status!=='ACCEPTED'||!(/\.(txt|md)$/i).test(file.relative_path))
+        fail('search: unverified document selection');
+    }
+  }
+  const chunks=segmentsFromApprovedText(pkg,allowed);
   const queryTerms=[...new Set(tokenize(question))].slice(0,120);
   if(!queryTerms.length||!chunks.length) return {status:'NO_EVIDENCE',answer:null,evidence:[],reason:'No searchable approved TXT/Markdown terms'};
   const tf=chunks.map(c=>{

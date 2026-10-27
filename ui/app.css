@@ -52,3 +52,8 @@
 /* P5.17: local-only deterministic conversational continuation. */
 #conversationHint{margin:.65rem 0 1rem}
 #followupButton:disabled{opacity:.55;cursor:not-allowed}
+
+/* P5.18 local-only session collection scope */
+.doc-select{display:flex;gap:.5rem;align-items:center;font-size:.86rem;margin:.5rem 0}
+.doc-select input{width:1rem;height:1rem;accent-color:currentColor}
+#knowledgeResult .kb-claim{padding:.75rem 0;border-top:1px solid #e2e8f0;white-space:pre-wrap;overflow-wrap:anywhere}
