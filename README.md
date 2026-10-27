@@ -93,6 +93,12 @@ npm run workspace -- "/local/AX-project-1" "/local/AX-project-2"
 
 [범위/테스트](docs/P517_GROUNDED_CONVERSATIONAL_MVP.md) · [CI 검증](https://github.com/hibi89/RAG_STUDIO/actions/runs/40490943430). 승인된 Private SMAX Native 데이터 반입 및 Windows 설치·상용 출시는 별도 검증 필요.
 
+## P5.18 — 선택 문서 지식베이스 및 다중 출처 대조
+
+로컬 대시보드의 **문서와 출처**에서 검증된 문서 1~8개를 선택하면 해당 문서만 근거로 검색할 수 있습니다. 2개 이상을 선택하면 반품 신청 및 배송 준비 기간의 명시적인 문장과 원본 행을 나란히 확인할 수 있습니다. 같은 정책이 7일/14일 등 충돌하면 확정 답변을 보류합니다.
+
+`npm run demo:zip` (합성 예제), `npm run workspace -- <verified-AX-folder>` (이미 검증된 패키지). [P5.18 사용법과 검증](docs/P518_KNOWLEDGE_COLLECTION.md). 자동 승인된 실제 비즈니스 정책 분석이나 임의 문서 비교/LLM 생성 답변은 아닙니다.
+
 ## 방향
 RAG Studio는 로컬 PC에서 고객이 승인한 업무 자료를 구조화·검색·분석하고, 문서 출처와 정확한 데이터 집계를 결합해 활용 가능한 대시보드를 만드는 제품을 목표로 한다.
 
