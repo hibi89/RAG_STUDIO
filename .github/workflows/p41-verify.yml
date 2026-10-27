@@ -1,0 +1,41 @@
+name: P4.1 synthetic SMAX semantic review gate
+on:
+  push:
+    branches:
+      - feature/p41-smax-review-handshake
+    paths:
+      - .github/workflows/p41-verify.yml
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Read public synthetic source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Node runtime 22.16
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Syntax checks
+        run: |
+          node --check src/smax-review.mjs
+          node --check tests/smax-review.test.mjs
+          node --check scripts/p41-synthetic-review.mjs
+      - name: Complete regression
+        run: npm test
+      - name: Preexisting SMAX source gate
+        run: npm run inspect:smax
+      - name: Synthetic review demonstration
+        run: |
+          node scripts/p41-synthetic-review.mjs > /tmp/p41_report.json
+          node -e 'const r=require("/tmp/p41_report.json");if(r.pending.status!=="PENDING_SEMANTIC_REVIEW"||r.intent.status!=="REVIEW_RECORD_READY"||r.intent.ax_package_created!==false||r.intent.reviewer_identity_verified!==false)process.exit(1);console.log("P4.1 explicit intent remains unapproved and non-exportable");'
+      - name: Original doctor and evidence router
+        run: |
+          npm run doctor
+          npm run demo:router
+      - name: Original real Chrome local smoke
+        run: node scripts/p32-browser-smoke.mjs
