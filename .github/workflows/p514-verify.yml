@@ -36,3 +36,7 @@ jobs:
           npm run test:gold
           npm run test:negative
           npm run test:heldout
+      - name: P5.14 actual Chromium file picker (runner dependent, separate evidence)
+        continue-on-error: true
+        timeout-minutes: 2
+        run: node scripts/p514-browser-smoke.mjs
