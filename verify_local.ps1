@@ -78,7 +78,7 @@ $failed = @($results | Where-Object {$_.status -eq 'FAIL'}).Count
 $report = [ordered]@{
     contract='RAG_STUDIO_LOCAL_VERIFY_V1'; date_utc=$started;
     source_sha=$sha; node=$version; os=$os; quick=[bool]$Quick;
-    status=$(if($failed -eq 0){'PASS'}else{'FAIL'}); steps=@($results)
+    status=$(if($failed -eq 0){'PASS'}else{'FAIL'}); steps=$results.ToArray()
 }
 $out = Join-Path $reportDir 'summary.json'
 [System.IO.File]::WriteAllText($out, ($report|ConvertTo-Json -Depth 7),
