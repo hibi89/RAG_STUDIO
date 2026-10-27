@@ -10,6 +10,7 @@ import {fail} from './validate.mjs';
 const ID='intfloat/multilingual-e5-small';
 export const XENOVA_E5_ID='Xenova/multilingual-e5-small';
 const XENOVA_SOURCE='https://huggingface.co/Xenova/multilingual-e5-small';
+export const XENOVA_E5_REVISION='761b726dd34fb83930e26aab4e9ac3899aa1fa78';
 // Exact public Git-LFS/Xet SHA-256 and byte sizes, independently recorded from
 // Hugging Face file history (not self-declared hashes in a customer manifest).
 // These locks are artifact integrity references, NOT a commercial license approval.
@@ -24,11 +25,17 @@ export const XENOVA_PUBLISHED_BLOBS=Object.freeze({
    sha256:'cfc8146abe2a0488e9e2a0c56de7952f7c11ab059eca145a0a727afce0db2865',
    size:5069051})
 });
-export function verifyPublishedXenovaManifest(m){
+export function verifyPublishedXenovaManifest(m,{requireRevision=false}={}){
+ if(requireRevision&&(!m||m.revision!==XENOVA_E5_REVISION))
+   fail('dense model: pinned revision mismatch');
  if(!m||typeof m!=='object'||Array.isArray(m)||
     m.model_id!==XENOVA_E5_ID||m.artifact_source!==XENOVA_SOURCE||
     m.license!=='mit'||m.dimension!==384||m.dtype!=='q8'||
     !Array.isArray(m.files))fail('dense model: published profile mismatch');
+ if(requireRevision&&(Object.keys(m).length!==7||
+    Object.keys(m).some(k=>!['model_id','license','dimension','dtype',
+      'artifact_source','files','revision'].includes(k))))
+   fail('dense model: pinned manifest schema unsupported');
  const entries=new Map();
  for(const d of m.files){
    if(!d||typeof d.name!=='string'||entries.has(d.name))
@@ -66,7 +73,10 @@ function verifiedPath(root,relative){
  if(!fs.statSync(current).isFile())fail('dense model: file required');
  return current;
 }
-export function verifyLocalModelFolder(dir,{ramBytes=os.totalmem(),modelProfile='legacy'}={}){
+export function verifyLocalModelFolder(dir,{ramBytes=os.totalmem(),
+  modelProfile='legacy',pinnedRevision=false}={}){
+ if(typeof pinnedRevision!=='boolean'||(pinnedRevision&&modelProfile!=='xenova-q8'))
+   fail('dense model: invalid pinned revision option');
  if(!['legacy','xenova-q8'].includes(modelProfile))fail('dense model: unsupported profile');
  if(typeof dir!=='string'||!path.isAbsolute(dir))fail('dense model: absolute local directory required');
  const root=fs.realpathSync(dir);
@@ -81,12 +91,14 @@ export function verifyLocalModelFolder(dir,{ramBytes=os.totalmem(),modelProfile=
  try{m=JSON.parse(fs.readFileSync(descriptor,'utf8'));}
  catch{fail('dense model: manifest JSON invalid');}
  const keys=Object.keys(m);
- if(keys.length!==6||keys.some(k=>!['model_id','license','dimension','dtype','artifact_source','files'].includes(k))||
+ if(keys.length!==(pinnedRevision?7:6)||
+    keys.some(k=>!['model_id','license','dimension','dtype','artifact_source','files',
+     ...(pinnedRevision?['revision']:[])].includes(k))||
     m.model_id!==(modelProfile==='xenova-q8'?XENOVA_E5_ID:ID)||m.license!=='mit'||m.dimension!==384||m.dtype!=='q8'||
     typeof m.artifact_source!=='string'||!/^https:\/\/huggingface\.co\/[\w./-]+$/.test(m.artifact_source)||
     !Array.isArray(m.files)||m.files.length<3||m.files.length>8)
    fail('dense model: manifest schema unsupported');
- if(modelProfile==='xenova-q8')verifyPublishedXenovaManifest(m);
+ if(modelProfile==='xenova-q8')verifyPublishedXenovaManifest(m,{requireRevision:pinnedRevision});
  if(!Number.isSafeInteger(ramBytes)||ramBytes<MIN_RAM_BYTES)
    fail('dense model: insufficient reported physical RAM');
  const provided=new Set();let total=0;
@@ -131,5 +143,6 @@ export function verifyLocalModelFolder(dir,{ramBytes=os.totalmem(),modelProfile=
    'LOCAL_ASSETS_CHECKED_PUBLISHED_CORE_HASHES_NOT_FULLY_AUTHENTICATED':
    'LOCAL_ASSETS_INTEGRITY_CHECKED_NOT_AUTHENTICATED',
    model_id:m.model_id,dimension:384,dtype:'q8',verified_files:provided.size,total_bytes:total,
-   runtime:'OPTIONAL_NOT_VALIDATED',origin_license:'OPERATOR_DECLARED_NOT_LEGAL_REVIEW'};
+   runtime:'OPTIONAL_NOT_VALIDATED',origin_license:'OPERATOR_DECLARED_NOT_LEGAL_REVIEW',
+   revision_status:pinnedRevision?'OPERATOR_CLAIM_MATCHES_PIN_NOT_ALL_BLOBS_AUTHENTICATED':'UNPINNED_LEGACY'};
 }

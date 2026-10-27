@@ -24,7 +24,7 @@ if(!modelDir){
  try{
    const local=fs.realpathSync(modelDir);
    const modelProfile=path.basename(path.dirname(local))==='Xenova'?'xenova-q8':'legacy';
-   manifest=verifyLocalModelFolder(modelDir,{modelProfile});
+   manifest=verifyLocalModelFolder(modelDir,{modelProfile,pinnedRevision:modelProfile==='xenova-q8'});
  }
  catch{output=safeFallback('MODEL_INTEGRITY_FAILED');}
  if(manifest){

@@ -1,0 +1,43 @@
+name: P5.24 immutable E5 revision and offline evaluation runner
+on:
+  push:
+    branches:
+      - feature/p524-offline-e5-eval
+    paths:
+      - .github/workflows/p524-verify.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify syntax
+        run: |
+          node --check src/local-model-preflight.mjs
+          node --check src/dense-evaluation.mjs
+          node --check scripts/p522-offline-dense-cli.mjs
+          node --check scripts/p524-offline-e5-eval.mjs
+          node --check tests/p524-offline-eval.test.mjs
+      - name: Full regression and local-only gold checks
+        run: |
+          npm test
+          npm run doctor
+          npm run test:gold
+          npm run test:negative
+          npm run test:heldout
+      - name: No weight, no optional runtime, and explicit no-model result
+        run: |
+          node scripts/p524-offline-e5-eval.mjs | tee /tmp/p524-no-model.json
+          node --input-type=module -e "import fs from 'node:fs';let r=JSON.parse(fs.readFileSync('/tmp/p524-no-model.json'));if(r.status!=='MODEL_NOT_PROVIDED'||r.production_ready!==false||r.download_performed!==false)process.exit(3)"
+      - name: Existing BM25 fallback preserved
+        run: |
+          node scripts/p522-offline-dense-cli.mjs "$PWD/fixtures/ax_multi_doc_v0" '반품 신청 기간은?'
