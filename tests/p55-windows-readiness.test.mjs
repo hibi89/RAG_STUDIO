@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import http from 'node:http';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {checkWindowsDemoReadiness} from '../src/windows-readiness.mjs';
@@ -78,6 +79,12 @@ test('P5.5 trusted synthetic dashboard actually binds loopback and refuses unaut
  assert.equal((await health.json()).scope,'loopback_only');
  const denied=await fetch(address+'/api/overview');
  assert.equal(denied.status,401);
- const forged=await fetch(address+'/api/health',{headers:{host:'invalid.example'}});
- assert.equal(forged.status,403);
+ const forgedStatus=await new Promise((resolve,reject)=>{
+   const request=http.request(new URL('/api/health',address),{
+     method:'GET',headers:{Host:'invalid.example'}
+   },response=>{response.resume();response.on('end',()=>resolve(response.statusCode));});
+   request.on('error',reject);
+   request.end();
+ });
+ assert.equal(forgedStatus,403);
 });
