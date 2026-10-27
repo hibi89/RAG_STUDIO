@@ -1,0 +1,48 @@
+name: P5.12 PDF DOCX local preview regression
+on:
+  push:
+    branches:
+      - feature/p512-pdf-docx-local-preview
+    paths:
+      - .github/workflows/p512-verify.yml
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout public synthetic repository only
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Node 22.16.0
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Resolve pinned OSS dependencies and generate lock candidate
+        run: npm install --package-lock-only --no-audit --no-fund --ignore-scripts
+      - name: Install from generated lock with lifecycle scripts disabled
+        run: npm ci --no-audit --no-fund --ignore-scripts
+      - name: Source syntax and initial Chrome baseline
+        run: |
+          node --check src/native-document-extract.mjs
+          node --check src/native-document-workspace.mjs
+          node --check src/native-document-cli.mjs
+          node --check tests/native-document-fixtures.mjs
+          node --check tests/p512-native-document.test.mjs
+          node scripts/p32-browser-smoke.mjs
+      - name: Full native test suite including actual PDF and DOCX
+        run: npm test
+      - name: Existing reliability and evidence evaluation
+        run: |
+          npm run doctor
+          npm run test:gold
+          npm run test:negative
+          npm run test:heldout
+      - name: Readonly dependency lock capture for reproducibility
+        run: |
+          echo 'BEGIN_RAG_P512_LOCK_GZIP_B64'
+          gzip -cn -9 package-lock.json | base64 -w 0
+          echo
+          echo 'END_RAG_P512_LOCK_GZIP_B64'
