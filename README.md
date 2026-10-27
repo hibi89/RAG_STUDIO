@@ -105,6 +105,12 @@ Knowledge Base의 검색 방식에서 **BM25 (기본)** 또는 **BM25 + 문자 n
 
 [실제 측정과 한계](docs/P519_OFFLINE_LEXICAL_RETRIEVAL_EVALUATION.md) · [CI 368 PASS / Chromium 15 PASS](https://github.com/hibi89/RAG_STUDIO/actions/runs/40495256771). 합성 8문항에서 두 방식 Recall@3이 동일하고 실험 방식 중앙 처리시간이 더 느리므로 기본값은 BM25로 유지합니다.
 
+## P5.20 — 문서 규모·검색 품질·자원 사용 독립 검증
+
+`node scripts/p520-scale-gate.mjs`: 비공개 데이터 없는 합성 V0 패키지 **24/64/96개 문서**를 임시로 만들고, 규모마다 **120개 정답 레이블 질문 + 12개 부정 질문**으로 기존 BM25와 선택형 문자 n-gram RRF 검색을 평가합니다. 각 검색 방식은 별도 Node 프로세스에서 CPU·Linux 최대 RSS·처리시간을 측정합니다.
+
+[계측표, 코드 및 검증 한계](docs/P520_RETRIEVAL_SCALING_GATE.md). 최대 96개 문서에서 Recall@3 **BM25 85/120 대 lexical 120/120**이었으나 생성된 식별자 띄어쓰기·오타 사례에 편향된 결과이며, lexical 중앙 처리시간은 **8.302ms 대 16.968ms**로 더 길었습니다. **BM25 기본값 유지**, Dense/FAISS 미구현·상용 QA 미완입니다.
+
 ## 방향
 RAG Studio는 로컬 PC에서 고객이 승인한 업무 자료를 구조화·검색·분석하고, 문서 출처와 정확한 데이터 집계를 결합해 활용 가능한 대시보드를 만드는 제품을 목표로 한다.
 
