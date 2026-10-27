@@ -31,7 +31,7 @@ class MiniElement {
   focus(){this.focused=true;}
   click(){this.events.get('click')?.();}
 }
-const fields=['health','projectId','revenue','orders','units','approvedDocs','documentCards','sourceRows','skuChart','askForm','question','askButton','searchButton','answerPane','citationDetail'];
+const fields=['health','projectId','revenue','orders','units','approvedDocs','documentCards','sourceRows','skuChart','askForm','question','askButton','searchButton','answerPane','citationDetail','smaxForm','smaxJson','smaxCsv','smaxButton','smaxResult'];
 function configure({apiFailure=null,session='A'.repeat(43)}={}) {
   const elements=Object.fromEntries(fields.map(x=>[x,new MiniElement()]));
   elements.question.value='총 매출과 반품 기간';
