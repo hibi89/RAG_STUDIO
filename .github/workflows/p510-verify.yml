@@ -25,8 +25,11 @@ jobs:
           node --check src/synthetic-zip-workspace.mjs
           node --check scripts/p510-mvp-zip-dashboard.mjs
           node --check tests/p510-mvp-zip-dashboard.test.mjs
+          node --check scripts/p510-cli-smoke.mjs
       - name: End-to-end synthetic ZIP and existing regression
         run: npm test
+      - name: Real npm-style CLI to ZIP to authenticated cited answer
+        run: node scripts/p510-cli-smoke.mjs
       - name: Existing synthetic evidence evaluation
         run: |
           npm run doctor
