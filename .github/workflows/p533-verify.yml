@@ -1,0 +1,52 @@
+name: P5.33 offline synthetic portable MVP actual launch
+on:
+  push:
+    branches:
+      - feature/p533-offline-portable-mvp
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  linux-mvp:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Full regression plus bounded source integrity tests
+        run: npm test
+      - name: Offline build with zero bundled npm dependencies
+        run: node scripts/p533-build-portable.mjs
+      - name: Actual portable folder server smoke
+        run: node scripts/p533-portable-smoke.mjs
+  windows-mvp:
+    runs-on: windows-2025
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.0'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Full Windows native regression
+        run: npm test
+      - name: Build ZIP contents locally, no install/download after extraction
+        run: node scripts/p533-build-portable.mjs
+      - name: Real copied-folder Windows CMD startup and bearer HTTP smoke
+        run: node scripts/p533-portable-smoke.mjs
+      - name: Produce download-ready SYNTHETIC-only demo ZIP
+        shell: pwsh
+        run: Compress-Archive -Path 'dist/rag-studio-mvp/*' -DestinationPath 'dist/RAG_STUDIO_MVP_SYNTHETIC_ONLY.zip'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RAG_STUDIO_MVP_SYNTHETIC_ONLY
+          path: dist/RAG_STUDIO_MVP_SYNTHETIC_ONLY.zip
+          retention-days: 7
+          if-no-files-found: error
