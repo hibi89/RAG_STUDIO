@@ -231,6 +231,8 @@ async function loadProjects(){
     :'실행 시 지정한 로컬 프로젝트 '+list.projects.length+'개 중 선택할 수 있습니다.';
   button.addEventListener('click',async()=>{
     ++queryRequestSequence; // Discard any in-flight answer from previous workspace.
+    for(const id of ['askButton','searchButton'])$(id).disabled=true;
+    if($('followupButton'))$('followupButton').disabled=true;
     button.disabled=true;
     status.textContent='선택한 프로젝트의 원본 파일과 계산 근거를 검증 중입니다.';
     try{
@@ -251,7 +253,11 @@ async function loadProjects(){
       // Keep prior verified UI: no partial overwrite on error.
       status.textContent='프로젝트를 전환하지 못했습니다. 현재 프로젝트를 유지합니다.';
       try{const fresh=await api('/api/projects');select.value=fresh.selected;}catch{}
-    }finally{button.disabled=false;}
+    }finally{
+      button.disabled=false;
+      for(const id of ['askButton','searchButton'])$(id).disabled=false;
+      setFollowupState();
+    }
   });
 }
 
