@@ -219,3 +219,6 @@ Run `RUN_LOCAL_SMAX_APPROVAL_PLAN.cmd` on Windows Node22.23+; supply the three r
 
 ## P5.38 — 전체 검증 문서의 상충 반품 기간 감지
 이제 `문서만 검색` 및 선택 문서 BM25 지식베이스 검색은 상위 `N`개 결과 밖에 있는 반품 기간 충돌도, 이미 무결성이 확인된 TXT/Markdown 원문 전체에서 검사합니다. `7일`·`30일`처럼 서로 다른 명시적 문구 발견 시 `POSSIBLE_CONFLICT`로 답을 보류하고 충돌한 원문 2개까지 표시합니다. 실제 약관 유효성 또는 고객 동의 판단 기능은 아닙니다. [설명](docs/P538_FULL_CORPUS_CONFLICT.md) · [Linux/Windows 482 PASS](https://github.com/hibi89/RAG_STUDIO/actions/runs/40540254275).
+
+## P5.39 — SKU별 고정 SQL 질의 + CSV 원본 출처
+인증된 로컬 대시보드에서 `SKU별 매출 알려줘`, `SKU별 주문 건수 알려줘`, `SKU N-02 매출 알려줘`처럼 제한된 문장을 실행하면 읽기 전용 SQLite가 검증된 매출·주문·수량과 원본 CSV 행 인용을 반환합니다. 미등록 SKU/불명확한 질문은 거부합니다. [기능 설명](docs/P539_FIXED_SKU_SQL_QUERY.md) · [Linux·Windows 491/491 PASS](https://github.com/hibi89/RAG_STUDIO/actions/runs/40542300601). 여전히 공개 합성 데이터 전용이며 실제 고객 데이터, 자유 SQL, Native SMAX 승인 또는 판매 배포는 지원하지 않습니다.
