@@ -50,7 +50,7 @@ test('P5.1 gold: 100 independent case IDs, distinct questions and expected categ
     counts[category]++;
   }
   assert.equal(ids.size,100);
-  assert.deepEqual(counts,{SQL_ONLY:12,DOCUMENT_ONLY:36,SQL_DOCUMENT:10,NOT_SUPPORTED:42});
+  assert.deepEqual(counts,{SQL_ONLY:12,DOCUMENT_ONLY:29,SQL_DOCUMENT:17,NOT_SUPPORTED:42});
 });
 test('P5.1 gold: compound near-misses require full abstention, never partial evidence',()=>{
   for(const q of [
