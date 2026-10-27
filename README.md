@@ -43,6 +43,16 @@ PDF에는 페이지 번호(`[PDF page 1]`), DOCX에는 문단 번호(`[DOCX para
 
 [한도·정확성·복구 설명](docs/P512_NATIVE_DOCUMENT_PREVIEW.md) · [실행 증거](STATUS.md).
 
+## P5.13 — SMAX 범용 CSV 결과의 실제 계산 미리보기
+
+SMAX `preprocessing`이 출력하는 `SMAX_PREPROCESS_GENERIC_CSV_V1` JSON과 **그때 사용한 원본 CSV**를 두 파일로 지정하면 RAG Studio가 원본 행·해시·정규화 값과 매출 수식을 다시 검증해 합성/로컬 미리보기 KPI를 계산합니다. 원본은 수정하지 않습니다.
+
+```bash
+npm run preview:smax -- "./local/smax-v1.json" "./local/original.csv"
+```
+
+현재는 `order_id`, `sku`, `quantity`, `unit_price_krw`, `amount_krw`를 갖춘 **엄격한 매출 스키마 전용**입니다. `NOT_GRANTED`/검토 필요 데이터를 승인된 AX 데이터로 자동 변환하지 않으며, 오류나 검토 행이 있으면 합계 표시를 차단합니다. 실제 SMAX Native 런타임의 양쪽 저장소 교차 실행은 별도 검증입니다. [연동 범위·한계](docs/P513_SMAX_SALES_PREVIEW.md).
+
 ## 방향
 RAG Studio는 로컬 PC에서 고객이 승인한 업무 자료를 구조화·검색·분석하고, 문서 출처와 정확한 데이터 집계를 결합해 활용 가능한 대시보드를 만드는 제품을 목표로 한다.
 
