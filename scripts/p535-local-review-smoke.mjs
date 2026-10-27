@@ -67,7 +67,10 @@ try{
  if(windows)await check('real-windows-cmd-local-review-only',async()=>{
   const res=run(true);
   if(res.status!==0)throw Error('WINDOWS_CMD_DENIED');
-  const j=JSON.parse(res.stdout);
+  const lines=res.stdout.trim().split(/\r?\n/u);
+  if(fromPortable&&!lines.some(line=>line.includes('PORTABLE_MVP_INTEGRITY_PASS')))
+   throw Error('PORTABLE_INTEGRITY_OUTPUT_MISSING');
+  const j=JSON.parse(lines.at(-1));
   if(j.status!=='REVIEW_HOLD'||j.sqlite_imported!==false||j.provisional_revenue_krw!=='157000')
    throw Error('CMD_IMPORT_WAS_NOT_BLOCKED');
  });
