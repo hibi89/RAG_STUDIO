@@ -2,6 +2,13 @@
 
 # RAG Studio — Local AI Data & Knowledge Workspace
 
+## 2026-10-28 — 즉시 실행 가능한 최소작동단위(MVP)
+
+현재 **합성 데이터로 동작하는 RAG Studio 로컬 MVP**를 별도 ZIP으로 제공한다. GitHub [P5.33 CI](https://github.com/hibi89/RAG_STUDIO/actions/runs/40527674723)의 **Artifacts → RAG_STUDIO_MVP_SYNTHETIC_ONLY**에서 받고 압축을 해제한 뒤 Windows에서 `RUN_MVP_WINDOWS.cmd`를 실행한다. **사전에 Node.js 22.23.0 설치 필요**(번들·자동설치 없음). Windows 446/446, Linux 446/446, 실제 복사한 폴더 시작·인증·집계·화면 제공·ZIP 재검사 PASS.
+
+확인 가능한 범위는 합성 매출 157,000원, 주문 6건, 수량 10개, 문서 2개 검색과 로컬 CSV 구조 미리보기다. CSV 선택 결과는 승인·DB 반입되지 않는다. **실제 고객 ZIP/CSV 자동 표준화, Private SMAX Native 연결, Windows 실사용자 3대, 서명된 설치기·상용 출시는 아직 미완성**이다. [MVP 범위와 다음 구현](docs/P533_MVP_FREEZE_20261028.md). 외관 및 부가기능은 핵심 흐름 이후 보완한다.
+
+
 > 상태(2026-10-27): **합성 ZIP→SQLite·TXT/Markdown 검색→로컬 대시보드 실행 및 표준 폴더 직접 열기 기능 개발 완료**. 정식 고객용 자동 전처리·SMAX Native 실연동·PDF/DOCX·설치기·배포는 미완성. `main`은 미출시 기준 브랜치.
 
 ## 2026-10-27 — 실행 가능한 합성 ZIP MVP 경로 (P5.10)
