@@ -1,0 +1,44 @@
+name: P4.2 one-time synthetic AX export gate
+on:
+  push:
+    branches:
+      - feature/p42-synthetic-approved-export
+    paths:
+      - .github/workflows/p42-verify.yml
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout synthetic repository only
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Use Node 22.16.0
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Verify new JavaScript syntax
+        run: |
+          node --check src/smax-synthetic-export.mjs
+          node --check tests/smax-synthetic-export.test.mjs
+          node --check scripts/p42-synthetic-export-demo.mjs
+          node --check scripts/p42-export-interactive.mjs
+      - name: All regression tests including actual verified AX writer
+        run: npm test
+      - name: Synthetic SMAX input must stay unapproved
+        run: npm run inspect:smax
+      - name: P4.1 synthetic review intent must not be AX approval
+        run: npm run demo:smax:review
+      - name: P4.2 simulated confirmation and verified AX output
+        run: |
+          node scripts/p42-synthetic-export-demo.mjs > /tmp/p42-report.json
+          node -e 'const r=require("/tmp/p42-report.json");if(r.scenario!=="SYNTHETIC_PROGRAMMATIC_CONFIRMATION_ONLY"||r.status!=="SYNTHETIC_AX_VERIFIED"||r.revenue_krw!=="157000"||r.orders!==6||r.units!=="10"||r.authenticated_reviewer!==false||r.real_data_allowed!==false)process.exit(1);console.log("P4.2 synthetic-only AX export verified");'
+      - name: Existing doctor and evidence search
+        run: |
+          npm run doctor
+          npm run demo:router
+      - name: Real Chrome local synthetic UI regression
+        run: node scripts/p32-browser-smoke.mjs
