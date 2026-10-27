@@ -168,7 +168,7 @@ async function loadProjects(){
   });
 }
 
-try{const data=await api('/api/overview');renderOverview(data);setHealth('검증된 로컬 데이터');await loadProjects();}
+try{const data=await api('/api/overview');renderOverview(data);setHealth('검증된 로컬 데이터');try{await loadProjects();}catch{if($('projectStatus'))$('projectStatus').textContent='프로젝트 목록을 확인할 수 없습니다. 현재 데이터는 유지됩니다.';}}
 catch(e){setHealth(sessionToken?'데이터 검증 실패':'세션 연결 필요',true);replace($('documentCards'),element('p','', '데이터 출처를 확인할 수 없습니다.'));}
 
 
