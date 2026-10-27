@@ -1,0 +1,38 @@
+name: P5.11 Markdown plus local-folder MVP regression
+on:
+  push:
+    branches:
+      - feature/p511-markdown-local-open
+    paths:
+      - .github/workflows/p511-verify.yml
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout public source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Node 22.16.0
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Check new source and test syntax
+        run: |
+          node --check src/document-search.mjs
+          node --check src/evidence-router.mjs
+          node --check src/local-package-cli.mjs
+          node --check tests/p511-markdown-local-open.test.mjs
+      - name: Full native Node regression including real local folder HTTP
+        run: npm test
+      - name: Existing Chrome local UI smoke
+        run: node scripts/p32-browser-smoke.mjs
+      - name: Gold and defensive regression
+        run: |
+          npm run doctor
+          npm run test:gold
+          npm run test:negative
+          npm run test:heldout
