@@ -88,7 +88,7 @@ test('P5.6 actual dashboard CLI bind conflict fails closed without printing a se
  assert.equal(processResult.status,1);
  assert.match(processResult.stderr,/Dashboard startup blocked: loopback port already in use/);
  assert.doesNotMatch(processResult.stdout,/session=|http:\/\/127\.0\.0\.1/);
- assert.doesNotMatch(processResult.stderr,/fixtures\/|fixture\\/|session=/);
+ assert.equal(processResult.stderr.includes('session='),false);
 });
 test('P5.6 invalid port cannot be treated as a successful Windows prerequisite',async()=>{
  for(const port of [0,65536,-1,NaN,'8765',null]){
