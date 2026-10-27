@@ -127,6 +127,10 @@ SHA-256으로 검증된 **로컬 모델 파일**이 별도로 제공될 때에�
 
 GitHub Actions에서 Chrome 155 실제 브라우저 11/11 PASS와 Linux Node 전체 441/441 PASS 확인. Windows 호스트의 합성 사전검사는 PASS지만 Windows 회귀 테스트는 431/441로 FAIL이며, 현재 출시 차단 상태입니다. 상세 근거: [P5.30 검사 보고](docs/P530_REAL_BROWSER_WINDOWS_GATE.md). 기능 브랜치에서만 보존하며 기존 develop/main은 변경하지 않습니다.
 
+## P5.32 — Windows CMD 실행과 실제 Edge/Chrome 검증
+
+`RUN_SYNTHETIC_WINDOWS.cmd`를 실제 Windows CI에서 실행한 후 **Edge와 Chrome 각각 11/11 E2E PASS**, 각 Windows Node 전체 테스트 **441/441 PASS**, Linux **441/441 PASS**를 확인했습니다. 인증·CSV 검토·미승인 데이터 차단·종료 후 로컬 서버 정리를 포함합니다. 이는 **합성 데이터·Windows CI VM·헤드리스 브라우저 검사**이며 사용자 PC 3대, 서명된 설치기, Windows Node 22.16 지원 검증은 아닙니다. [P5.32 상세 검증](docs/P532_WINDOWS_CMD_BROWSER_ACCEPTANCE.md).
+
 ## P5.31 — Windows 실행 환경별 검증 결과
 
 Windows Node 22.16.0에서는 파일 장치번호 API 불일치로 회귀 테스트 10개가 실패했습니다. Node **22.23.0 및 24.11.0은 Windows 441/441 PASS**였으며, Linux 실제 Chrome CSV 선택 11/11 PASS도 재확인했습니다. 검증 코드 자체는 완화하지 않았고 **Windows CI에서만** 22.23.0으로 검사합니다. 기존 제품 최소 Node 22.16 표기는 유지되어 있으나 Windows 22.16은 호환성 미충족입니다. 실제 판매용 버전 정책과 설치 검증은 별도 승인 대상입니다. [실증 보고](docs/P531_IDENTITY_DIAGNOSTICS.md).
