@@ -17,7 +17,8 @@
     "test:gold": "node scripts/p5-gold-eval.mjs",
     "test:negative": "node scripts/p52-negative-evidence.mjs",
     "test:heldout": "node scripts/p53-heldout.mjs",
-    "preflight:windows": "node scripts/windows-preflight.mjs"
+    "preflight:windows": "node scripts/windows-preflight.mjs",
+    "test:browser": "node scripts/p57-browser-e2e.mjs"
   },
   "engines": {
     "node": ">=22.16.0"
