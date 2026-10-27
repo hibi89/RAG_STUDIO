@@ -16,6 +16,8 @@ if errorlevel 1 (
   popd
   exit /b 2
 )
+REM Pin this launcher to the verified fixed demo port even if the shell has overrides.
+set "RAG_DASHBOARD_PORT=8765"
 node "scripts\windows-preflight.mjs"
 if errorlevel 1 (
   echo Windows synthetic preflight blocked the launch.
