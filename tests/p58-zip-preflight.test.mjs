@@ -8,7 +8,7 @@ function zip(items){const locals=[],centrals=[];let offset=0;
  for(const it of items){const name=Buffer.from(it.name),body=Buffer.from(it.body??'ok'),method=it.method??0,blob=method===8?deflateRawSync(body):body,crc=crc32(body),flags=it.flags??0;
   const local=Buffer.alloc(30),central=Buffer.alloc(46);
   local.writeUInt32LE(0x04034b50);local.writeUInt16LE(flags,6);local.writeUInt16LE(method,8);local.writeUInt32LE(crc,14);local.writeUInt32LE(blob.length,18);local.writeUInt32LE(body.length,22);local.writeUInt16LE(name.length,26);
-  central.writeUInt32LE(0x02014b50);central.writeUInt16LE(it.unixType===undefined?20:0x0314,4);central.writeUInt16LE(flags,8);central.writeUInt16LE(method,10);central.writeUInt32LE(crc,16);central.writeUInt32LE(blob.length,20);central.writeUInt16LE(body.length,24);central.writeUInt16LE(name.length,28);central.writeUInt32LE(((it.unixType??0)*65536)>>>0,38);central.writeUInt32LE(offset,42);
+  central.writeUInt32LE(0x02014b50);central.writeUInt16LE(it.unixType===undefined?20:0x0314,4);central.writeUInt16LE(flags,8);central.writeUInt16LE(method,10);central.writeUInt32LE(crc,16);central.writeUInt32LE(blob.length,20);central.writeUInt32LE(body.length,24);central.writeUInt16LE(name.length,28);central.writeUInt32LE(((it.unixType??0)*65536)>>>0,38);central.writeUInt32LE(offset,42);
   locals.push(local,name,blob);centrals.push(central,name);offset+=local.length+name.length+blob.length;
  }
  const cd=Buffer.concat(centrals),eocd=Buffer.alloc(22);eocd.writeUInt32LE(0x06054b50);eocd.writeUInt16LE(items.length,8);eocd.writeUInt16LE(items.length,10);eocd.writeUInt32LE(cd.length,12);eocd.writeUInt32LE(offset,16);return Buffer.concat([...locals,cd,eocd]);
