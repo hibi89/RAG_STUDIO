@@ -1,0 +1,51 @@
+name: P5.32 real Windows CMD launcher Edge and Chrome
+on:
+  push:
+    branches:
+      - feature/p532-windows-cmd-edge-chrome-smoke
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows-real-browser:
+    name: Windows CMD + ${{ matrix.browser }}
+    runs-on: windows-2025
+    timeout-minutes: 22
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [msedge, chrome]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.0'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Preflight the original synthetic fixture
+        run: node scripts/windows-preflight.mjs
+      - name: Install temporary CI-only Playwright driver
+        run: npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.64.1
+      - run: node --check scripts/p532-windows-cmd-browser.mjs
+      - name: Real CMD launcher with real Windows browser
+        env:
+          RAG_P532_BROWSER: ${{ matrix.browser }}
+        run: node scripts/p532-windows-cmd-browser.mjs
+      - name: Independent Windows Node regression gate
+        run: npm test
+      - name: Independent Windows doctor gate
+        run: npm run doctor
+  linux-control:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: node --check scripts/p532-windows-cmd-browser.mjs
+      - run: npm test
