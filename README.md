@@ -85,6 +85,14 @@ npm run workspace -- "/local/AX-project-1" "/local/AX-project-2"
 
 [실행 범위와 검증](docs/P516_LOCAL_DOCUMENT_EXPLORER.md). 기존 원본 PDF/DOCX 레이아웃 표시, Native SMAX 승인/권리 검증, Windows 설치 및 고객 출시까지 완료된 기능은 아닙니다.
 
+## P5.17 — 출처 재검증형 후속 질문 (대화형 RAG 제한 MVP)
+
+`npm run demo:zip`으로 로컬 대시보드를 시작한 뒤 **반품 기간은?** 질문에 검증된 근거가 표시되면 **그건 며칠이야?**를 입력하고 **근거 확인 후속 질문**을 누릅니다. 이전 질문의 출처와 현재 프로젝트를 다시 확인한 후 7일 이내라는 근거를 재표시합니다. 배송 준비 기간도 지원합니다.
+
+지원하는 짧은 기간 후속 질문만 안전하게 재작성하며, 매출 질문이나 다중 주제처럼 대상이 모호하면 **답변을 보류**합니다. 이 기능은 로컬·무저장·규칙 기반 구현으로 자유 대화용 LLM, 벡터 검색, 일반적인 다중 문맥 추론을 의미하지 않습니다. 프로젝트 전환 시 맥락을 초기화합니다.
+
+[범위/테스트](docs/P517_GROUNDED_CONVERSATIONAL_MVP.md) · [CI 검증](https://github.com/hibi89/RAG_STUDIO/actions/runs/40490943430). 승인된 Private SMAX Native 데이터 반입 및 Windows 설치·상용 출시는 별도 검증 필요.
+
 ## 방향
 RAG Studio는 로컬 PC에서 고객이 승인한 업무 자료를 구조화·검색·분석하고, 문서 출처와 정확한 데이터 집계를 결합해 활용 가능한 대시보드를 만드는 제품을 목표로 한다.
 
