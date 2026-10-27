@@ -59,7 +59,7 @@
         <div><label for="smaxCsv">대응하는 원본 CSV (최대 2MiB)</label><input id="smaxCsv" type="file" accept=".csv,text/csv" required></div>
         <div><label for="smaxDocument">검토용 TXT/MD 정책 문서 (최대 256KiB)</label><input id="smaxDocument" type="file" accept=".txt,.md,text/plain,text/markdown"></div>
       </div>
-      <div class="smax-controls"><button id="smaxButton" type="submit">원본 대조 후 집계</button><button id="smaxReviewPlanButton" type="button">3개 파일 검토 항목 확인</button><span>검토용 문서를 선택해도 AX/SQLite 반입·승인은 되지 않음</span></div>
+      <div class="smax-controls"><button id="smaxButton" type="submit">원본 대조 후 집계</button><button id="smaxReviewPlanButton" type="button">3개 파일 검토 항목 확인</button><button id="smaxReviewExportButton" type="button" disabled>미승인 검토 요약 저장</button><span>검토용 문서를 선택해도 AX/SQLite 반입·승인은 되지 않음</span></div>
     </form>
     <div id="smaxResult" class="smax-result" role="status" aria-live="polite"><p class="placeholder">두 파일을 선택하면 로컬 미리보기 결과가 표시됩니다.</p></div>
     <div id="smaxReviewPlanResult" class="smax-result" role="status" aria-live="polite"><p class="placeholder">JSON·CSV·정책 TXT/MD를 선택해 권리·데이터 의미·문서 효력 등 미확인 항목을 확인하세요. 승인 처리 기능은 없습니다.</p></div>
