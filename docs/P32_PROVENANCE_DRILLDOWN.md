@@ -26,3 +26,11 @@ Date: 2026-10-27 KST. Status: feature implementation + isolated tests; not produ
 2. Live Chromium/Windows browser interaction: correct authenticated module load and click from query evidence to CSV row/doc card, keyboard focus, CSP/Console/Network errors, error UX, screen layout.
 3. Full integration test for edited dashboard static route and UI selectors. Do not merge feature into develop or main solely from isolated tests without clear verification/risk decision.
 4. Separate product gates: SMAX producer contract, original ZIP/license, PDF/Word, dense retrieval, installer, 100-question accuracy and 3 Windows installations.
+
+## 2026-10-27 follow-up isolated UI verification
+- Added tests/ui-interaction.test.mjs: dependency-free MiniElement DOM stub + mocked authorized fetch (not a real browser and not a real dashboard server). It checks session-fragment removal, protected overview render, bearer header, query execution, click-to-CSV-row and click-to-document highlight, clearing previous selection, 401 error UI, and no protected fetch when token is missing.
+- Linux Node 22.16.0 command: node --test tests/doctor.test.mjs tests/provenance.test.mjs tests/ui-interaction.test.mjs = **24 passed, 0 failed, 0 skipped** (11 + 10 + 3). The exact six locally tested JS artifacts matched GitHub blob SHA (doctor 327d0d4..., doctor test 60044501..., provenance 14be33ba..., provenance test 36fca6d..., UI app bc490762..., UI integration test 60884dd...).
+- node --check on those six JS files: **6 passed, 0 failed**.
+- This isolated 24/24 does NOT supersede historical develop 92/92 or prove the full expected 116-test suite. Tests requiring the full repository, real package files, HTTP listener and Playwright UI remain NOT RUN/UNVERIFIED because the runtime cannot DNS-resolve github.com, and earlier Chromium loopback access was administratively blocked.
+- The UI links document metadata and displayed line/quote from a previously verified backend search response. It does not independently re-read or hash each quoted document line in the browser. Do not describe a clicked quote as fresh independent per-line revalidation.
+- Integration gate: do not fast-forward feature to develop solely from mock tests. Preserve feature branch and avoid altering production/main until a full regression and authorized browser smoke can be run.
