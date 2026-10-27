@@ -126,7 +126,49 @@ async function ask(mode){
 $('askForm').addEventListener('submit',(event)=>{event.preventDefault();void ask('query');});
 $('searchButton').addEventListener('click',()=>void ask('search'));
 for(const button of document.querySelectorAll('[data-question]'))button.addEventListener('click',()=>{$('question').value=button.dataset.question;$('question').focus();});
-try{const data=await api('/api/overview');renderOverview(data);setHealth('검증된 로컬 데이터');}
+// P5.15: only allowlist entries from this session's server; no path entry.
+async function loadProjects(){
+  const select=$('projectSelect'),button=$('projectSwitch'),status=$('projectStatus');
+  if(!select||!button||!status)return;
+  const list=await api('/api/projects');
+  if(!Array.isArray(list.projects)||list.projects.length<1||list.projects.length>8)
+    throw new Error('프로젝트 목록 형식이 올바르지 않습니다.');
+  const choices=list.projects.map(item=>{
+    const option=element('option','',item.project_id+' · 문서 '+item.documents+'건');
+    option.value=item.project_key;
+    return option;
+  });
+  replace(select,...choices);
+  select.value=list.selected;
+  select.disabled=list.projects.length<2;
+  button.disabled=list.projects.length<2;
+  status.textContent=list.projects.length===1
+    ?'현재 실행에 등록된 로컬 프로젝트가 1개입니다.'
+    :'실행 시 지정한 로컬 프로젝트 '+list.projects.length+'개 중 선택할 수 있습니다.';
+  button.addEventListener('click',async()=>{
+    button.disabled=true;
+    status.textContent='선택한 프로젝트의 원본 파일과 계산 근거를 검증 중입니다.';
+    try{
+      const result=await api('/api/projects/select',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({project_key:select.value})
+      });
+      if(result.status!=='PROJECT_SELECTED'||!result.overview)throw new Error('PROJECT_NOT_VERIFIED');
+      renderOverview(result.overview);
+      if(highlighted){highlighted.classList.remove('source-active');highlighted=null;}
+      replace($('answerPane'),element('p','placeholder','프로젝트가 변경되었습니다. 새로 질문해 주세요.'));
+      $('citationDetail').textContent='선택한 프로젝트의 원본 근거만 사용합니다.';
+      $('question').value='';
+      status.textContent='프로젝트 변경 완료: '+result.overview.project_id;
+    }catch{
+      // Keep prior verified UI: no partial overwrite on error.
+      status.textContent='프로젝트를 전환하지 못했습니다. 현재 프로젝트를 유지합니다.';
+      try{const fresh=await api('/api/projects');select.value=fresh.selected;}catch{}
+    }finally{button.disabled=false;}
+  });
+}
+
+try{const data=await api('/api/overview');renderOverview(data);setHealth('검증된 로컬 데이터');await loadProjects();}
 catch(e){setHealth(sessionToken?'데이터 검증 실패':'세션 연결 필요',true);replace($('documentCards'),element('p','', '데이터 출처를 확인할 수 없습니다.'));}
 
 
