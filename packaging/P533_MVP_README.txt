@@ -26,3 +26,13 @@ P5.34 synthetic SMAX-style producer-to-consumer demonstration:
  creates a disposable AX folder, reads it via SQLite and cited document Q&A.
  Verification is PROGRAMMATIC SYNTHETIC ONLY, not identity/real approval.
  Private SMAX Native production integration and real customer inputs are not approved.
+
+P5.35 local user-selected SMAX review (NO IMPORT OR APPROVAL):
+ Node.js 22.23 on Windows required. Run in CMD:
+ RUN_LOCAL_SMAX_REVIEW.cmd "C:\path\SMAX-v1.json" "C:\path\original.csv" "C:\path\policy.txt"
+ Developer alternative: npm run review:smax:local -- <v1.json> <original.csv> <policy.txt>
+ Prints SHA, verification counts, provisional sales totals and text line count.
+ Status remains REVIEW_HOLD ALWAYS. No AX approval/SQLite load/document indexing.
+ No network, writes, user source paths, raw cells, source text or identity attestations.
+ User owns responsibility for selecting authorized local files; this is a review,
+ not permission to publish, copy or permanently import customer data.
