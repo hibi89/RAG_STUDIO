@@ -24,6 +24,7 @@ jobs:
           node --check src/dashboard-server.mjs
           node --check ui/app.js
           node --check tests/p516-document-explorer.test.mjs
+          node --check scripts/p516-browser-smoke.mjs
       - name: Whole test suite
         run: npm test
       - name: Evidence regressions
@@ -32,3 +33,7 @@ jobs:
           npm run test:gold
           npm run test:negative
           npm run test:heldout
+      - name: Actual Chromium verified-document browsing (runner-dependent)
+        continue-on-error: true
+        timeout-minutes: 2
+        run: node scripts/p516-browser-smoke.mjs

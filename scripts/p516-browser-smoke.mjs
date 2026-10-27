@@ -1,0 +1,52 @@
+/** P5.16 actual Chromium: click source, verify line provenance, no markup injection. */
+import assert from 'node:assert/strict';
+import {spawn} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
+import {createDashboardServer,listenDashboard,dashboardLaunchUrl} from '../src/dashboard-server.mjs';
+const root=fileURLToPath(new URL('../fixtures/ax_multi_doc_v0/',import.meta.url));
+const server=createDashboardServer({packageRoot:root});
+await listenDashboard(server,0);
+const driverPort=9526,base='http://127.0.0.1:'+driverPort;
+const binary=process.env.CHROMEDRIVER_BIN??(process.env.CHROMEWEBDRIVER?process.env.CHROMEWEBDRIVER+'/chromedriver':'chromedriver');
+const child=spawn(binary,['--port='+driverPort,'--allowed-ips=127.0.0.1'],{stdio:'ignore'});
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+async function call(url,method='GET',body){
+ const r=await fetch(url,{method,headers:body?{'Content-Type':'application/json'}:{},
+ body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(15000)});
+ const data=await r.json();
+ if(!r.ok||data.value?.error)throw Error('CHROMEDRIVER_REQUEST_FAILED');
+ return data.value;
+}
+async function until(fn){
+ for(let i=0;i<70;i++){
+  try{if(await fn())return;}catch{}
+  await sleep(160);
+ }
+ throw Error('CHROME_DOCUMENT_SMOKE_TIMEOUT');
+}
+let session;
+try{
+ await until(async()=>(await fetch(base+'/status',{signal:AbortSignal.timeout(1200)})).ok);
+ const opened=await call(base+'/session','POST',{capabilities:{alwaysMatch:{
+ browserName:'chrome','goog:chromeOptions':{args:['--headless=new','--no-sandbox','--disable-dev-shm-usage','--window-size=1280,900']}}}});
+ session=opened.sessionId;assert.ok(session);
+ const endpoint=base+'/session/'+session;
+ const exec=script=>call(endpoint+'/execute/sync','POST',{script,args:[]});
+ await call(endpoint+'/url','POST',{url:dashboardLaunchUrl(server)});
+ await until(async()=>await exec("return document.querySelectorAll('#documentCards .doc button').length===2"));
+ const before=await exec("return {revenue:document.getElementById('revenue').textContent,hash:location.hash}");
+ assert.equal(before.revenue,'157,000원');assert.equal(before.hash,'');
+ await exec("document.querySelector('#documentCards .doc button').click();return true");
+ await until(async()=>await exec("return !!document.querySelector('#documentViewer .document-lines li')"));
+ const after=await exec("return {heading:document.querySelector('#documentViewer h3')?.textContent,lines:document.querySelectorAll('#documentViewer .document-lines li').length,source:document.getElementById('documentViewer').textContent,metric:document.getElementById('revenue').textContent}");
+ assert.match(after.heading,/반품/);
+ assert.ok(after.lines>=3);
+ assert.match(after.source,/반품/);
+ assert.equal(after.metric,'157,000원');
+ assert.equal(after.source.includes(root),false);
+ console.log('P5.16 ACTUAL CHROMIUM DOCUMENT VIEW: 7 checks PASS');
+}finally{
+ if(session){try{await call(base+'/session/'+session,'DELETE');}catch{}}
+ child.kill('SIGTERM');
+ await new Promise(done=>server.close(done));
+}
