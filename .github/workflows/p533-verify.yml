@@ -44,6 +44,11 @@ jobs:
       - name: Produce download-ready SYNTHETIC-only demo ZIP
         shell: pwsh
         run: Compress-Archive -Path 'dist/rag-studio-mvp/*' -DestinationPath 'dist/RAG_STUDIO_MVP_SYNTHETIC_ONLY.zip'
+      - name: Extract ZIP to fresh folder and verify complete original bytes
+        shell: pwsh
+        run: |
+          Expand-Archive -Path 'dist/RAG_STUDIO_MVP_SYNTHETIC_ONLY.zip' -DestinationPath 'dist/reextracted_mvp'
+          node dist/reextracted_mvp/scripts/p533-verify-portable.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: RAG_STUDIO_MVP_SYNTHETIC_ONLY
