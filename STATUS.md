@@ -488,3 +488,9 @@ P3.2 further UI interaction QA (authorized Windows/browser), source drill-down, 
 - Integration gate: feature `feature/p529-csv-browser-review` from develop `e0e1ed0c9d79184f64b0225be04e118479083c54`. After docs-only checkpoint and successful CI confirmation, compare non-force feature->develop then fast-forward, reread remote SHA. No force push.
 - Next: P5.30 independent Playwright/Chromium real browser file-picker test with explicit synthetic CSV and Windows launch/install readiness; never interpret programmatic DOM or Linux Node CI as Windows release sign-off.
 
+
+### P5.29 final integration checkpoint — 2026-10-27 KST
+- Confirmed GitHub Actions #40515975048 **completed / success**, exact tested code SHA `9679de1da125f95f91eacdcf488d9f7e0563ca3e`; Node22.16 Ubuntu `npm test` 441 PASS, 0 FAIL, 0 cancelled, 0 skipped; doctor, gold, negative, heldout completed successfully.
+- Feature `feature/p529-csv-browser-review` verified **five commits ahead, zero behind** develop baseline `e0e1ed0c9d79184f64b0225be04e118479083c54`, 9 expected changed files including two documentation files. Integrated by **non-force, expected-SHA fast-forward** into `develop` at `70ca02010a3697c7112e4b73f73d8318ba82f80f`. Live re-query confirmed feature and develop identical.
+- Compare tested source commit `9679de1` to integrated `70ca020`: **only STATUS.md and HANDOFF.md changed**; no runtime code changes after green CI. This final documentation-only checkpoint will advance develop HEAD again, so live remote SHA remains authoritative.
+- Product state: **P5.29 development integrated, commercial release NOT READY**; browser actual human/UI Windows 3-machine tests unverified; main `1d809ea` unchanged; no Vercel deployment or Production URL. Next: P5.30 real browser synthetic CSV file selection / no-import acceptance, Windows readiness; avoid falsely treating CI as customer acceptance.
