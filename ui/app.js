@@ -114,6 +114,7 @@ async function api(url,options={}){
   return body;
 }
 async function ask(mode){
+  if(highlighted){highlighted.classList.remove('source-active');highlighted=null;}
   const question=$('question').value;
   const controls=[$('askButton'),$('searchButton')];controls.forEach(b=>b.disabled=true);
   replace($('answerPane'),element('p','placeholder','근거를 검증하고 있습니다…'));
