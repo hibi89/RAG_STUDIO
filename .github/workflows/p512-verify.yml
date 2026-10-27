@@ -24,14 +24,13 @@ jobs:
         run: npm install --package-lock-only --no-audit --no-fund --ignore-scripts
       - name: Install from generated lock with lifecycle scripts disabled
         run: npm ci --no-audit --no-fund --ignore-scripts
-      - name: Source syntax and initial Chrome baseline
+      - name: Source syntax; browser baseline already covered by P5.11
         run: |
           node --check src/native-document-extract.mjs
           node --check src/native-document-workspace.mjs
           node --check src/native-document-cli.mjs
           node --check tests/native-document-fixtures.mjs
           node --check tests/p512-native-document.test.mjs
-          node scripts/p32-browser-smoke.mjs
       - name: Full native test suite including actual PDF and DOCX
         run: npm test
       - name: Existing reliability and evidence evaluation
