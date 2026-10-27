@@ -1,0 +1,272 @@
+{
+  "schema_version": "RAG_P5_GOLD_V0",
+  "fixture": "ax_multi_doc_v0",
+  "scope": "synthetic_read_only",
+  "gold_source": "manual_compilation_from_public_fixtures",
+  "metric": {
+    "orders": 6,
+    "units": "10",
+    "revenue_krw": "157000",
+    "source_csv_lines": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ]
+  },
+  "document_periods": {
+    "document-returns": 7,
+    "document-shipping": 2
+  },
+  "items": [
+    {
+      "id": "sales-total",
+      "question": "총 매출은 얼마야?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_ONLY",
+        "document_ids": []
+      }
+    },
+    {
+      "id": "sales-alias",
+      "question": "전체 매상은?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_ONLY",
+        "document_ids": []
+      }
+    },
+    {
+      "id": "sales-orders",
+      "question": "주문 건수 알려줘",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_ONLY",
+        "document_ids": []
+      }
+    },
+    {
+      "id": "sales-units",
+      "question": "판매 수량은 몇 개?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_ONLY",
+        "document_ids": []
+      }
+    },
+    {
+      "id": "return-request",
+      "question": "반품 신청 기간은?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-returns"
+        ]
+      }
+    },
+    {
+      "id": "return-refund",
+      "question": "환불 신청 가능 기간은?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-returns"
+        ]
+      }
+    },
+    {
+      "id": "return-policy",
+      "question": "반품 규정을 알려줘",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-returns"
+        ]
+      }
+    },
+    {
+      "id": "return-rules",
+      "question": "환불 정책은 어떻게 돼?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-returns"
+        ]
+      }
+    },
+    {
+      "id": "shipping-start",
+      "question": "배송 준비는 언제 시작해?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "shipping-interval",
+      "question": "배송 준비 시작 기간은?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "shipping-dispatch",
+      "question": "발송 준비 기간 알려줘",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "shipping-start-date",
+      "question": "배송 준비 시작은 며칠?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "mixed-sales-return",
+      "question": "총 매출과 반품 신청 기간 알려줘",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_DOCUMENT",
+        "document_ids": [
+          "document-returns"
+        ]
+      }
+    },
+    {
+      "id": "mixed-sales-shipping",
+      "question": "매상과 배송 준비 기간은?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_DOCUMENT",
+        "document_ids": [
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "mixed-orders-refund",
+      "question": "주문 건수와 환불 규정 알려줘",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_DOCUMENT",
+        "document_ids": [
+          "document-returns"
+        ]
+      }
+    },
+    {
+      "id": "mixed-policy-shipping",
+      "question": "반품 신청 기간과 배송 준비 기간은?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-returns",
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "mixed-triple",
+      "question": "총 매출과 반품 기간, 배송 준비 기간은?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_DOCUMENT",
+        "document_ids": [
+          "document-returns",
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "mixed-triple-alias",
+      "question": "판매 수량과 환불 규정과 발송 준비 기간",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_DOCUMENT",
+        "document_ids": [
+          "document-returns",
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "abstain-weather",
+      "question": "내일 부산 날씨는?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "abstain-stock",
+      "question": "SKU별 재고 현황은?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "abstain-shipping-fee",
+      "question": "배송비가 얼마야?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "abstain-mixed-fee",
+      "question": "매출과 반품 배송비를 알려줘",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "abstain-refund-amount",
+      "question": "환불 금액은 얼마야?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "abstain-delivery-eta",
+      "question": "배송은 총 며칠 걸려?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    }
+  ]
+}
