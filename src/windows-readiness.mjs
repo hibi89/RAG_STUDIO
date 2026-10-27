@@ -5,6 +5,7 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import path from 'node:path';
+import net from 'node:net';
 import {fileURLToPath} from 'node:url';
 import {checkRuntime,checkPackage} from './doctor.mjs';
 
@@ -57,14 +58,36 @@ function canonicalPublicDemo(root){
   }catch{return false;}
 }
 
+/** A one-shot loopback bind probe. It closes before dashboard startup;
+ * therefore only the dashboard's actual bind is authoritative (TOCTOU).
+ * The probe never connects to or reads from another local process.
+ */
+async function probeLoopbackPort(port){
+  return new Promise(resolve=>{
+    const listener=net.createServer();
+    listener.once('error',()=>resolve(false));
+    try{
+      listener.listen({host:'127.0.0.1',port,exclusive:true},()=>{
+        listener.close(()=>resolve(true));
+      });
+    }catch{resolve(false);}
+  });
+}
+
 /** Machine-readable output includes no local paths, content or environment secrets. */
 export async function checkWindowsDemoReadiness({
   projectRoot=PROJECT_ROOT,
   nodeVersion=process.versions.node,
+  port=8765,
   packageVerifier
 }={}){
   if(typeof projectRoot!=='string'||!projectRoot.trim()){
     return Object.freeze({contract:'rag.windows-demo-preflight.v1',status:'BLOCKED_INVALID_ROOT',
+      run_platform:process.platform,ready_for_customer_data:false,
+      windows_browser_verified:false,installer_verified:false});
+  }
+  if(!Number.isInteger(port)||port<1||port>65535){
+    return Object.freeze({contract:'rag.windows-demo-preflight.v1',status:'BLOCKED_INVALID_PORT',
       run_platform:process.platform,ready_for_customer_data:false,
       windows_browser_verified:false,installer_verified:false});
   }
@@ -76,9 +99,12 @@ export async function checkWindowsDemoReadiness({
     pkg.status==='CONTRACT_VALIDATED'&&pkg.schema_version==='AX_DATA_PACKAGE_V0'&&
     pkg.datasets===1&&pkg.documents===2&&pkg.files===3&&pkg.accepted_files===3&&
     pkg.needs_review_files===0&&pkg.rejected_files===0;
+  const needsProbe=runtime.status==='SUPPORTED_NODE'&&absent.length===0&&sourceVerified;
+  const portAvailable=needsProbe?await probeLoopbackPort(port):null;
   const status=runtime.status!=='SUPPORTED_NODE'?'BLOCKED_NODE':
     absent.length?'BLOCKED_REQUIRED_FILES':
     !sourceVerified?'BLOCKED_SYNTHETIC_SOURCE':
+    !portAvailable?'BLOCKED_PORT_UNAVAILABLE':
     process.platform!=='win32'?'WINDOWS_HOST_NOT_TESTED':
     'WINDOWS_DEMO_PREFLIGHT_PASS';
   return Object.freeze({
@@ -86,6 +112,7 @@ export async function checkWindowsDemoReadiness({
     run_platform:process.platform,node_supported:runtime.status==='SUPPORTED_NODE',
     required_files_present:REQUIRED.length-absent.length,required_files_total:REQUIRED.length,
     synthetic_package_validated:sourceVerified,
+    port_available:portAvailable,
     network_download_required:false,admin_required:false,
     ready_for_customer_data:false,
     windows_browser_verified:false,installer_verified:false
