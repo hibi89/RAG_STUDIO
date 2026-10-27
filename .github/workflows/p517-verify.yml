@@ -25,6 +25,7 @@ jobs:
           node --check src/dashboard-server.mjs
           node --check ui/app.js
           node --check tests/p517-followup.test.mjs
+          node --check tests/p517-followup-ui.test.mjs
           node --check scripts/p517-browser-smoke.mjs
       - name: Full regression
         run: npm test
