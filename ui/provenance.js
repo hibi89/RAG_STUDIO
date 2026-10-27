@@ -33,3 +33,27 @@ export function citationKey(ref) {
   if (ref.kind === 'document') return JSON.stringify(['document', ref.document_id, ref.file_id]);
   return null;
 }
+
+
+/** Page start for the existing 40-line authenticated source explorer. */
+export function documentPageStartForLine(line) {
+  if (!Number.isSafeInteger(line)||line<1||line>10000) return null;
+  return 1+40*Math.floor((line-1)/40);
+}
+/** Preview-only source locator: generated title and exact extracted prefix required.
+ * This is NOT an original PDF pixel/bounding-box location or DOCX page.
+ */
+export function nativeSourceLocation(citation) {
+  if(!citation||typeof citation!=='object'||Array.isArray(citation)||
+     typeof citation.source_title!=='string'||typeof citation.quote!=='string')return null;
+  const title=/^Local (PDF|DOCX) text preview(?: ([1-4]))?$/u.exec(citation.source_title);
+  if(!title)return null;
+  const unit=title[1]==='PDF'?'page':'paragraph';
+  const match=(unit==='page'?/^\[PDF page ([1-9][0-9]*)\] /u:
+    /^\[DOCX paragraph ([1-9][0-9]*)\] /u).exec(citation.quote);
+  if(!match)return null;
+  const n=Number(match[1]);
+  if(!Number.isSafeInteger(n)||n>(unit==='page'?50:500))return null;
+  return (title[2]?'파일 '+title[2]+' · ':'')+
+    (unit==='page'?'PDF 추출 '+n+'페이지':'DOCX 추출 '+n+'문단');
+}

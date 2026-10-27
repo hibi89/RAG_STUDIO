@@ -57,3 +57,6 @@
 .doc-select{display:flex;gap:.5rem;align-items:center;font-size:.86rem;margin:.5rem 0}
 .doc-select input{width:1rem;height:1rem;accent-color:currentColor}
 #knowledgeResult .kb-claim{padding:.75rem 0;border-top:1px solid #e2e8f0;white-space:pre-wrap;overflow-wrap:anywhere}
+
+/* P5.41: distinguish the exact SHA-rechecked source row from its document card. */
+.document-lines li.source-active{border-left:4px solid #286f9d;padding-left:8px;background:#eaf5ff}

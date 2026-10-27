@@ -1,5 +1,5 @@
 /* Static local UI. Treat all package-origin strings as untrusted: textContent only. */
-import {resolveCitation,citationKey} from './provenance.js';
+import {resolveCitation,citationKey,documentPageStartForLine,nativeSourceLocation} from './provenance.js';
 const $=(id)=>document.getElementById(id);
 let currentOverview=null;
 let highlighted=null;
@@ -98,7 +98,7 @@ function renderOverview(data){
 
 }
 /** Render only manifest-selected, SHA-verified source lines. Responses never become HTML. */
-async function openDocument(id,start){
+async function openDocument(id,start,expectedCitation=null){
   const viewer=$('documentViewer');
   if(!viewer)return;
   const request=++docRequestSequence;
@@ -108,6 +108,16 @@ async function openDocument(id,start){
     if(request!==docRequestSequence)return; // A project switch or later click superseded this response.
     if(data.status!=='VERIFIED_SOURCE_LINES'||data.document_id!==id||!Array.isArray(data.lines))
       throw new Error('INVALID_DOCUMENT_RESPONSE');
+    let matched=null;
+    if(expectedCitation){
+      if(data.file_id!==expectedCitation.file_id||
+         documentPageStartForLine(expectedCitation.line)!==start)
+         throw new Error('SOURCE_IDENTITY_MISMATCH');
+      matched=data.lines.find(row=>row.line===expectedCitation.line);
+      if(!matched||typeof matched.text!=='string'||
+         matched.text.trim()!==expectedCitation.quote.trim())
+         throw new Error('SOURCE_QUOTE_MISMATCH');
+    }
     const title=element('h3','',data.source_title);
     const note=element('p','project-hint','검증된 TXT/Markdown 원문 행 · '+data.file_id+' · 전체 '+data.total_lines+'행');
     const rows=element('ol','document-lines');
@@ -115,6 +125,9 @@ async function openDocument(id,start){
     for(const line of data.lines){
       const li=element('li','',line.text||' ');
       li.value=line.line;
+      if(expectedCitation&&line.line===expectedCitation.line){
+        li.classList.add('source-active');li.tabIndex=-1;
+      }
       rows.append(li);
     }
     const controls=element('div','document-nav');
@@ -129,8 +142,21 @@ async function openDocument(id,start){
       controls.append(next);
     }
     replace(viewer,title,note,rows,controls);
+    if(expectedCitation&&request===docRequestSequence){
+      const location=nativeSourceLocation(expectedCitation);
+      $('citationDetail').textContent='검증된 출처 · '+data.source_title+' · '+
+        (location?location+' · ':'')+expectedCitation.line+'행: '+matched.text.trim();
+      const target=[...rows.children].find(node=>node.value===expectedCitation.line);
+      if(target){
+        target.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'});
+        target.focus({preventScroll:true});
+      }
+    }
   }catch{
-    if(request===docRequestSequence)replace(viewer,element('p','smax-warning','이 문서를 검증하거나 표시할 수 없습니다. 원본 무결성 및 세션을 확인하세요.'));
+    if(request===docRequestSequence){
+      replace(viewer,element('p','smax-warning','이 문서를 검증하거나 표시할 수 없습니다. 원본 무결성 및 세션을 확인하세요.'));
+      if(expectedCitation)$('citationDetail').textContent='인용 행 원본 검증 실패 · 위치와 내용이 일치하지 않습니다.';
+    }
   }
 }
 function showCitation(item){
@@ -145,9 +171,15 @@ function showCitation(item){
   target.classList.add('source-active');
   detail.textContent=ref.kind==='dataset'
     ? `CSV ${ref.file_id}, ${ref.csv_line}행 · 주문 ${ref.order_id} · ${comma(ref.amount_krw)}원 (검증된 요약 행)`
-    : `문서 ${ref.source_title} · ${ref.document_id} · ${ref.line}행: ${ref.quote}`;
-  target.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'});
-  target.focus({preventScroll:true});
+    : '문서 인용 행의 SHA 검증 원문을 확인 중입니다…';
+  if(ref.kind==='document'){
+    const start=documentPageStartForLine(ref.line);
+    if(start===null){detail.textContent='문서 인용 행이 지원 범위를 벗어났습니다.';return;}
+    void openDocument(ref.document_id,start,ref);
+  }else{
+    target.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'});
+    target.focus({preventScroll:true});
+  }
 }
 function addEvidence(parent,title,items){
   parent.append(element('p','evidence-title',title));
@@ -155,7 +187,10 @@ function addEvidence(parent,title,items){
   for(const item of items){
     const li=element('li');
     const heading=item.quote??`${item.amount_krw}원 / 주문 ${item.order_id}`;
-    li.append(element('strong','',heading),element('span','',`출처: ${item.document_id??item.file_id} · ${item.file_id} · ${item.line??item.csv_line}행`));
+    const locator=nativeSourceLocation(item);
+    li.append(element('strong','',heading),element('span','',
+      `출처: ${item.document_id??item.file_id} · ${item.file_id} · ${item.line??item.csv_line}행`+
+      (locator?' · '+locator:'')));
     const jump=element('button','citation-link',item.csv_line!==undefined?'CSV 원본 행 찾기':'문서 출처 찾기');
     jump.type='button';
     jump.addEventListener('click',()=>showCitation(item));
