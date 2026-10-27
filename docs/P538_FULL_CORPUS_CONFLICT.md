@@ -20,3 +20,8 @@ No actual customer data, owner approval, Windows physical-PC installer, Vercel o
 
 ## Local browser handling
 Knowledge Base search now displays the bounded `review_evidence` conflicting line excerpts when the verified search returns `POSSIBLE_CONFLICT` instead of presenting only top BM25-ranked hits. UI uses existing safe `textContent` construction, no raw HTML, and does not suppress the `answer:null` warning.
+
+## Exact verified code checkpoint
+- Source/UI SHA `54e714444d0fcf1f3a933d6a63cc396a726f5185`; [GitHub Actions #40540254275](https://github.com/hibi89/RAG_STUDIO/actions/runs/40540254275) completed/success; Linux22.16 482/482 PASS and Windows22.23 482/482 PASS. Both systems also passed gold/negative/heldout/router and the P5.37 read-only synthetic wizard smoke. All 5 new P5.38 tests included in the full 482.
+- Source-only prior `8b7a528b1d17c1f5b2e40288c94d1c4c28a21ad4` green 482/482 on both OS at [#40540044719](https://github.com/hibi89/RAG_STUDIO/actions/runs/40540044719). UI enhancement after first green then full rerun at second green.
+- Actual Chrome/Edge user-click verification of changed UI not run, although Node test syntax and other existing UI tests passed. No customer input, private SMAX source, real policy legal validity or product release tested.

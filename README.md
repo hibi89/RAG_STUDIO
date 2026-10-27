@@ -216,3 +216,6 @@ SMAX의 기존 사장님 SELF 출시 일정 및 기술 지원 범위를 본 통�
 
 ## P5.37 — Windows local interactive review-plan launcher
 Run `RUN_LOCAL_SMAX_APPROVAL_PLAN.cmd` on Windows Node22.23+; supply the three requested absolute local JSON/CSV/TXT|MD filenames when prompted. No CMD path interpolation, no approval or import. Both Linux and Windows test suites **477/477 PASS** at source SHA `30caaf1eb9ba439d2b2b99a2395824c2c01d02c5`; see [P5.37 documentation](docs/P537_WINDOWS_LOCAL_REVIEW_WIZARD.md) and [CI #40538676154](https://github.com/hibi89/RAG_STUDIO/actions/runs/40538676154). Only synthetic fixtures tested; not a signed installer or commercial app.
+
+## P5.38 — 전체 검증 문서의 상충 반품 기간 감지
+이제 `문서만 검색` 및 선택 문서 BM25 지식베이스 검색은 상위 `N`개 결과 밖에 있는 반품 기간 충돌도, 이미 무결성이 확인된 TXT/Markdown 원문 전체에서 검사합니다. `7일`·`30일`처럼 서로 다른 명시적 문구 발견 시 `POSSIBLE_CONFLICT`로 답을 보류하고 충돌한 원문 2개까지 표시합니다. 실제 약관 유효성 또는 고객 동의 판단 기능은 아닙니다. [설명](docs/P538_FULL_CORPUS_CONFLICT.md) · [Linux/Windows 482 PASS](https://github.com/hibi89/RAG_STUDIO/actions/runs/40540254275).
