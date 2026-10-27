@@ -1,0 +1,39 @@
+name: P5.25 offline model provisioning and manifest safety
+on:
+  push:
+    branches:
+      - feature/p525-offline-model-manifest-prep
+    paths:
+      - .github/workflows/p525-verify.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Syntax and full regression
+        run: |
+          node --check src/local-model-provision.mjs
+          node --check scripts/p525-prepare-local-model.mjs
+          node --check tests/p525-local-model-prep.test.mjs
+          npm test
+          npm run doctor
+          npm run test:gold
+          npm run test:negative
+          npm run test:heldout
+      - name: Unconfigured model folder cannot cause network access or writes
+        run: |
+          if node scripts/p525-prepare-local-model.mjs /tmp/p525-absent-folder > /tmp/p525-reject.json; then
+            echo 'unexpected model preparation success'; exit 1
+          fi
+          node --input-type=module -e "import fs from 'node:fs';let x=JSON.parse(fs.readFileSync('/tmp/p525-reject.json')); if(x.status!=='LOCAL_MODEL_PREPARATION_BLOCKED'||x.download_performed!==false||x.manifest_written!==false)process.exit(2)"
+          node scripts/p524-offline-e5-eval.mjs
