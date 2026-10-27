@@ -1,0 +1,36 @@
+name: P5.22 offline optional dense seam and model SHA preflight
+on:
+  push:
+    branches:
+      - feature/p522-optin-local-dense
+    paths:
+      - .github/workflows/p522-verify.yml
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Syntax
+        run: |
+          node --check src/local-dense.mjs
+          node --check src/local-model-preflight.mjs
+          node --check scripts/p522-offline-dense-cli.mjs
+          node --check tests/p522-local-dense.test.mjs
+      - name: Entire safety and regression
+        run: |
+          npm test
+          npm run doctor
+          npm run test:gold
+          npm run test:negative
+          npm run test:heldout
+      - name: No-model explicit BM25 fallback smoke
+        run: node scripts/p522-offline-dense-cli.mjs "$PWD/fixtures/ax_multi_doc_v0" '반품 신청 기간은?'
