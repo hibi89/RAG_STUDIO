@@ -458,6 +458,35 @@ async function submitSmaxPreview(){
   }finally{button.disabled=false;}
 }
 
+/** P5.45: explicit user-initiated download of a redacted HOLD summary. */
+let pendingHoldExport=null;
+function clearHoldExport(){
+ pendingHoldExport=null;
+ const button=$('smaxReviewExportButton');if(button)button.disabled=true;
+}
+function downloadHoldExport(){
+ if(!pendingHoldExport)return;
+ const json=pendingHoldExport;
+ if(typeof json!=='string'||json.length>4096)return;
+ let parsed;
+ try{parsed=JSON.parse(json);}catch{return;}
+ if(parsed.contract!=='RAG_REVIEW_HOLD_EXPORT_V1'||parsed.status!=='REVIEW_HOLD'||
+    parsed.promotion_status!=='NOT_AUTHORIZED_FOR_AX_PROMOTION'||
+    parsed.ax_package_created!==false||parsed.sqlite_imported!==false||
+    parsed.customer_data_approved!==false||parsed.source_rights_verified!==false||
+    parsed.customer_consent_verified!==false)return;
+ const url=URL.createObjectURL(new Blob([json],{type:'application/json;charset=utf-8'}));
+ try{
+  const link=document.createElement('a');link.href=url;
+  link.download='rag-studio-review-hold.json';
+  link.click();
+ }finally{URL.revokeObjectURL(url);}
+}
+if($('smaxReviewExportButton'))
+ $('smaxReviewExportButton').addEventListener('click',downloadHoldExport);
+for(const id of ['smaxJson','smaxCsv','smaxDocument'])
+ if($(id))$(id).addEventListener('change',clearHoldExport);
+
 /** P5.44: review the third policy document while retaining all ten HOLD gates.
  * This is a distinct local-only API; it can NEVER update approved dashboard data.
  */
@@ -466,6 +495,7 @@ async function submitSmaxReviewPlan(){
        doc=$('smaxDocument')?.files?.[0];
  const area=$('smaxReviewPlanResult'),button=$('smaxReviewPlanButton');
  const notice=msg=>replace(area,element('p','smax-warning',msg));
+ clearHoldExport();
  if(!json||!csv||!doc||
    !/\.json$/iu.test(json.name)||!/\.csv$/iu.test(csv.name)||
    !/\.(txt|md)$/iu.test(doc.name)||
@@ -501,7 +531,21 @@ async function submitSmaxReviewPlan(){
    list.append(li);
   }
   nodes.push(list);
+  if(typeof result.review_export_json!=='string'||
+    !/^[a-f0-9]{64}$/u.test(result.review_export_sha256)||
+    result.review_export_json.length>4096)throw Error('INVALID_REVIEW_EXPORT');
+  const summary=JSON.parse(result.review_export_json);
+  if(summary.contract!=='RAG_REVIEW_HOLD_EXPORT_V1'||
+     summary.review_key_sha256!==result.review_key_sha256||
+     summary.unresolved_review_items!==result.unresolved_review_items||
+     summary.status!=='REVIEW_HOLD'||
+     summary.promotion_status!=='NOT_AUTHORIZED_FOR_AX_PROMOTION'||
+     summary.ax_package_created!==false||summary.sqlite_imported!==false||
+     summary.customer_data_approved!==false||summary.source_rights_verified!==false||
+     summary.customer_consent_verified!==false)throw Error('INVALID_REVIEW_EXPORT');
   replace(area,...nodes);
+  pendingHoldExport=result.review_export_json;
+  $('smaxReviewExportButton').disabled=false;
  }catch{
   notice('세 파일의 무결성·매핑·인용 검토를 수행하지 못했습니다. 승인/반입은 차단됩니다.');
  }finally{button.disabled=false;}
