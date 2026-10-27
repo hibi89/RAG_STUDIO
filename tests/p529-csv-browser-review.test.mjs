@@ -91,5 +91,5 @@ test('P5.29 fixture source not modified on success or error',async t=>{
  const names=['manifest.json','sales.csv','returns_policy.txt','shipping_policy.txt'];
  const before=names.map(n=>fs.readFileSync(path.join(fixture,n)));
  const ctx=await boot(t);await send(ctx);await send(ctx,'{');
- for(let i=0;i<names.length;i++)assert.deepEqual(fs.readFileSync(path.join(fixture,n)),before[i]);
+ for(let i=0;i<names.length;i++)assert.deepEqual(fs.readFileSync(path.join(fixture,names[i])),before[i]);
 });
