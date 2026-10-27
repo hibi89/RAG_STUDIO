@@ -20,9 +20,14 @@
     "preflight:windows": "node scripts/windows-preflight.mjs",
     "test:browser": "node scripts/p57-browser-e2e.mjs",
     "demo:zip": "node scripts/p510-mvp-zip-dashboard.mjs",
-    "open:package": "node src/local-package-cli.mjs"
+    "open:package": "node src/local-package-cli.mjs",
+    "preview:document": "node src/native-document-cli.mjs"
   },
   "engines": {
     "node": ">=22.16.0"
+  },
+  "dependencies": {
+    "mammoth": "1.12.2",
+    "pdfjs-dist": "6.4.299"
   }
 }
