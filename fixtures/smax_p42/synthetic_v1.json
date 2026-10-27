@@ -1,0 +1,176 @@
+{
+  "schema_version": "SMAX_PREPROCESS_GENERIC_CSV_V1",
+  "source": {
+    "format": "UTF8_CSV",
+    "sha256": "8213907ae23423c34db415c0e31f8113eccceed9fdbc2bb4557e1b6ea31e03b9",
+    "bytes": 204,
+    "headers": [
+      "order_id",
+      "sku",
+      "quantity",
+      "unit_price_krw",
+      "amount_krw"
+    ],
+    "source_rows": 6
+  },
+  "fields": [
+    {
+      "key": "order_id",
+      "source": "order_id",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "sku",
+      "source": "sku",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "quantity",
+      "source": "quantity",
+      "type": "integer",
+      "required": true
+    },
+    {
+      "key": "unit_price_krw",
+      "source": "unit_price_krw",
+      "type": "integer",
+      "required": true
+    },
+    {
+      "key": "amount_krw",
+      "source": "amount_krw",
+      "type": "integer",
+      "required": true
+    }
+  ],
+  "rows": [
+    {
+      "source_record": 2,
+      "source_cells": [
+        "O-1001",
+        "N-01",
+        "2",
+        "15000",
+        "30000"
+      ],
+      "values": {
+        "order_id": "O-1001",
+        "sku": "N-01",
+        "quantity": "2",
+        "unit_price_krw": "15000",
+        "amount_krw": "30000"
+      },
+      "status": "READY_FOR_HUMAN_REVIEW",
+      "issues": []
+    },
+    {
+      "source_record": 3,
+      "source_cells": [
+        "O-1002",
+        "N-02",
+        "1",
+        "24000",
+        "24000"
+      ],
+      "values": {
+        "order_id": "O-1002",
+        "sku": "N-02",
+        "quantity": "1",
+        "unit_price_krw": "24000",
+        "amount_krw": "24000"
+      },
+      "status": "READY_FOR_HUMAN_REVIEW",
+      "issues": []
+    },
+    {
+      "source_record": 4,
+      "source_cells": [
+        "O-1003",
+        "N-01",
+        "1",
+        "15000",
+        "15000"
+      ],
+      "values": {
+        "order_id": "O-1003",
+        "sku": "N-01",
+        "quantity": "1",
+        "unit_price_krw": "15000",
+        "amount_krw": "15000"
+      },
+      "status": "READY_FOR_HUMAN_REVIEW",
+      "issues": []
+    },
+    {
+      "source_record": 5,
+      "source_cells": [
+        "O-1004",
+        "N-03",
+        "3",
+        "10000",
+        "30000"
+      ],
+      "values": {
+        "order_id": "O-1004",
+        "sku": "N-03",
+        "quantity": "3",
+        "unit_price_krw": "10000",
+        "amount_krw": "30000"
+      },
+      "status": "READY_FOR_HUMAN_REVIEW",
+      "issues": []
+    },
+    {
+      "source_record": 6,
+      "source_cells": [
+        "O-1005",
+        "N-02",
+        "2",
+        "24000",
+        "48000"
+      ],
+      "values": {
+        "order_id": "O-1005",
+        "sku": "N-02",
+        "quantity": "2",
+        "unit_price_krw": "24000",
+        "amount_krw": "48000"
+      },
+      "status": "READY_FOR_HUMAN_REVIEW",
+      "issues": []
+    },
+    {
+      "source_record": 7,
+      "source_cells": [
+        "O-1006",
+        "N-03",
+        "1",
+        "10000",
+        "10000"
+      ],
+      "values": {
+        "order_id": "O-1006",
+        "sku": "N-03",
+        "quantity": "1",
+        "unit_price_krw": "10000",
+        "amount_krw": "10000"
+      },
+      "status": "READY_FOR_HUMAN_REVIEW",
+      "issues": []
+    }
+  ],
+  "review_queue": [],
+  "quality": {
+    "input_rows": 6,
+    "output_rows": 6,
+    "review_rows": 0,
+    "exact_duplicate_rows": 0,
+    "missing_required_cells": 0,
+    "invalid_cells": 0,
+    "formula_risk_cells": 0
+  },
+  "processing_mode": "DETERMINISTIC_LOCAL",
+  "approval": "NOT_GRANTED"
+}
