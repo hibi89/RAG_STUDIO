@@ -27,7 +27,8 @@
     "preview:text": "node src/local-text-cli.mjs",
     "inspect:csv": "node scripts/p528-inspect-csv.mjs",
     "mvp:smax": "node scripts/p534-smax-vertical-cli.mjs",
-    "review:smax:local": "node src/local-smax-review-cli.mjs"
+    "review:smax:local": "node src/local-smax-review-cli.mjs",
+    "plan:smax:local": "node src/local-smax-approval-plan-cli.mjs"
   },
   "engines": {
     "node": ">=22.16.0"
