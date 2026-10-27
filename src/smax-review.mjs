@@ -24,7 +24,7 @@ function parsePlainCsv(sourceBytes,expectedRows){
   let text;
   try{text=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true}).decode(sourceBytes);}
   catch{issue('SOURCE_UTF8_INVALID');}
-  if(!text||text.includes('\uFEFF')||text.includes('"')||/[\u0000-\u0009\u000b-\u001f\u007f]/u.test(text))issue('CSV_UNSUPPORTED');
+  if(!text||text.includes('\uFEFF')||text.includes('"')||/[\u0000-\u0009\u000b-\u000c\u000e-\u001f\u007f]/u.test(text))issue('CSV_UNSUPPORTED');
   const normalized=text.replace(/\r\n/g,'\n');
   if(normalized.includes('\r')||!normalized.endsWith('\n'))issue('CSV_UNSUPPORTED');
   const lines=normalized.slice(0,-1).split('\n');
