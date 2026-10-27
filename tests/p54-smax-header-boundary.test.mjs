@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {fileURLToPath} from 'node:url';
 import {inspectSmaxV1,inspectSmaxFiles} from '../src/smax-intake.mjs';
 const v1Path=new URL('../fixtures/smax_p42/synthetic_v1.json',import.meta.url);
 const sourcePath=new URL('../fixtures/ax_multi_doc_v0/sales.csv',import.meta.url);
@@ -39,7 +40,7 @@ test('P5.4 safely refuses forged approval even with unambiguous headers',()=>{
 });
 test('P5.4 original files are unmodified and local inspector reports only counters',()=>{
  const before=fs.readFileSync(v1Path),original=fs.readFileSync(sourcePath);
- const r=inspectSmaxFiles(new URL(v1Path).pathname,new URL(sourcePath).pathname);
+ const r=inspectSmaxFiles(fileURLToPath(v1Path),fileURLToPath(sourcePath));
  assert.equal(r.status,'REVIEW_REQUIRED');
  assert.ok(!JSON.stringify(r).includes('O-1001'));
  assert.deepEqual(fs.readFileSync(v1Path),before);
