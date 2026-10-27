@@ -210,3 +210,6 @@ SMAX의 기존 사장님 SELF 출시 일정 및 기술 지원 범위를 본 통�
 
 ## 합성 P1 SQLite + 문서 혼합 질의 (개발 브랜치)
 `feature/p1-mixed-query`에서 Node.js 22.16 이상으로 `npm test`, `npm run demo:mixed`를 실행한다. 정형 CSV의 정확한 SQLite 집계(157000원/6건/10개)와 검증된 TXT의 반품 규정 2행 근거를 결합한다. **Node 22 내장 SQLite는 실험적이며 Windows 설치·프로덕션은 미검증**이다. [P1 범위/검증](docs/P1_SQL_DOCUMENT_SLICE.md).
+
+## P5.36 — 로컬 데이터 승인 전 점검표 (승인 기능 아님)
+`npm run plan:smax:local -- <smax-v1.json> <original.csv> <document.txt|md>` 명령은 명시한 로컬 3개 파일의 P5.35 무결성 검사를 거친 뒤, **권리·동의·매출/VAT 정의·문서 버전·검토자 확인이 아직 필요하다는 10개 항목**을 출력합니다. 결과는 무조건 `REVIEW_HOLD`이며 실제 사용자 승인, AX 패키지 생성, SQLite 반입이나 데이터 업로드가 아닙니다. [정확한 구현 범위와 검증](docs/P536_LOCAL_APPROVAL_READINESS.md).
