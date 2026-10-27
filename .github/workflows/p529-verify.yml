@@ -3,8 +3,6 @@ on:
   push:
     branches:
       - feature/p529-csv-browser-review
-    paths:
-      - .github/workflows/p529-verify.yml
   workflow_dispatch:
 permissions:
   contents: read
