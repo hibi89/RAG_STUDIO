@@ -2,7 +2,7 @@
 
 # RAG Studio — Local AI Data & Knowledge Workspace
 
-> 상태: **P0 표준계약과 P1 합성 SQL+TXT 실행 기능 구현 중** (2026-10-26 KST). 고객용 RAG 엔진·SMAX 실연동·설치기·배포는 미완성. `main`은 문서 기준 브랜치.
+> 상태(2026-10-27): **합성 ZIP→SQLite·TXT/Markdown 검색→로컬 대시보드 실행 및 표준 폴더 직접 열기 기능 개발 완료**. 정식 고객용 자동 전처리·SMAX Native 실연동·PDF/DOCX·설치기·배포는 미완성. `main`은 미출시 기준 브랜치.
 
 ## 2026-10-27 — 실행 가능한 합성 ZIP MVP 경로 (P5.10)
 
@@ -16,6 +16,18 @@ npm test
 ```
 
 판매/실고객용 파일 입력/자동 설치/LLM/벡터/PDF/DOCX는 아직 구현·검증 중이다. 기술 격차와 우선 개발순서는 [MVP-first 구현 지도](docs/MVP_FIRST_IMPLEMENTATION_MAP_20261027.md), 실제 실행검증은 [STATUS.md](STATUS.md) 참조. 이전 P0/P1 상태 설명은 역사 기록으로 유지한다.
+
+## P5.11 — 로컬 패키지 열기 및 Markdown 출처 검색
+
+이미 표준화된 `AX_DATA_PACKAGE_V0` 폴더를 로컬에서 선택해 실행할 수 있습니다. 일반 CSV/ZIP을 임의로 자동 변환하지 않습니다. 검증된 UTF-8 `.md`와 기존 `.txt` 문서를 원본 행 번호·문장 인용으로 검색합니다.
+
+```bash
+npm run open:package -- "/path/to/local/AX_DATA_PACKAGE_V0"
+# 셀프 테스트용 기존 합성 데모
+npm run demo:zip
+```
+
+폴더는 다른 서버로 업로드하지 않습니다. 단, `manifest.json`의 `ACCEPTED` 표시는 실제 사용자 인증·권리/개인정보 승인 또는 SMAX Native 검증의 증거가 아닙니다. **현재 명령은 개발용 로컬 미리보기**입니다. [P5.11 사용법·제약](docs/P511_MARKDOWN_LOCAL_MVP.md), [실제 테스트](STATUS.md).
 
 ## 방향
 RAG Studio는 로컬 PC에서 고객이 승인한 업무 자료를 구조화·검색·분석하고, 문서 출처와 정확한 데이터 집계를 결합해 활용 가능한 대시보드를 만드는 제품을 목표로 한다.
