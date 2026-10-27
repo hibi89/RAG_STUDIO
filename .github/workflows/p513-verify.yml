@@ -1,0 +1,36 @@
+name: P5.13 SMAX V1 local preview integration
+on:
+  push:
+    branches:
+      - feature/p513-smax-native-sales-preview
+    paths:
+      - .github/workflows/p513-verify.yml
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Install frozen dependencies without scripts
+        run: npm ci --no-audit --no-fund --ignore-scripts
+      - name: Syntax checks
+        run: |
+          node --check src/smax-intake.mjs
+          node --check src/smax-sales-preview.mjs
+          node --check src/smax-sales-preview-cli.mjs
+          node --check tests/p513-smax-sales-preview.test.mjs
+      - name: Run full RAG regression and actual synthetic local CLI
+        run: npm test
+      - name: Existing evidence and diagnostics
+        run: |
+          npm run doctor
+          npm run test:gold
+          npm run test:negative
+          npm run test:heldout
