@@ -35,8 +35,8 @@ test('P5.42 bounded picker selection accepts only exact 2-4 absolute local PDF/D
   packet([pdf,docx,'/secret.csv']),
   {...packet([pdf,docx]),package_root:'user chosen'}
  ]){
-  const code=invalid?.package_root?'NATIVE_PICKER_INVALID_SELECTION':
-    invalid?.documents?.length===3?'NATIVE_PICKER_INVALID_FILE_PATH':'NATIVE_PICKER_INVALID_SELECTION';
+  const code=invalid?.package_root||!Array.isArray(invalid?.documents)?
+    'NATIVE_PICKER_INVALID_SELECTION':'NATIVE_PICKER_INVALID_FILE_PATH';
   assert.throws(()=>parseNativePickerSelection(invalid),{code});
  }
  assert.throws(()=>parseNativePickerSelection(packet([pdf,pdf])),{code:'NATIVE_PICKER_DUPLICATE_PATH'});
