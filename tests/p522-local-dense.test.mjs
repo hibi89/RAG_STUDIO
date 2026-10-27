@@ -93,3 +93,26 @@ test('P5.22 missing actual local inference does not trigger any network connecti
  const r=await searchLocalDense(root,'배송',{embedder:embedding});
  assert.equal(r.status,'CANDIDATES_ONLY');
 });
+
+test('P5.22 undeclared additional model asset and symbolic link are blocked',t=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'p522-unlisted-'));
+ t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
+ const f=(name,content)=>{
+  const p=path.join(dir,name);fs.mkdirSync(path.dirname(p),{recursive:true});
+  fs.writeFileSync(p,content);return {name,size:Buffer.byteLength(content),
+    sha256:crypto.createHash('sha256').update(content).digest('hex')};
+ };
+ const assets=[f('config.json','{}'),f('tokenizer.json','{}'),f('onnx/model_quantized.onnx','placeholder')];
+ fs.writeFileSync(path.join(dir,'rag_model_manifest.json'),JSON.stringify({
+  model_id:'intfloat/multilingual-e5-small',license:'mit',dimension:384,dtype:'q8',
+  artifact_source:'https://huggingface.co/intfloat/multilingual-e5-small',files:assets
+ }));
+ assert.equal(verifyLocalModelFolder(dir,{ramBytes:8*1024**3}).verified_files,3);
+ fs.writeFileSync(path.join(dir,'unsafe-extra.json'),'{}');
+ assert.throws(()=>verifyLocalModelFolder(dir,{ramBytes:8*1024**3}),/undeclared/);
+ fs.rmSync(path.join(dir,'unsafe-extra.json'));
+ if(process.platform!=='win32'){
+  fs.symlinkSync(path.join(dir,'config.json'),path.join(dir,'unsafe-link'));
+  assert.throws(()=>verifyLocalModelFolder(dir,{ramBytes:8*1024**3}),/symlink/);
+ }
+});

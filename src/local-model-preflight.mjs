@@ -69,6 +69,19 @@ export function verifyLocalModelFolder(dir,{ramBytes=os.totalmem()}={}){
  if(!provided.has('config.json')||!provided.has('tokenizer.json')||
     ![...provided].some(n=>n.startsWith('onnx/')&&n.endsWith('.onnx')))
    fail('dense model: missing model/tokenizer/weights');
+ // Transformers.js may read additional local tokenizer config files. Reject all
+ // undeclared items and symlinks, so asset integrity covers the full model tree.
+ const allowed=new Set([...provided,'rag_model_manifest.json']);
+ function scan(dir,relative='',depth=0){
+   if(depth>2)fail('dense model: folder depth exceeded');
+   for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+     const rel=relative?relative+'/'+entry.name:entry.name;
+     if(entry.isSymbolicLink())fail('dense model: undeclared symlink');
+     if(entry.isDirectory()){if(rel!=='onnx')fail('dense model: unapproved directory');scan(path.join(dir,entry.name),rel,depth+1);}
+     else if(!entry.isFile()||!allowed.has(rel))fail('dense model: undeclared artifact');
+   }
+ }
+ scan(root);
  return {status:'LOCAL_ASSETS_INTEGRITY_CHECKED_NOT_AUTHENTICATED',
    model_id:ID,dimension:384,dtype:'q8',verified_files:provided.size,total_bytes:total,
    runtime:'OPTIONAL_NOT_VALIDATED',origin_license:'OPERATOR_DECLARED_NOT_LEGAL_REVIEW'};
