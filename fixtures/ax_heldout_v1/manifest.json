@@ -1,0 +1,97 @@
+{
+  "schema_version": "AX_DATA_PACKAGE_V0",
+  "project_id": "synthetic-heldout-shop-002",
+  "created_at_utc": "2026-10-27T00:00:00Z",
+  "files": [
+    {
+      "file_id": "file-sales",
+      "relative_path": "sales.csv",
+      "kind": "dataset",
+      "sha256": "4d52fec36e88721e16404648088c66b5ba6bea3bf164c3b63ce32eaf9097fbea",
+      "size_bytes": 250,
+      "import_status": "ACCEPTED"
+    },
+    {
+      "file_id": "file-policy",
+      "relative_path": "returns_policy.txt",
+      "kind": "document",
+      "sha256": "2f822ed24ea201f10fe9772aaac6f153f9248f6d69d9b1265854b411f8b056a5",
+      "size_bytes": 239,
+      "import_status": "ACCEPTED"
+    },
+    {
+      "file_id": "file-shipping",
+      "relative_path": "shipping_policy.txt",
+      "kind": "document",
+      "sha256": "465482ede3d1711ff6da882cdeeb1e269401bc6fe5dad5360c5aaf1f93f75c14",
+      "size_bytes": 266,
+      "import_status": "ACCEPTED"
+    }
+  ],
+  "datasets": [
+    {
+      "dataset_id": "dataset-sales",
+      "file_id": "file-sales",
+      "row_count": 8,
+      "provenance_mode": "csv_line_1_based",
+      "columns": [
+        {
+          "name": "order_id",
+          "type": "string",
+          "source_column": "order_id",
+          "review_status": "APPROVED"
+        },
+        {
+          "name": "sku",
+          "type": "string",
+          "source_column": "sku",
+          "review_status": "APPROVED"
+        },
+        {
+          "name": "quantity",
+          "type": "integer",
+          "source_column": "quantity",
+          "review_status": "APPROVED"
+        },
+        {
+          "name": "unit_price_krw",
+          "type": "integer",
+          "source_column": "unit_price_krw",
+          "review_status": "APPROVED"
+        },
+        {
+          "name": "amount_krw",
+          "type": "integer",
+          "source_column": "amount_krw",
+          "review_status": "APPROVED"
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "document_id": "document-returns",
+      "file_id": "file-policy",
+      "language": "ko",
+      "source_title": "별도 합성 반품 정책",
+      "page_info": "lines:1-4",
+      "index_status": "NOT_INDEXED"
+    },
+    {
+      "document_id": "document-shipping",
+      "file_id": "file-shipping",
+      "language": "ko",
+      "source_title": "별도 합성 배송 정책",
+      "page_info": "lines:1-4",
+      "index_status": "NOT_INDEXED"
+    }
+  ],
+  "review_items": [],
+  "processing_summary": {
+    "accepted": 3,
+    "needs_review": 0,
+    "rejected": 0,
+    "failed_file_ids": [],
+    "unsupported": []
+  }
+}
