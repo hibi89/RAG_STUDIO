@@ -44,3 +44,8 @@ P3.2 further UI interaction QA (authorized Windows/browser), source drill-down, 
 - Local Linux Node 22.16.0 isolated command node --test tests/doctor.test.mjs: **11 PASS / 0 FAIL / 0 SKIP**. GitHub module/test blob SHAs matched locally tested artifacts exactly. This is a new isolated test batch; do NOT add 11 to historical 92 as if the entire 103-test suite ran.
 - Existing 2026-10-26 develop P3.1 evidence remains historical 92/92 PASS; **full regression in this session NOT RUN** due blocked GitHub clone DNS. Real fixture CLI, Windows browser/install and production NOT TESTED.
 - Before integration verify remote feature HEAD, author/committer and changed paths, then merge to develop by normal fast-forward only if regressions are acceptable. Keep main not released. Next P3.2 source drill-down / clear error UX; P4/P5 still pending.
+
+### 2026-10-27 KST — P3.2 merged into develop (not release)
+- Verified no-force fast-forward develop from 45e96b7870168a7ec38e55f5ed004b9f53655eec to 79801fcf5b11f89d1c87942b5efa8605580bde35; feature/p32-offline-diagnostics contained 6 targeted files, 6 commits ahead, 0 behind. Confirmed latest documentation commit author/committer hibi89.
+- Isolated P3.2 offline doctor test: 11/11 pass, 0 fail (Node 22.16.0 Linux); new code and test Git blobs matched local bytes. Historical P3.1 tests: 92 PASS on 2026-10-26, not rerun. **Combined full npm test, real doctor fixture, Windows/browser/production UNVERIFIED in this session.** No production deployment or real data.
+- GitHub integration reflects an additive, synthetic-only diagnostics slice, not complete P3.2 or commercial readiness. Next: actual whole-suite/fixture testing when full repo checkout is accessible, then provenance drill-down and error UX.
