@@ -11,6 +11,7 @@ import {loadPackage} from './validate.mjs';
 import {withReadOnlySales} from './mixed-question.mjs';
 import {routeQuestion} from './evidence-router.mjs';
 import {searchDocuments} from './document-search.mjs';
+import {previewSmaxSales} from './smax-sales-preview.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const ASSETS={
@@ -20,6 +21,9 @@ const ASSETS={
   '/provenance.js':{path:path.join(HERE,'../ui/provenance.js'),type:'text/javascript; charset=utf-8'}
 };
 const MAX_BODY=2048;
+const MAX_SMAX_JSON=4*1024*1024;
+const MAX_SMAX_CSV=2*1024*1024;
+const MAX_SMAX_BODY=8*1024*1024+256*1024;
 const sessions=new WeakMap();
 const CSP="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'none'; font-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 const COMMON={
@@ -74,6 +78,39 @@ async function readJson(req){
     throw Object.assign(new Error('Provide question text (1–500 characters)'),{statusCode:400});
   return obj.question;
 }
+/** Separate strictly bounded browser handoff; no persistence, files or source echoes.
+ * The JSON package remains NOT_GRANTED. The source bytes are SHA-bound by P5.13.
+ */
+async function readSmaxPreview(req){
+  const ct=req.headers['content-type']??'';
+  if(!/^application\/json(?:\s*;|\s*$)/i.test(ct))
+    throw Object.assign(new Error('INVALID_MEDIA_TYPE'),{statusCode:415});
+  let length=0;
+  const chunks=[];
+  for await(const chunk of req){
+    length+=chunk.length;
+    if(length>MAX_SMAX_BODY)throw Object.assign(new Error('PAYLOAD_TOO_LARGE'),{statusCode:413});
+    chunks.push(chunk);
+  }
+  let payload;
+  try{payload=JSON.parse(Buffer.concat(chunks).toString('utf8'));}
+  catch{throw Object.assign(new Error('INVALID_JSON'),{statusCode:400});}
+  if(!payload||typeof payload!=='object'||Array.isArray(payload)||
+     Object.keys(payload).length!==2||!Object.hasOwn(payload,'v1')||
+     !Object.hasOwn(payload,'source_csv_base64')||
+     !payload.v1||typeof payload.v1!=='object'||Array.isArray(payload.v1)||
+     typeof payload.source_csv_base64!=='string'||
+     payload.source_csv_base64.length<4||
+     payload.source_csv_base64.length>4*Math.ceil(MAX_SMAX_CSV/3)||
+     !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(payload.source_csv_base64)||
+     Buffer.byteLength(JSON.stringify(payload.v1),'utf8')>MAX_SMAX_JSON)
+    throw Object.assign(new Error('INVALID_SOURCE_FORM'),{statusCode:400});
+  const bytes=Buffer.from(payload.source_csv_base64,'base64');
+  if(!bytes.length||bytes.length>MAX_SMAX_CSV||bytes.toString('base64')!==payload.source_csv_base64)
+    throw Object.assign(new Error('INVALID_SOURCE_FORM'),{statusCode:400});
+  try{return previewSmaxSales(payload.v1,bytes);}
+  finally{bytes.fill(0);}
+}
 function checkHost(req,port){
   const host=req.headers.host;
   return host===`127.0.0.1:${port}`||host===`localhost:${port}`;
@@ -100,6 +137,18 @@ export function createDashboardServer({packageRoot}){
     if(req.method==='GET'&&route==='/api/overview'){
       try{return respond(res,200,overview(root));}
       catch{return respond(res,422,{error:'PACKAGE_UNVERIFIED',reason:'Data source failed validation or supported dataset checks'});}
+    }
+    if(req.method==='POST'&&route==='/api/smax-preview'){
+      // Deliberately distinct from /api/query: larger limited payload, same bearer,
+      // Host and Origin protections, no disk writes and no raw file echo.
+      const origin=req.headers.origin;
+      if(origin&&origin!==`http://127.0.0.1:${port}`&&origin!==`http://localhost:${port}`)
+        return respond(res,403,{error:'FORBIDDEN_ORIGIN'});
+      try{return respond(res,200,await readSmaxPreview(req));}
+      catch(e){
+        if(e.statusCode)return respond(res,e.statusCode,{error:e.message});
+        return respond(res,422,{error:'SMAX_PREVIEW_UNVERIFIED'});
+      }
     }
     if(req.method==='POST'&&(route==='/api/query'||route==='/api/search')){
       const origin=req.headers.origin;
