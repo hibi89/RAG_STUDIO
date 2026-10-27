@@ -54,9 +54,9 @@ try{
   const res=await fetch(base+'/api/overview',{headers:{Authorization:'Bearer '+token}});
   assert.equal(res.status,200);
   const obj=await res.json();
-  assert.equal(obj.dataset.revenue_krw,157000);
+  assert.equal(obj.dataset.revenue_krw,'157000');
   assert.equal(obj.dataset.orders,6);
-  assert.equal(obj.dataset.units,10);
+  assert.equal(obj.dataset.units,'10');
   assert.equal(obj.documents.length,2);
  });
  await check('portable-serves-real-browser-assets',async()=>{
