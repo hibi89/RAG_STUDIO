@@ -27,7 +27,9 @@ jobs:
           node --check src/smax-sales-preview-cli.mjs
           node --check tests/p513-smax-sales-preview.test.mjs
       - name: Run full RAG regression and actual synthetic local CLI
-        run: npm test
+        run: |
+          npm test
+          npm run preview:smax -- fixtures/smax_p42/synthetic_v1.json fixtures/ax_multi_doc_v0/sales.csv
       - name: Existing evidence and diagnostics
         run: |
           npm run doctor
