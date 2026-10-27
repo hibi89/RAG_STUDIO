@@ -24,6 +24,8 @@ test('P5.45 forged approvals, mutated counts and malformed digest fail closed',(
  const plan=planBrowserSmaxReview(v1,csv,doc,'.txt');
  for(const patch of [{status:'APPROVED'},{ax_package_created:true},
  {source_rights_verified:true},{customer_consent_verified:true},
+ {authenticated_reviewer:true},{approval_record_persisted:true},
+ {private_smax_native_signoff:true},{document_indexed:true},{remote_upload:true},
  {unresolved_review_items:0},{review_key_sha256:'bad'},
  {review_items:[{status:'APPROVED'}]}]){
   assert.throws(()=>exportHeldReviewSummary({...plan,...patch}),/REVIEW_EXPORT_BLOCKED/);
