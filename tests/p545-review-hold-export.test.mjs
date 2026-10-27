@@ -31,3 +31,31 @@ test('P5.45 forged approvals, mutated counts and malformed digest fail closed',(
   assert.throws(()=>exportHeldReviewSummary({...plan,...patch}),/REVIEW_EXPORT_BLOCKED/);
  }
 });
+
+import {createDashboardServer,listenDashboard,dashboardLaunchUrl} from '../src/dashboard-server.mjs';
+import path from 'node:path';
+test('P5.45 localhost API returns redacted export and UI requires explicit click',async t=>{
+ const root=path.join(fileURLToPath(new URL('../fixtures/ax_multi_doc_v0/',import.meta.url)));
+ const server=createDashboardServer({packageRoot:root});
+ const url=await listenDashboard(server,0);
+ t.after(()=>new Promise(resolve=>server.close(resolve)));
+ const token=dashboardLaunchUrl(server).split('#session=')[1];
+ const payload={v1,source_csv_base64:csv.toString('base64'),
+ document_base64:doc.toString('base64'),document_kind:'.txt'};
+ const post=(headers)=>fetch(url+'/api/smax-review-plan',{
+ method:'POST',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify(payload)});
+ const anon=await post({});assert.equal(anon.status,401);
+ const rsp=await post({Authorization:'Bearer '+token});assert.equal(rsp.status,200);
+ const plan=await rsp.json(), exported=JSON.parse(plan.review_export_json);
+ assert.equal(exported.status,'REVIEW_HOLD');
+ assert.equal(exported.review_key_sha256,plan.review_key_sha256);
+ assert.equal(exported.unresolved_review_items,10);
+ assert.equal(exported.customer_data_approved,false);
+ assert.doesNotMatch(plan.review_export_json,/O-1001|상품 수령일|returns_policy|sales.csv/);
+ const html=fs.readFileSync(new URL('../ui/index.html',import.meta.url),'utf8');
+ const script=fs.readFileSync(new URL('../ui/app.js',import.meta.url),'utf8');
+ assert.match(html,/id="smaxReviewExportButton"[^>]*disabled/);
+ assert.match(script,/URL\.createObjectURL/);
+ assert.match(script,/pendingHoldExport=result\.review_export_json/);
+ assert.match(script,/addEventListener\('change',clearHoldExport\)/);
+});
