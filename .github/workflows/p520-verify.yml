@@ -1,0 +1,38 @@
+name: P5.20 scaling retrieval quality and resource gate
+on:
+  push:
+    branches:
+      - feature/p520-synthetic-scale-gate
+    paths:
+      - .github/workflows/p520-verify.yml
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: JS syntax
+        run: |
+          node --check scripts/p520-corpus.mjs
+          node --check scripts/p520-benchmark-worker.mjs
+          node --check scripts/p520-scale-gate.mjs
+          node --check tests/p520-scale-gate.test.mjs
+      - name: Full existing and new tests
+        run: npm test
+      - name: Original evidence gates
+        run: |
+          npm run doctor
+          npm run test:gold
+          npm run test:negative
+          npm run test:heldout
+      - name: 132 question retrieval profile across 24, 64, 96 files each mode
+        timeout-minutes: 10
+        run: node scripts/p520-scale-gate.mjs
