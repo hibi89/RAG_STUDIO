@@ -23,7 +23,8 @@
     "open:package": "node src/local-package-cli.mjs",
     "preview:document": "node src/native-document-cli.mjs",
     "preview:smax": "node src/smax-sales-preview-cli.mjs",
-    "workspace": "node src/workspace-cli.mjs"
+    "workspace": "node src/workspace-cli.mjs",
+    "preview:text": "node src/local-text-cli.mjs"
   },
   "engines": {
     "node": ">=22.16.0"

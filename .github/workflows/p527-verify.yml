@@ -1,0 +1,36 @@
+name: P5.27 local TXT Markdown preview into existing RAG dashboard
+on:
+  push:
+    branches:
+      - feature/p527-local-text-preview
+    paths:
+      - .github/workflows/p527-verify.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 17
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Syntax and regression
+        run: |
+          node --check src/local-text-workspace.mjs
+          node --check src/local-text-cli.mjs
+          node --check tests/p527-local-text.test.mjs
+          npm test
+          npm run doctor
+          npm run test:gold
+          npm run test:negative
+          npm run test:heldout
+      - name: No change to BM25 fallback and optional model status
+        run: |
+          node scripts/p524-offline-e5-eval.mjs
+          node scripts/p522-offline-dense-cli.mjs "$PWD/fixtures/ax_multi_doc_v0" '반품 신청 기간은?'
