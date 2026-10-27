@@ -52,10 +52,25 @@ try{
    assert.doesNotMatch(await anonymous.locator('#revenue').innerText(),/157,000/);
   });
   const page=await context.newPage();
-  await check('authorized-dashboard-kpis',async()=>{
+  const safeHttp={overview:'NOT_OBSERVED'};
+  page.on('response',r=>{if(r.url().startsWith(origin+'/api/overview'))safeHttp.overview=String(r.status());});
+  await check('authorized-page-health',async()=>{
    await page.goto(launch,{waitUntil:'domcontentloaded'});
-   await page.locator('#health').getByText('검증된 로컬 데이터').waitFor();
+   try{await page.locator('#health').getByText('검증된 로컬 데이터').waitFor({timeout:6000});}
+   catch{
+    const state=await page.locator('#health').textContent().catch(()=>null);
+    report.diagnostic={health:state==='데이터 검증 실패'?'DATA_FAIL':
+      state==='세션 연결 필요'?'SESSION_MISSING':
+      state==='검증된 로컬 데이터'?'VERIFIED':'OTHER',
+      overview_http:safeHttp.overview,page_errors:errors,
+      token_fragment_cleared:!new URL(page.url()).hash};
+    throw new Error('HEALTH_UNVERIFIED');
+   }
+  });
+  await check('session-token-not-left-in-url',async()=>{
    assert.equal(new URL(page.url()).hash,'');
+  });
+  await check('verified-sales-kpis',async()=>{
    assert.match(await page.locator('#revenue').innerText(),/157,000/);
    assert.equal(await page.locator('#orders').innerText(),'6');
    assert.equal(await page.locator('#units').innerText(),'10');
