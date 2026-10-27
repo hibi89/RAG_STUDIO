@@ -1,0 +1,36 @@
+name: P5.8 readonly ZIP synthetic regression
+on:
+  push:
+    branches:
+      - feature/p58-zip-preflight
+    paths:
+      - .github/workflows/p58-verify.yml
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout public synthetic source only
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Node 22.16.0
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: P5.8 source and test syntax
+        run: |
+          node --check src/zip-preflight.mjs
+          node --check tests/p58-zip-preflight.test.mjs
+      - name: Full regression including ZIP boundaries
+        run: npm test
+      - name: Existing synthetic evidence and preflight
+        run: |
+          npm run doctor
+          npm run test:gold
+          npm run test:negative
+          npm run test:heldout
+      - name: Existing real Chrome synthetic dashboard smoke
+        run: node scripts/p32-browser-smoke.mjs
