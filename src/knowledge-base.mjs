@@ -3,6 +3,7 @@
  */
 import {loadPackage,fail} from './validate.mjs';
 import {searchDocuments} from './document-search.mjs';
+import {searchLexicalHybrid} from './lexical-hybrid.mjs';
 
 const SUPPORTED= /\.(?:txt|md)$/i;
 export function selectedDocuments(pkg,ids,min=1){
@@ -19,9 +20,11 @@ export function selectedDocuments(pkg,ids,min=1){
    return {doc,file,text:pkg.textMap.get(file.file_id)};
  });
 }
-export function knowledgeSearch(root,ids,question){
+export function knowledgeSearch(root,ids,question,{mode='bm25'}={}){
+ if(!['bm25','lexical_hybrid'].includes(mode))fail('knowledge: invalid mode');
  const pkg=loadPackage(root);selectedDocuments(pkg,ids);
- return {...searchDocuments(root,question,{limit:8,documentIds:ids}),
+ const search=mode==='bm25'?searchDocuments:searchLexicalHybrid;
+ return {...search(root,question,{limit:8,documentIds:ids}),
    scope:{mode:'SESSION_SELECTED_DOCUMENTS',document_ids:[...ids]}};
 }
 function policyClaims(entry){

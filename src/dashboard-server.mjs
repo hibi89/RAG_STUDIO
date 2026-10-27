@@ -115,13 +115,14 @@ async function readKnowledgeRequest(req){
  catch{throw Object.assign(new Error('INVALID_JSON'),{statusCode:400});}
  if(!obj||typeof obj!=='object'||Array.isArray(obj)||!['search','compare'].includes(obj.action)||
    typeof obj.project_key!=='string'||!/^[a-f0-9]{32}$/.test(obj.project_key)||
+   (Object.hasOwn(obj,'mode')&&(obj.action!=='search'||!['bm25','lexical_hybrid'].includes(obj.mode)))||
    !Array.isArray(obj.document_ids)||obj.document_ids.length<1||obj.document_ids.length>8||
    obj.document_ids.some(x=>typeof x!=='string'||!/^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$/.test(x))||
    new Set(obj.document_ids).size!==obj.document_ids.length||
    (obj.action==='compare'&&obj.document_ids.length<2)||
    (obj.action==='search'&&(typeof obj.question!=='string'||!obj.question.trim()||obj.question.length>500))||
-   Object.keys(obj).length!==(obj.action==='search'?4:3)||
-   Object.keys(obj).some(x=>!(obj.action==='search'?['action','project_key','document_ids','question']:['action','project_key','document_ids']).includes(x)))
+   Object.keys(obj).length!==(obj.action==='search'?(Object.hasOwn(obj,'mode')?5:4):3)||
+   Object.keys(obj).some(x=>!(obj.action==='search'?['action','project_key','document_ids','question','mode']:['action','project_key','document_ids']).includes(x)))
    throw Object.assign(new Error('INVALID_KNOWLEDGE_REQUEST'),{statusCode:400});
  return obj;
 }
@@ -300,7 +301,7 @@ export function createDashboardServer({packageRoot,projectRoots=null}){
         const input=await readKnowledgeRequest(req);
         if(input.project_key!==selected.key)return respond(res,409,{error:'WORKSPACE_CHANGED'});
         const output=input.action==='search'
-          ?knowledgeSearch(selected.root,input.document_ids,input.question)
+          ?knowledgeSearch(selected.root,input.document_ids,input.question,{mode:input.mode??'bm25'})
           :knowledgeCompare(selected.root,input.document_ids);
         return respond(res,200,output);
       }catch(e){

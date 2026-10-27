@@ -246,13 +246,17 @@ async function runKnowledge(action){
   pane.textContent='검증된 문서의 출처를 다시 확인 중입니다.';
   try{
     const input={action,project_key:activeProjectKey,document_ids:ids};
-    if(action==='search')input.question=question;
+    if(action==='search'){
+      input.question=question;
+      if($('knowledgeMode')?.value==='lexical_hybrid')input.mode='lexical_hybrid';
+    }
     const res=await api('/api/knowledge',{method:'POST',
       headers:{'Content-Type':'application/json'},body:JSON.stringify(input)});
     if(version!==knowledgeRequestGeneration)return;
     const warning=res.status!=='FOUND'&&res.status!=='COMPARISON_READY';
     const nodes=[element('strong',warning?'smax-warning':'',res.status)];
     nodes.push(element('p','',res.answer??(res.reason??'지원되는 근거가 없습니다.')));
+    if(res.search_mode)nodes.push(element('p','project-hint','검색 엔진: '+res.search_mode));
     const items=action==='compare'?(res.comparison?.length?res.comparison:res.review_evidence??[]):res.evidence??[];
     for(const hit of items){
       nodes.push(element('p','kb-claim',

@@ -65,7 +65,7 @@
   <div class="section-heading"><div><p class="eyebrow">03-B / LOCAL KNOWLEDGE BASE</p><h2 id="knowledgeTitle">선택 문서 지식베이스</h2></div><span class="table-note">검증된 문서 1~8개, 현재 프로젝트 전용</span></div>
   <div class="workbench">
     <p class="project-hint">위 문서 카드에서 범위에 포함할 문서를 고르세요. 선택된 문서만 검색하며, 2개 이상이면 지원되는 정책 문구를 출처별로 대조합니다.</p>
-    <form id="knowledgeForm"><label for="knowledgeQuestion">선택 문서에서 찾을 내용</label><textarea id="knowledgeQuestion" maxlength="500" rows="2" placeholder="반품 신청 기간"></textarea>
+    <form id="knowledgeForm"><label for="knowledgeQuestion">선택 문서에서 찾을 내용</label><textarea id="knowledgeQuestion" maxlength="500" rows="2" placeholder="반품 신청 기간"></textarea><label for="knowledgeMode">검색 방식</label><select id="knowledgeMode" aria-label="로컬 검색 방식"><option value="bm25" selected>BM25 · 기본</option><option value="lexical_hybrid">BM25 + 문자 n-gram RRF · 실험</option></select><p class="project-hint">실험 검색은 로컬 문자 유사도 결합이며 FAISS 또는 임베딩 기반 의미 검색은 아닙니다.</p>
     <div class="form-actions"><div id="knowledgeCount" role="status">선택된 문서 0개</div><div class="buttons"><button id="knowledgeSearch" type="submit">선택 문서 검색</button><button id="knowledgeCompare" type="button" class="outline">선택 문서 정책 대조</button></div></div></form>
     <div id="knowledgeResult" class="answer-pane" role="status" aria-live="polite">문서를 선택하면 로컬 지식베이스 기능을 이용할 수 있습니다.</div>
   </div>

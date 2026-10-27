@@ -24,7 +24,7 @@ export function tokenize(text) {
   return terms;
 }
 
-function segmentsFromApprovedText(pkg,allowed=null) {
+export function segmentsFromApprovedText(pkg,allowed=null) {
   const result=[];
   for (const d of pkg.manifest.documents) {
     if(allowed!==null&&!allowed.has(d.document_id))continue;
