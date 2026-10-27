@@ -4,6 +4,7 @@
 import {loadPackage, fail} from './validate.mjs';
 import {withReadOnlySales} from './mixed-question.mjs';
 import {searchDocuments} from './document-search.mjs';
+import {parseFixedSkuIntent,answerFixedSkuQuestion} from './sku-query.mjs';
 
 const MAX_DOC_LINES = 10_000;
 const MAX_LINE = 4_096;
@@ -88,6 +89,14 @@ function computeSales(root) {
 /** Bounded synthetic-domain router. Never answers a partially supported multi-part question. */
 export function routeQuestion(root, question) {
   if(typeof question!=='string'||!question.trim()||question.length>500) fail('router: question must be 1..500 characters');
+  // Only these exact P5.39 SKU wordings may bypass the former SKU restriction.
+  // All other SKU wording fails closed; never reinterpret as global sales.
+  const skuIntent=parseFixedSkuIntent(question.trim());
+  if(skuIntent)return answerFixedSkuQuestion(root,skuIntent);
+  if(/SKU/iu.test(question))return {
+    status:'NOT_SUPPORTED',answer:null,
+    reason:'Use explicit fixed SKU questions, not arbitrary product SQL filters'
+  };
   // Fees/refund amounts are outside the time-period vocabulary. Abstain
   // entirely instead of answering only a supported fragment of a mixed query.
   if(UNSUPPORTED_FEES.test(question)||UNSUPPORTED_SCOPE.some(rule=>rule.test(question))) return {

@@ -173,6 +173,15 @@ function renderResult(data,mode){
   parent.append(element('p','answer-text',body));
   if(data.metric_evidence){
     parent.append(element('p','evidence-title',`SQLite 고정 집계 · 매출 ${comma(data.metric_evidence.revenue_krw)}원 / ${data.metric_evidence.orders}건 / ${data.metric_evidence.units}개`));
+    if(Array.isArray(data.metric_evidence.sku_totals)){
+      const list=element('ul','evidence-list');
+      for(const item of data.metric_evidence.sku_totals){
+        const li=element('li');
+        li.textContent=item.sku+' · 매출 '+comma(item.revenue_krw)+'원 · 주문 '+item.orders+'건 · 판매 수량 '+comma(item.units)+'개';
+        list.append(li);
+      }
+      parent.append(element('p','evidence-title','SKU별 고정 SQL 집계'),list);
+    }
     addEvidence(parent,'원본 CSV 행 근거',data.metric_evidence.row_evidence);
   }
   if(Array.isArray(data.document_evidence)&&data.document_evidence.length)addEvidence(parent,'문서 인용',data.document_evidence);
