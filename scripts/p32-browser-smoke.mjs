@@ -28,7 +28,8 @@ async function run(){
   const server=createDashboardServer({packageRoot:fixture});
   const url=await listenDashboard(server,0);
   // On GitHub-hosted Ubuntu 24.04, ChromeDriver executable is on PATH.
-  const driver=spawn(process.env.CHROMEDRIVER_BIN??'chromedriver',['--port='+port,'--allowed-ips=127.0.0.1'],{stdio:'ignore'});
+  const driverBin=process.env.CHROMEDRIVER_BIN??(process.env.CHROMEWEBDRIVER?process.env.CHROMEWEBDRIVER+'/chromedriver':'chromedriver');
+  const driver=spawn(driverBin,['--port='+port,'--allowed-ips=127.0.0.1'],{stdio:'ignore'});
   let sessionId;
   try{
     await waitUntil(async()=>{const r=await fetch(base+'/status');return r.ok;},'driver startup');
