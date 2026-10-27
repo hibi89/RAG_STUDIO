@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - feature/p530-real-browser-windows-gate
+      - feature/p531-win-file-identity-diagnostics
     paths:
       - '.github/workflows/p530-verify.yml'
       - 'scripts/p530-csv-browser-e2e.mjs'
@@ -52,7 +53,9 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
-          node-version: '22.16.0'
+          # P5.31: Windows Node22.16 path-lstat dev=0 while fd-fstat dev!=0;
+          # Windows 22.23 and 24.11 both passed 441/441 without changing guards.
+          node-version: '22.23.0'
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Actual Windows synthetic readiness preflight
         run: node scripts/windows-preflight.mjs
