@@ -1,0 +1,288 @@
+{
+  "schema_version": "RAG_P53_HELDOUT_GOLD_V0",
+  "dataset": "ax_heldout_v1",
+  "provenance": "MANUALLY_AUTHORED_SYNTHETIC_ORACLE_NO_INDEPENDENT_HUMAN_REVIEW",
+  "independent_from": [
+    "fixtures/ax_multi_doc_v0",
+    "fixtures/p5_gold_v0.json"
+  ],
+  "oracle": {
+    "project_id": "synthetic-heldout-shop-002",
+    "orders": 8,
+    "units": "16",
+    "revenue_krw": "187000",
+    "sales_source_lines": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "document_policies": [
+      {
+        "document_id": "document-returns",
+        "file_id": "file-policy",
+        "line": 2,
+        "period": 11,
+        "claim_kind": "calendar_days"
+      },
+      {
+        "document_id": "document-shipping",
+        "file_id": "file-shipping",
+        "line": 2,
+        "period": 4,
+        "claim_kind": "business_days"
+      }
+    ]
+  },
+  "items": [
+    {
+      "id": "h-sql_only-01",
+      "question": "총 매출액 알려줘",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_ONLY",
+        "document_ids": []
+      }
+    },
+    {
+      "id": "h-sql_only-02",
+      "question": "주문 수는?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_ONLY",
+        "document_ids": []
+      }
+    },
+    {
+      "id": "h-sql_only-03",
+      "question": "판매 수량은?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_ONLY",
+        "document_ids": []
+      }
+    },
+    {
+      "id": "h-sql_only-04",
+      "question": "매상은 얼마나 돼?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_ONLY",
+        "document_ids": []
+      }
+    },
+    {
+      "id": "h-sql_only-05",
+      "question": "매출과 주문 건수",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_ONLY",
+        "document_ids": []
+      }
+    },
+    {
+      "id": "h-returns-01",
+      "question": "반품 신청은 언제까지 가능한지?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-returns"
+        ]
+      }
+    },
+    {
+      "id": "h-returns-02",
+      "question": "환불 규정을 알려줘",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-returns"
+        ]
+      }
+    },
+    {
+      "id": "h-returns-03",
+      "question": "상품 반품 기간?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-returns"
+        ]
+      }
+    },
+    {
+      "id": "h-returns-04",
+      "question": "환불 신청 가능한 기간?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-returns"
+        ]
+      }
+    },
+    {
+      "id": "h-shipping-01",
+      "question": "배송 준비 시작은 언제?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "h-shipping-02",
+      "question": "발송 준비 기간?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "h-shipping-03",
+      "question": "결제 후 배송 준비는 언제 시작?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "h-shipping-04",
+      "question": "배송 준비 기간을 알려줘",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "h-mixed-01",
+      "question": "총 매출과 반품 기간?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_DOCUMENT",
+        "document_ids": [
+          "document-returns"
+        ]
+      }
+    },
+    {
+      "id": "h-mixed-02",
+      "question": "주문 수와 배송 준비 기간?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_DOCUMENT",
+        "document_ids": [
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "h-mixed-03",
+      "question": "반품 정책과 발송 준비 시작 기간?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-returns",
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "h-mixed-04",
+      "question": "매상과 환불 규정과 배송 준비 기간?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_DOCUMENT",
+        "document_ids": [
+          "document-returns",
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "h-mixed-05",
+      "question": "판매 수량과 반품 신청 가능 기간과 배송 준비?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_DOCUMENT",
+        "document_ids": [
+          "document-returns",
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "h-abstain-01",
+      "question": "이번주 매출?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "h-abstain-02",
+      "question": "SKU별 매출?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "h-abstain-03",
+      "question": "매상과 환불 수수료?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "h-abstain-04",
+      "question": "발송 준비 기간과 배송 추적은?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "h-abstain-05",
+      "question": "평균 주문 금액?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "h-abstain-06",
+      "question": "재고와 반품 기간?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    }
+  ]
+}
