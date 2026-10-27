@@ -16,7 +16,8 @@
     "demo:smax:export": "node scripts/p42-synthetic-export-demo.mjs",
     "test:gold": "node scripts/p5-gold-eval.mjs",
     "test:negative": "node scripts/p52-negative-evidence.mjs",
-    "test:heldout": "node scripts/p53-heldout.mjs"
+    "test:heldout": "node scripts/p53-heldout.mjs",
+    "preflight:windows": "node scripts/windows-preflight.mjs"
   },
   "engines": {
     "node": ">=22.16.0"
