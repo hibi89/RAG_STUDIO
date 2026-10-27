@@ -118,7 +118,7 @@ test('P5.35 direct source symlinks and ancestor directory symlink refused where 
 });
 test('P5.35 hardlink alias of selected original rejected',t=>{
  const x=make(t),alt=path.join(x.dir,'duplicate-policy.md');
- try{fs.linkSync(x.policy,alt);}catch{t.skip('hardlinks unsupported');return;}
+ try{fs.linkSync(x.source,alt);}catch{t.skip('hardlinks unsupported');return;}
  assert.throws(()=>stageLocalSmaxReview({...x.paths,documentPath:alt}).source_rows, {code:'LOCAL_SMAX_REVIEW_BLOCKED'});
 });
 test('P5.35 local CLI return contains no filename, original cells or document text',t=>{
