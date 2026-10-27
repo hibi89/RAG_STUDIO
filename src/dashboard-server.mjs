@@ -16,7 +16,8 @@ const HERE=path.dirname(fileURLToPath(import.meta.url));
 const ASSETS={
   '/':{path:path.join(HERE,'../ui/index.html'),type:'text/html; charset=utf-8'},
   '/app.css':{path:path.join(HERE,'../ui/app.css'),type:'text/css; charset=utf-8'},
-  '/app.js':{path:path.join(HERE,'../ui/app.js'),type:'text/javascript; charset=utf-8'}
+  '/app.js':{path:path.join(HERE,'../ui/app.js'),type:'text/javascript; charset=utf-8'},
+  '/provenance.js':{path:path.join(HERE,'../ui/provenance.js'),type:'text/javascript; charset=utf-8'}
 };
 const MAX_BODY=2048;
 const sessions=new WeakMap();
