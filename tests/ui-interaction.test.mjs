@@ -31,7 +31,7 @@ class MiniElement {
   focus(){this.focused=true;}
   click(){this.events.get('click')?.();}
 }
-const fields=['health','projectId','revenue','orders','units','approvedDocs','documentCards','sourceRows','skuChart','askForm','question','askButton','searchButton','answerPane','citationDetail','smaxForm','smaxJson','smaxCsv','smaxButton','smaxResult'];
+const fields=['health','projectId','revenue','orders','units','approvedDocs','documentCards','sourceRows','skuChart','askForm','question','askButton','searchButton','answerPane','citationDetail','documentViewer','smaxForm','smaxJson','smaxCsv','smaxButton','smaxResult'];
 function configure({apiFailure=null,session='A'.repeat(43)}={}) {
   const elements=Object.fromEntries(fields.map(x=>[x,new MiniElement()]));
   elements.question.value='총 매출과 반품 기간';
@@ -46,6 +46,11 @@ function configure({apiFailure=null,session='A'.repeat(43)}={}) {
   globalThis.fetch=async(endpoint,opts={})=>{
     requests.push({endpoint,opts});
     if(apiFailure && endpoint===apiFailure.endpoint) return {ok:false,status:apiFailure.status,json:async()=>({error:apiFailure.code})};
+    if(endpoint.startsWith('/api/documents?'))return {ok:true,status:200,json:async()=>({
+      status:'VERIFIED_SOURCE_LINES',document_id:'doc-policy',file_id:'file-policy',
+      source_title:'합성 환불 정책',start:1,total_lines:2,
+      lines:[{line:1,text:'합성 안내'},{line:2,text:'반품 7일 이내'}],next_start:null
+    })};
     return {ok:true,status:200,json:async()=>(endpoint==='/api/overview'?overview:answer)};
   };
   return {elements,requests,replacements};
@@ -75,7 +80,14 @@ test('P3.2 mocked UI renders protected overview and navigates both types of evid
   resultButtons[1].click();
   assert.equal(elements.documentCards.children[0].classList.contains('source-active'),true);
   assert.equal(elements.sourceRows.children[0].classList.contains('source-active'),false);
+  assert.match(elements.citationDetail.textContent,/검증 중/);
+  await flush(); // Source SHA/quote check now completes before showing an actual citation.
+  assert.equal(requests[2].endpoint,'/api/documents?document_id=doc-policy&start=1');
   assert.match(elements.citationDetail.textContent,/7일/);
+  const sourceRows=elements.documentViewer.children[2];
+  const sourceLine=sourceRows.children.find(row=>row.value===2);
+  assert.equal(sourceLine.classList.contains('source-active'),true);
+  assert.equal(sourceLine.focused,true);
   elements.askForm.events.get('submit')({preventDefault(){}});
   assert.equal(elements.documentCards.children[0].classList.contains('source-active'),false);
 });
