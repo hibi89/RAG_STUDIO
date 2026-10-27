@@ -28,13 +28,13 @@ jobs:
           node --check scripts/p510-cli-smoke.mjs
       - name: End-to-end synthetic ZIP and existing regression
         run: npm test
-      - name: Real npm-style CLI to ZIP to authenticated cited answer
-        run: node scripts/p510-cli-smoke.mjs
+      - name: Actual Chrome dashboard smoke (isolated before CLI process)
+        run: node scripts/p32-browser-smoke.mjs
       - name: Existing synthetic evidence evaluation
         run: |
           npm run doctor
           npm run test:gold
           npm run test:negative
           npm run test:heldout
-      - name: Actual Chrome dashboard smoke
-        run: node scripts/p32-browser-smoke.mjs
+      - name: Real npm-style CLI to ZIP to authenticated cited answer
+        run: node scripts/p510-cli-smoke.mjs
