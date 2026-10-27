@@ -79,6 +79,12 @@ npm run workspace -- "/local/AX-project-1" "/local/AX-project-2"
 
 `ACCEPTED`는 패키지 내부 표기이지 실제 SMAX Native 서명·사용권·고객 동의의 증거는 아닙니다. 정식 고객용 인입 및 설치 프로그램은 미완성입니다. [기능·제약·검증](docs/P515_LOCAL_WORKSPACE_SWITCHER.md).
 
+## P5.16 — 로컬 원문 행 탐색 (TXT/Markdown)
+
+검증된 데이터 패키지로 `npm run demo:zip` 또는 `npm run workspace -- <AX-folder>` 실행 후, 화면 **문서와 출처**의 **검증된 원문 보기**를 누르면 등록된 TXT/Markdown 문서를 원본 행 번호로 40행씩 조회할 수 있습니다. 문서 내용은 서버에서 다시 SHA-256 검증되며 브라우저에는 경로 없이 텍스트로만 표시됩니다. 인증되지 않은 접근·등록되지 않은 문서 ID·무결성 오류는 차단됩니다.
+
+[실행 범위와 검증](docs/P516_LOCAL_DOCUMENT_EXPLORER.md). 기존 원본 PDF/DOCX 레이아웃 표시, Native SMAX 승인/권리 검증, Windows 설치 및 고객 출시까지 완료된 기능은 아닙니다.
+
 ## 방향
 RAG Studio는 로컬 PC에서 고객이 승인한 업무 자료를 구조화·검색·분석하고, 문서 출처와 정확한 데이터 집계를 결합해 활용 가능한 대시보드를 만드는 제품을 목표로 한다.
 
