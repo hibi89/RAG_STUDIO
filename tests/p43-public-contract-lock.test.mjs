@@ -6,6 +6,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
+import {fileURLToPath} from 'node:url';
 import {inspectSmaxV1,inspectSmaxFiles} from '../src/smax-intake.mjs';
 import {beginSyntheticExport} from '../src/smax-synthetic-export.mjs';
 const root=new URL('../fixtures/',import.meta.url);
@@ -93,8 +94,8 @@ test('P4.3 malformed review queue or duplicate sources rejected by wire gate',()
 });
 test('P4.3 public fixture passes both disk and in-memory gate without source edits',()=>{
   const before=Buffer.from(source),v1=fs.readFileSync(fixture);
-  const r=inspectSmaxFiles(new URL('smax_p42/synthetic_v1.json',root).pathname,
-    new URL('ax_multi_doc_v0/sales.csv',root).pathname);
+  const r=inspectSmaxFiles(fileURLToPath(new URL('smax_p42/synthetic_v1.json',root)),
+    fileURLToPath(new URL('ax_multi_doc_v0/sales.csv',root)));
   assert.equal(r.status,'REVIEW_REQUIRED');
   assert.equal(r.provenance,'SOURCE_DIGEST_VERIFIED');
   assert.deepEqual(fs.readFileSync(fixture),v1);
