@@ -257,7 +257,10 @@ async function runKnowledge(action){
     const nodes=[element('strong',warning?'smax-warning':'',res.status)];
     nodes.push(element('p','',res.answer??(res.reason??'지원되는 근거가 없습니다.')));
     if(res.search_mode)nodes.push(element('p','project-hint','검색 엔진: '+res.search_mode));
-    const items=action==='compare'?(res.comparison?.length?res.comparison:res.review_evidence??[]):res.evidence??[];
+    const items=action==='compare'
+       ?(res.comparison?.length?res.comparison:res.review_evidence??[])
+       :(res.status==='POSSIBLE_CONFLICT'&&res.review_evidence?.length
+         ?res.review_evidence:res.evidence??[]);
     for(const hit of items){
       nodes.push(element('p','kb-claim',
         (hit.source_title??hit.document_id)+' · '+hit.line+'행 · '+

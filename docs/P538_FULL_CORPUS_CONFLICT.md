@@ -17,3 +17,6 @@ Only an explicit Korean return/refund period pattern is supported. Conditions, e
 `tests/p538-full-corpus-conflict.test.mjs` covers conflict outside top1, selected-document isolation, lexical-hybrid preservation, same-line contradiction, consistent policy and source tampering. Run full `npm test` and synthetic regression on Linux/Windows in `.github/workflows/p538-verify.yml`; the actual result and SHA must be checked on GitHub Actions.
 
 No actual customer data, owner approval, Windows physical-PC installer, Vercel or public deployment. Existing stable `main` is not changed.
+
+## Local browser handling
+Knowledge Base search now displays the bounded `review_evidence` conflicting line excerpts when the verified search returns `POSSIBLE_CONFLICT` instead of presenting only top BM25-ranked hits. UI uses existing safe `textContent` construction, no raw HTML, and does not suppress the `answer:null` warning.
