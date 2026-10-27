@@ -2,6 +2,13 @@
 
 # RAG Studio — Local AI Data & Knowledge Workspace
 
+## 2026-10-28 — P5.34: SMAX 형식 → SQLite·문서 검색 연결형 최소 MVP
+
+**실제 실행되는 하나의 흐름**이 연결됐다. `npm run mvp:smax`는 공개 합성 SMAX V1 JSON과 원본 CSV를 검증하고, SHA/행·계산 대조 후 임시 AX 패키지를 생성해 SQLite 매출과 반품 규정 문서를 근거로 답하는 로컬 대시보드를 실행한다. Windows ZIP에서도 `RUN_SMAX_SYNTHETIC_MVP.cmd`를 실행할 수 있다. GitHub [CI #40530670061](https://github.com/hibi89/RAG_STUDIO/actions/runs/40530670061) **Windows/Linux 각 454/454 PASS**, 실제 HTTP SQL+문서 통합 검사와 ZIP 재검사 PASS.
+
+**중요:** 여기의 SMAX 출력은 **고정된 공개 합성 입력**이며, 코드가 수행하는 확인은 실제 인간의 동의나 비공개 SMAX Native의 승인 증빙이 아니다. 실제 고객 CSV/ZIP을 자동 승인·반입하는 기능은 여전히 차단돼 있다. 프론트엔드 외관보다 사용자 원본의 신뢰·동의 경로 구현을 먼저 진행한다. [기능·검증·남은 작업](docs/P534_SMAX_TO_RAG_VERTICAL_MVP.md).
+
+
 ## 2026-10-28 — 즉시 실행 가능한 최소작동단위(MVP)
 
 현재 **합성 데이터로 동작하는 RAG Studio 로컬 MVP**를 별도 ZIP으로 제공한다. GitHub [P5.33 CI](https://github.com/hibi89/RAG_STUDIO/actions/runs/40527674723)의 **Artifacts → RAG_STUDIO_MVP_SYNTHETIC_ONLY**에서 받고 압축을 해제한 뒤 Windows에서 `RUN_MVP_WINDOWS.cmd`를 실행한다. **사전에 Node.js 22.23.0 설치 필요**(번들·자동설치 없음). Windows 446/446, Linux 446/446, 실제 복사한 폴더 시작·인증·집계·화면 제공·ZIP 재검사 PASS.
