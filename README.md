@@ -29,6 +29,20 @@ npm run demo:zip
 
 폴더는 다른 서버로 업로드하지 않습니다. 단, `manifest.json`의 `ACCEPTED` 표시는 실제 사용자 인증·권리/개인정보 승인 또는 SMAX Native 검증의 증거가 아닙니다. **현재 명령은 개발용 로컬 미리보기**입니다. [P5.11 사용법·제약](docs/P511_MARKDOWN_LOCAL_MVP.md), [실제 테스트](STATUS.md).
 
+## P5.12 — PDF·DOCX 실제 로컬 텍스트 검색 (개발자 미리보기)
+
+Node.js >=22.16.0. 고정된 오픈소스 추출 의존성(설치 시 네트워크 필요)을 설치한 뒤 **선택한 PDF/DOCX 원본을 수정하지 않고** 임시 표준 패키지에 텍스트를 추가해 기존 검색·SQLite 대시보드에서 인용합니다.
+
+```bash
+npm ci --ignore-scripts --no-audit --no-fund
+npm run preview:document -- "./fixtures/ax_multi_doc_v0" "/absolute/local/path/manual.pdf"
+npm run preview:document -- "./fixtures/ax_multi_doc_v0" "/absolute/local/path/manual.docx"
+```
+
+PDF에는 페이지 번호(`[PDF page 1]`), DOCX에는 문단 번호(`[DOCX paragraph 1]`)를 **추출 텍스트에 명시**합니다. 이는 파생 TXT의 원본 행 인용과 별개이며, DOCX 페이지·PDF 화면 좌표를 임의로 생성하지 않습니다. PDF 스캔·OCR/복잡한 표·암호화 파일·2MiB 초과 원본은 미지원 또는 개별 검증 필요합니다. 원본파일/문서는 외부 업로드하지 않지만, 이 기능은 사용자/원본 사용권을 독립적으로 검증하지 않는 **로컬 프리뷰**로서 상용 데이터 반입 승인/SMAX Native 연동을 뜻하지 않습니다.
+
+[한도·정확성·복구 설명](docs/P512_NATIVE_DOCUMENT_PREVIEW.md) · [실행 증거](STATUS.md).
+
 ## 방향
 RAG Studio는 로컬 PC에서 고객이 승인한 업무 자료를 구조화·검색·분석하고, 문서 출처와 정확한 데이터 집계를 결합해 활용 가능한 대시보드를 만드는 제품을 목표로 한다.
 
