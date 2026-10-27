@@ -111,6 +111,25 @@ async function readSmaxPreview(req){
   try{return previewSmaxSales(payload.v1,bytes);}
   finally{bytes.fill(0);}
 }
+/** Strict small JSON contract for switching among explicit launch-time roots. */
+async function readProjectChoice(req){
+  if(!/^application\/json(?:\s*;|\s*$)/i.test(req.headers['content-type']??''))
+    throw Object.assign(new Error('INVALID_MEDIA_TYPE'),{statusCode:415});
+  const chunks=[];let size=0;
+  for await(const chunk of req){
+    size+=chunk.length;
+    if(size>256)throw Object.assign(new Error('PAYLOAD_TOO_LARGE'),{statusCode:413});
+    chunks.push(chunk);
+  }
+  let value;
+  try{value=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(Buffer.concat(chunks)));}
+  catch{throw Object.assign(new Error('INVALID_JSON'),{statusCode:400});}
+  if(!value||Array.isArray(value)||typeof value!=='object'||
+     Object.keys(value).length!==1||typeof value.project_key!=='string'||
+     !/^[a-f0-9]{32}$/.test(value.project_key))
+    throw Object.assign(new Error('INVALID_PROJECT_CHOICE'),{statusCode:400});
+  return value.project_key;
+}
 function checkHost(req,port){
   const host=req.headers.host;
   return host===`127.0.0.1:${port}`||host===`localhost:${port}`;
@@ -121,10 +140,31 @@ function authorized(req,secret){
   // Equal-length constant-time comparison after strict ASCII-format verification.
   return crypto.timingSafeEqual(Buffer.from(header.slice(7),'ascii'),Buffer.from(secret,'ascii'));
 }
-export function createDashboardServer({packageRoot}){
+export function createDashboardServer({packageRoot,projectRoots=null}){
   if(typeof packageRoot!=='string'||!packageRoot.trim())throw new Error('packageRoot required');
+  const roots=projectRoots===null?[packageRoot]:projectRoots;
+  if(!Array.isArray(roots)||roots.length<1||roots.length>8||
+     roots.some(p=>typeof p!=='string'||!p.trim()))throw new Error('Invalid explicit project roots');
+  const candidates=roots.map(p=>fs.realpathSync(p));
   const root=fs.realpathSync(packageRoot);
-  loadPackage(root);
+  if(candidates[0]!==root||new Set(candidates).size!==candidates.length)
+    throw new Error('Project roots must be distinct and first must be packageRoot');
+  // Validate *every* chosen root before exposing any selector item. No scanning.
+  const projects=candidates.map(projectRoot=>{
+    const pkg=loadPackage(projectRoot);
+    if(pkg.manifest.files.some(f=>f.import_status!=='ACCEPTED')||
+       pkg.manifest.datasets.some(d=>d.columns.some(c=>c.review_status!=='APPROVED'))||
+       pkg.manifest.documents.length<1)throw new Error('Selected package is not ready');
+    overview(projectRoot); // Actual readonly dataset validation before listing.
+    return Object.freeze({
+      key:crypto.randomBytes(16).toString('hex'),
+      root:projectRoot,
+      project_id:pkg.manifest.project_id,
+      schema_version:pkg.manifest.schema_version,
+      documents:pkg.manifest.documents.length
+    });
+  });
+  let selected=projects[0];
   const secret=crypto.randomBytes(32).toString('base64url');
   const server=http.createServer(async(req,res)=>{
     const port=server.address()?.port;
@@ -134,8 +174,33 @@ export function createDashboardServer({packageRoot}){
     catch{return respond(res,400,{error:'BAD_REQUEST'});}
     if(req.method==='GET'&&route==='/api/health')return respond(res,200,{status:'READY',scope:'loopback_only'});
     if(route.startsWith('/api/') && !authorized(req,secret))return respond(res,401,{error:'SESSION_REQUIRED'});
+    if(req.method==='GET'&&route==='/api/projects'){
+      return respond(res,200,{
+        status:'EXPLICIT_LOCAL_PROJECTS_ONLY',
+        selected:selected.key,
+        projects:projects.map(p=>({project_key:p.key,project_id:p.project_id,
+          schema_version:p.schema_version,documents:p.documents}))
+      });
+    }
+    if(req.method==='POST'&&route==='/api/projects/select'){
+      const origin=req.headers.origin;
+      if(origin&&origin!==`http://127.0.0.1:${port}`&&origin!==`http://localhost:${port}`)
+        return respond(res,403,{error:'FORBIDDEN_ORIGIN'});
+      try{
+        const key=await readProjectChoice(req);
+        const next=projects.find(p=>p.key===key);
+        if(!next)return respond(res,404,{error:'PROJECT_NOT_ALLOWLISTED'});
+        // Atomic: verify the next project before changing the active root.
+        const nextOverview=overview(next.root);
+        selected=next;
+        return respond(res,200,{status:'PROJECT_SELECTED',selected:key,overview:nextOverview});
+      }catch(e){
+        if(e.statusCode)return respond(res,e.statusCode,{error:e.message});
+        return respond(res,422,{error:'PROJECT_UNVERIFIED'});
+      }
+    }
     if(req.method==='GET'&&route==='/api/overview'){
-      try{return respond(res,200,overview(root));}
+      try{return respond(res,200,overview(selected.root));}
       catch{return respond(res,422,{error:'PACKAGE_UNVERIFIED',reason:'Data source failed validation or supported dataset checks'});}
     }
     if(req.method==='POST'&&route==='/api/smax-preview'){
@@ -155,7 +220,7 @@ export function createDashboardServer({packageRoot}){
       if(origin&&origin!==`http://127.0.0.1:${port}`&&origin!==`http://localhost:${port}`)return respond(res,403,{error:'FORBIDDEN_ORIGIN'});
       try{
         const question=await readJson(req);
-        const answer=route==='/api/query'?routeQuestion(root,question):searchDocuments(root,question,{limit:8});
+        const answer=route==='/api/query'?routeQuestion(selected.root,question):searchDocuments(selected.root,question,{limit:8});
         return respond(res,200,answer);
       }catch(e){
         if(e.statusCode)return respond(res,e.statusCode,{error:'INVALID_REQUEST',reason:e.message});
