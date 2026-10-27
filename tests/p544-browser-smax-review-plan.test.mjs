@@ -30,7 +30,7 @@ test('P5.44: genuine SMAX + CSV + TXT yields HOLD and ten unresolved questions, 
  assert.equal(a.ax_package_created,false);
  assert.equal(a.sqlite_imported,false);
  assert.equal(a.source_rights_verified,false);
- assert.equal(a.customer_data_approved,false);
+ assert.equal(a.customer_consent_verified,false);
  assert.ok(a.review_items.every(i=>i.status==='UNVERIFIED'));
  assert.doesNotMatch(JSON.stringify(a),/O-1001|상품 수령일|72000|returns_policy|sales\.csv/);
  assert.equal(a.review_key_sha256,planBrowserSmaxReview(v1,csv,doc,'.txt').review_key_sha256);
