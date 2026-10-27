@@ -7,9 +7,10 @@ import crypto from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 const ROOT=fileURLToPath(new URL('../',import.meta.url));
 const fixed=[
- 'package.json','RUN_SYNTHETIC_WINDOWS.cmd','RUN_MVP_WINDOWS.cmd',
- 'scripts/windows-preflight.mjs','scripts/p533-verify-portable.mjs',
+ 'package.json','RUN_SYNTHETIC_WINDOWS.cmd','RUN_MVP_WINDOWS.cmd','RUN_SMAX_SYNTHETIC_MVP.cmd',
+ 'scripts/windows-preflight.mjs','scripts/p533-verify-portable.mjs','scripts/p534-smax-vertical-cli.mjs',
  'ui/app.css','ui/app.js','ui/index.html','ui/provenance.js',
+ 'fixtures/smax_p42/synthetic_v1.json',
  'fixtures/ax_multi_doc_v0/manifest.json','fixtures/ax_multi_doc_v0/sales.csv',
  'fixtures/ax_multi_doc_v0/returns_policy.txt',
  'fixtures/ax_multi_doc_v0/shipping_policy.txt',

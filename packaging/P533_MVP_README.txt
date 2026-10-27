@@ -18,3 +18,11 @@ RAG STUDIO - OFFLINE SYNTHETIC MVP DEMO (P5.33)
    Windows release-version policy is pending owner approval; Node22.23
    is the runtime actually verified for this synthetic portable demo.
 10. For developer reproduction see GitHub hibi89/RAG_STUDIO documentation.
+
+P5.34 synthetic SMAX-style producer-to-consumer demonstration:
+ Windows: run RUN_SMAX_SYNTHETIC_MVP.cmd, no arguments, Node 22.23 installed.
+ Or npm run mvp:smax in developer checkout.
+ It validates SMAX-shaped V1 original CSV SHA/row/values and a pinned policy,
+ creates a disposable AX folder, reads it via SQLite and cited document Q&A.
+ Verification is PROGRAMMATIC SYNTHETIC ONLY, not identity/real approval.
+ Private SMAX Native production integration and real customer inputs are not approved.

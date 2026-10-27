@@ -4,10 +4,11 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 const HERE=fileURLToPath(new URL('../',import.meta.url));
-const REQUIRED=['package.json','RUN_SYNTHETIC_WINDOWS.cmd','RUN_MVP_WINDOWS.cmd',
- 'scripts/windows-preflight.mjs','scripts/p533-verify-portable.mjs',
+const REQUIRED=['package.json','RUN_SYNTHETIC_WINDOWS.cmd','RUN_MVP_WINDOWS.cmd','RUN_SMAX_SYNTHETIC_MVP.cmd',
+ 'scripts/windows-preflight.mjs','scripts/p533-verify-portable.mjs','scripts/p534-smax-vertical-cli.mjs',
  'src/dashboard-cli.mjs','src/dashboard-server.mjs','src/windows-readiness.mjs',
  'src/validate.mjs','ui/index.html','ui/app.js','ui/app.css','ui/provenance.js',
+ 'fixtures/smax_p42/synthetic_v1.json',
  'fixtures/ax_multi_doc_v0/manifest.json','fixtures/ax_multi_doc_v0/sales.csv',
  'fixtures/ax_multi_doc_v0/returns_policy.txt',
  'fixtures/ax_multi_doc_v0/shipping_policy.txt'];
