@@ -26,6 +26,7 @@ jobs:
           node --check src/document-search.mjs
           node --check ui/app.js
           node --check tests/p518-knowledge.test.mjs
+          node --check scripts/p518-browser-smoke.mjs
       - name: Whole unit and live-loopback suite
         run: npm test
       - name: Evidence regression and offline preflight
@@ -34,3 +35,7 @@ jobs:
           npm run test:gold
           npm run test:negative
           npm run test:heldout
+      - name: Actual Chromium scoped knowledge UI (runner-dependent)
+        continue-on-error: true
+        timeout-minutes: 2
+        run: node scripts/p518-browser-smoke.mjs
