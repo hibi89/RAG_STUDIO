@@ -80,7 +80,7 @@ test('P3.2 mocked UI renders protected overview and navigates both types of evid
   resultButtons[1].click();
   assert.equal(elements.documentCards.children[0].classList.contains('source-active'),true);
   assert.equal(elements.sourceRows.children[0].classList.contains('source-active'),false);
-  assert.match(elements.citationDetail.textContent,/검증 중/);
+  assert.match(elements.citationDetail.textContent,/검증 원문을 확인 중/);
   await flush(); // Source SHA/quote check now completes before showing an actual citation.
   assert.equal(requests[2].endpoint,'/api/documents?document_id=doc-policy&start=1');
   assert.match(elements.citationDetail.textContent,/7일/);
