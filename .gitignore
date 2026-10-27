@@ -1,0 +1,7 @@
+# P5.22: never commit operator-provisioned model weights or caches to public source.
+models/
+local-models/
+.cache/
+*.onnx
+*.safetensors
+rag_model_manifest.json
