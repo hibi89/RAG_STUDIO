@@ -1,0 +1,47 @@
+name: P5.41 source-cited native line jump and regressions
+on:
+  push:
+    branches:
+      - feature/p541-verified-source-line-jump
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm test
+      - run: npm run test:gold
+      - run: npm run test:negative
+      - run: npm run test:heldout
+      - run: npm run demo:router
+      - run: node scripts/p537-interactive-smoke.mjs
+      - run: node --check ui/app.js
+      - run: node --check ui/provenance.js
+  windows:
+    runs-on: windows-2025
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.0'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm test
+      - run: npm run test:gold
+      - run: npm run test:negative
+      - run: npm run test:heldout
+      - run: npm run demo:router
+      - run: node scripts/p537-interactive-smoke.mjs
+      - run: node --check ui/app.js
+      - run: node --check ui/provenance.js
