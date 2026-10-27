@@ -1,6 +1,6 @@
 # RAG_STUDIO single-command local verification (P5.43).
 # Safe synthetic test suite; report files are written to a NEW system-temp folder.
-# No npm install, browser automation, real customer file, DB or network API mutations.
+# No dependency setup, real customer files, DB mutations, or external API calls.
 param([switch]$Quick)
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path -Parent $MyInvocation.MyCommand.Path
