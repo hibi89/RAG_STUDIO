@@ -413,3 +413,69 @@ async function submitSmaxPreview(){
 $('smaxForm').addEventListener('submit',event=>{event.preventDefault();void submitSmaxPreview();});
 for(const id of ['smaxJson','smaxCsv'])
   $(id).addEventListener('change',()=>previewMessage('선택한 파일이 변경됐습니다. 다시 원본을 대조하세요.'));
+
+/* P5.29 — selected CSV schema candidates only, never approved or imported. */
+function csvReviewNotice(message,warning=false){
+  const area=$('csvReviewResult');
+  if(area)replace(area,element('p',warning?'smax-warning':'placeholder',message));
+}
+function showCsvReview(result){
+  const area=$('csvReviewResult');if(!area)return;
+  if(result.schema!=='RAG_LOCAL_CSV_REVIEW_V1'||result.status!=='NEEDS_REVIEW'||
+     result.customer_data_approved!==false||result.smax_native_approved!==false||
+     result.ax_package_created!==false||result.imported_to_sqlite!==false||
+     !Array.isArray(result.columns)||!Array.isArray(result.issue_examples))
+    throw new Error('INVALID_REVIEW_RESPONSE');
+  const nodes=[element('strong','smax-warning','NEEDS_REVIEW · 승인·데이터 반입 없음'),
+    element('p','project-hint','데이터 행 '+result.row_count+' · 분석 가능 행 '+
+      result.analyzed_rows+' · 열 '+result.columns.length+' · 검토 항목 '+result.total_issues),
+    element('p','project-hint','원본 SHA-256: '+result.source_sha256)];
+  const table=element('table'),thead=element('thead'),headers=element('tr');
+  for(const label of ['열','헤더','후보 자료형','빈 값','검토 상태']){
+    const th=element('th','',label);th.scope='col';headers.append(th);
+  }
+  thead.append(headers);
+  const tbody=element('tbody');
+  for(const column of result.columns){
+    const tr=element('tr');
+    for(const value of [column.column_index,column.name,column.inferred_type,column.missing,column.review_status])
+      tr.append(element('td','',value));
+    tbody.append(tr);
+  }
+  table.append(thead,tbody);const wrap=element('div','table-container');wrap.append(table);nodes.push(wrap);
+  if(result.issue_examples.length){
+    const issues=element('ul','evidence-list');
+    for(const issue of result.issue_examples){
+      const where=issue.source_line===null?'자료형/헤더 검토':issue.source_line+'행';
+      issues.append(element('li','',issue.code+' · '+where+
+        (issue.column_index===undefined?'':' · '+issue.column_index+'열')));
+    }
+    nodes.push(element('p','smax-warning','오류 위치 (원본 값 숨김)'),issues);
+  }
+  nodes.push(element('p','project-hint','원본 셀 값·로컬 파일 경로는 반환되지 않습니다. 대시보드 지표는 변하지 않습니다.'));
+  replace(area,...nodes);
+}
+async function submitCsvReview(){
+  const file=$('csvReviewFile')?.files?.[0];
+  if(!file||!/\.csv$/i.test(file.name)||file.size<1||file.size>1024*1024){
+    csvReviewNotice('1MiB 이하 CSV 파일 한 개만 검사할 수 있습니다.',true);return;
+  }
+  const button=$('csvReviewButton');button.disabled=true;
+  csvReviewNotice('로컬 CSV 구조 검사 중입니다.');
+  try{
+    const buffer=await file.arrayBuffer();
+    if(buffer.byteLength!==file.size||buffer.byteLength>1024*1024)
+      throw new Error('INVALID_CSV_SIZE');
+    const result=await api('/api/csv-review',{method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({source_csv_base64:encodedSource(new Uint8Array(buffer))})});
+    showCsvReview(result);
+  }catch{csvReviewNotice('CSV를 검토하지 못했습니다. 파일 형식·크기·세션을 확인하세요.',true);}
+  finally{button.disabled=false;}
+}
+if($('csvReviewForm'))$('csvReviewForm').addEventListener('submit',event=>{
+  event.preventDefault();void submitCsvReview();
+});
+if($('csvReviewFile'))$('csvReviewFile').addEventListener('change',()=>{
+  csvReviewNotice('선택한 파일이 변경됐습니다. 검사를 다시 실행하세요.');
+});

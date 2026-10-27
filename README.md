@@ -123,6 +123,10 @@ SHA-256으로 검증된 **로컬 모델 파일**이 별도로 제공될 때에�
 
 **주의:** [P5.22 구현과 테스트의 정확한 범위](docs/P522_OFFLINE_DENSE_ADAPTER.md). 테스트의 벡터는 합성 입력이며 실제 E5 ONNX 가중치 추론/Windows 호환/한영 의미 검색 성능은 아직 미검증입니다. FAISS 구현이나 상용 Dense 출시 완료를 의미하지 않습니다. [CI 389 PASS](https://github.com/hibi89/RAG_STUDIO/actions/runs/40501134514).
 
+## P5.29 — 브라우저 로컬 CSV 구조 검토 (개발자 미리보기)
+
+`npm run demo:zip`으로 로컬 대시보드를 연 후 **CSV 구조 검토** 메뉴에서 1MiB 이하 UTF-8 CSV 1개를 선택합니다. 컬럼·후보 타입·오류 위치를 표시하지만 모든 필드는 `NEEDS_REVIEW`이며 승인, SQLite 반입, 기존 KPI 변경은 하지 않습니다. [제약/테스트](docs/P529_BROWSER_CSV_REVIEW.md).
+
 ## 방향
 RAG Studio는 로컬 PC에서 고객이 승인한 업무 자료를 구조화·검색·분석하고, 문서 출처와 정확한 데이터 집계를 결합해 활용 가능한 대시보드를 만드는 제품을 목표로 한다.
 

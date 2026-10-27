@@ -1,0 +1,32 @@
+name: P5.29 authenticated browser CSV review
+on:
+  push:
+    branches:
+      - feature/p529-csv-browser-review
+    paths:
+      - .github/workflows/p529-verify.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Source syntax and full regression
+        run: |
+          node --check src/dashboard-server.mjs
+          node --check ui/app.js
+          node --check tests/p529-csv-browser-review.test.mjs
+          npm test
+          npm run doctor
+          npm run test:gold
+          npm run test:negative
+          npm run test:heldout

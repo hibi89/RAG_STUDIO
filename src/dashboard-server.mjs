@@ -14,6 +14,7 @@ import {answerFollowUp} from './conversation.mjs';
 import {searchDocuments} from './document-search.mjs';
 import {knowledgeSearch,knowledgeCompare} from './knowledge-base.mjs';
 import {previewSmaxSales} from './smax-sales-preview.mjs';
+import {inspectCsvBytes} from './local-csv-review.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const ASSETS={
@@ -26,6 +27,8 @@ const MAX_BODY=2048;
 const MAX_SMAX_JSON=4*1024*1024;
 const MAX_SMAX_CSV=2*1024*1024;
 const MAX_SMAX_BODY=8*1024*1024+256*1024;
+const MAX_CSV_REVIEW=1024*1024;
+const MAX_CSV_REVIEW_BODY=4*Math.ceil(MAX_CSV_REVIEW/3)+256;
 const sessions=new WeakMap();
 const CSP="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'none'; font-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 const COMMON={
@@ -183,6 +186,34 @@ async function readSmaxPreview(req){
   try{return previewSmaxSales(payload.v1,bytes);}
   finally{bytes.fill(0);}
 }
+/** Browser explicit CSV choice: no path, no import, no source cell echo. */
+async function readCsvBrowserReview(req){
+  if(!/^application\/json(?:\s*;|\s*$)/i.test(req.headers['content-type']??''))
+    throw Object.assign(new Error('INVALID_MEDIA_TYPE'),{statusCode:415});
+  const chunks=[];let size=0;
+  for await(const chunk of req){
+    size+=chunk.length;
+    if(size>MAX_CSV_REVIEW_BODY)
+      throw Object.assign(new Error('PAYLOAD_TOO_LARGE'),{statusCode:413});
+    chunks.push(chunk);
+  }
+  let payload;
+  try{payload=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(Buffer.concat(chunks)));}
+  catch{throw Object.assign(new Error('INVALID_JSON'),{statusCode:400});}
+  if(!payload||typeof payload!=='object'||Array.isArray(payload)||
+     Object.keys(payload).length!==1||typeof payload.source_csv_base64!=='string'||
+     payload.source_csv_base64.length<4||
+     payload.source_csv_base64.length>4*Math.ceil(MAX_CSV_REVIEW/3)||
+     !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(payload.source_csv_base64))
+    throw Object.assign(new Error('INVALID_CSV_REVIEW_FORM'),{statusCode:400});
+  const bytes=Buffer.from(payload.source_csv_base64,'base64');
+  try{
+    if(!bytes.length||bytes.length>MAX_CSV_REVIEW||
+       bytes.toString('base64')!==payload.source_csv_base64)
+      throw Object.assign(new Error('INVALID_CSV_REVIEW_FORM'),{statusCode:400});
+    return inspectCsvBytes(bytes);
+  }finally{bytes.fill(0);}
+}
 /** Strict small JSON contract for switching among explicit launch-time roots. */
 async function readProjectChoice(req){
   if(!/^application\/json(?:\s*;|\s*$)/i.test(req.headers['content-type']??''))
@@ -321,6 +352,17 @@ export function createDashboardServer({packageRoot,projectRoots=null}){
       }catch(e){
         if(e.statusCode)return respond(res,e.statusCode,{error:e.message});
         return respond(res,422,{error:'PACKAGE_OR_QUERY_UNVERIFIED'});
+      }
+    }
+    if(req.method==='POST'&&route==='/api/csv-review'){
+      // Bearer and Host gate occurred before this branch: no body read on 401/403.
+      const origin=req.headers.origin;
+      if(origin&&origin!==('http://127.0.0.1:'+port)&&origin!==('http://localhost:'+port))
+        return respond(res,403,{error:'FORBIDDEN_ORIGIN'});
+      try{return respond(res,200,await readCsvBrowserReview(req));}
+      catch(e){
+        if(e.statusCode)return respond(res,e.statusCode,{error:e.message});
+        return respond(res,422,{error:'CSV_REVIEW_UNVERIFIED'});
       }
     }
     if(req.method==='POST'&&route==='/api/smax-preview'){

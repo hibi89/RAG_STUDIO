@@ -12,7 +12,7 @@
 <div class="layout">
 <aside class="rail">
   <div class="logo"><div class="logo-mark">R</div><div><strong>RAG STUDIO</strong><small>AX EDITION · LOCAL</small></div></div>
-  <nav aria-label="페이지 탐색"><a href="#overview">개요 및 KPI</a><a href="#smaxPreview">SMAX 미리보기</a><a href="#query">통합 질의</a><a href="#documents">문서와 출처</a><a href="#provenance">계산 근거</a></nav>
+  <nav aria-label="페이지 탐색"><a href="#overview">개요 및 KPI</a><a href="#csvReview">CSV 구조 검토</a><a href="#smaxPreview">SMAX 미리보기</a><a href="#query">통합 질의</a><a href="#documents">문서와 출처</a><a href="#provenance">계산 근거</a></nav>
   <div class="rail-foot">외부 서버 연결 없음<br>합성 데이터 테스트용 빌드 <span class="version">P3.1</span></div>
 </aside>
 <main>
@@ -37,6 +37,18 @@
   </div>
 </section>
 <section id="sku" class="section" aria-labelledby="skuTitle"><div class="section-heading"><div><p class="eyebrow">01-B / PRODUCT MIX</p><h2 id="skuTitle">상품별 매출</h2></div><span class="table-note">검증된 CSV · SQLite 집계</span></div><div id="skuChart" class="sku-chart" role="group" aria-label="상품별 매출 비교"><p>SKU별 집계 검증 중…</p></div></section>
+<section id="csvReview" class="section" aria-labelledby="csvReviewTitle">
+  <div class="section-heading"><div><p class="eyebrow">02-A / UNAPPROVED LOCAL CSV</p><h2 id="csvReviewTitle">CSV 구조·자료형 검토</h2></div><span class="table-note">읽기 전용 · 데이터 반입 없음</span></div>
+  <div class="workbench smax-workbench">
+    <p class="smax-intro">내 PC에서 선택한 CSV 1개를 이 로컬 프로그램(127.0.0.1)에서만 검사합니다. 후보 자료형·행 오류·검토 항목만 표시하며 원본 저장, 자동 승인, SQLite 반입, 기존 지표 변경은 하지 않습니다.</p>
+    <form id="csvReviewForm" class="smax-form">
+      <label for="csvReviewFile">검사할 UTF-8 CSV (최대 1MiB)</label>
+      <input id="csvReviewFile" type="file" accept=".csv,text/csv" required>
+      <div class="smax-controls"><button id="csvReviewButton" type="submit">구조 검사하기</button><span>모든 필드는 NEEDS_REVIEW · SMAX 승인 아님</span></div>
+    </form>
+    <div id="csvReviewResult" class="smax-result" role="status" aria-live="polite"><p class="placeholder">파일을 선택하고 검사하면 헤더·후보 자료형·오류 위치가 표시됩니다.</p></div>
+  </div>
+</section>
 <section id="smaxPreview" class="section" aria-labelledby="smaxTitle">
   <div class="section-heading"><div><p class="eyebrow">02 / LOCAL SOURCE CHECK</p><h2 id="smaxTitle">SMAX 매출 미리보기</h2></div><span class="table-note">원본 대조 · 승인되지 않은 분석</span></div>
   <div class="workbench smax-workbench">
