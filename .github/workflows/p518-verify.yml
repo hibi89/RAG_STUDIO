@@ -1,0 +1,36 @@
+name: P5.18 local knowledge scoped search + source comparison
+on:
+  push:
+    branches:
+      - feature/p518-knowledge-collection
+    paths:
+      - .github/workflows/p518-verify.yml
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Syntax
+        run: |
+          node --check src/knowledge-base.mjs
+          node --check src/dashboard-server.mjs
+          node --check src/document-search.mjs
+          node --check ui/app.js
+          node --check tests/p518-knowledge.test.mjs
+      - name: Whole unit and live-loopback suite
+        run: npm test
+      - name: Evidence regression and offline preflight
+        run: |
+          npm run doctor
+          npm run test:gold
+          npm run test:negative
+          npm run test:heldout
