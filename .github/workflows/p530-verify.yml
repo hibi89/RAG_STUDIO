@@ -3,6 +3,15 @@ on:
   push:
     branches:
       - feature/p530-real-browser-windows-gate
+    paths:
+      - '.github/workflows/p530-verify.yml'
+      - 'scripts/p530-csv-browser-e2e.mjs'
+      - '.gitattributes'
+      - 'src/**'
+      - 'ui/**'
+      - 'fixtures/**'
+      - 'tests/**'
+      - 'package*.json'
   workflow_dispatch:
 permissions:
   contents: read
@@ -47,7 +56,7 @@ jobs:
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Actual Windows synthetic readiness preflight
         run: node scripts/windows-preflight.mjs
-      - name: Full Node regression on Windows
-        run: |
-          npm test
-          npm run doctor
+      - name: Full Node regression on Windows (independent exit code)
+        run: npm test
+      - name: Windows doctor (independent exit code)
+        run: npm run doctor
