@@ -1,4 +1,4 @@
-/** P2: deterministic, zero-dependency on-demand BM25 over approved UTF-8 TXT lines.
+/** P2/P5.11: deterministic, zero-dependency BM25 over approved UTF-8 TXT/Markdown lines.
  * Indexed text is untrusted evidence, never instructions or executable SQL.
  */
 import {loadPackage, fail} from './validate.mjs';
@@ -6,6 +6,7 @@ import {loadPackage, fail} from './validate.mjs';
 const STOP = new Set(['알려줘', '알려주세요', '설명해줘', '뭐야', '무엇', '어떻게', '언제', '어디', '이', '그', '좀', '에', '대해', '관련', '정책은', '규정은', 'and', 'the', 'what', 'please', 'about']);
 const MAX_CHUNKS = 10000;
 const MAX_LINE_CHARS = 4096;
+const SUPPORTED_TEXT = /\.(?:txt|md)$/i;
 
 /** NFKC, token per word plus Korean 2/3-grams for inflection-tolerant lexical recall. */
 export function tokenize(text) {
@@ -27,7 +28,7 @@ function segmentsFromApprovedText(pkg) {
   const result=[];
   for (const d of pkg.manifest.documents) {
     const file=pkg.fileMap.get(d.file_id);
-    if (file?.import_status!=='ACCEPTED' || !file.relative_path.toLowerCase().endsWith('.txt')) continue;
+    if (file?.import_status!=='ACCEPTED' || !SUPPORTED_TEXT.test(file.relative_path)) continue;
     const value=pkg.textMap.get(d.file_id);
     if(typeof value!=='string') continue;
     const lines=value.replace(/\r\n/g,'\n').split('\n');
@@ -60,7 +61,7 @@ export function searchDocuments(root,question,{limit=5}={}) {
   const pkg=loadPackage(root);
   const chunks=segmentsFromApprovedText(pkg);
   const queryTerms=[...new Set(tokenize(question))].slice(0,120);
-  if(!queryTerms.length||!chunks.length) return {status:'NO_EVIDENCE',answer:null,evidence:[],reason:'No searchable approved TXT terms'};
+  if(!queryTerms.length||!chunks.length) return {status:'NO_EVIDENCE',answer:null,evidence:[],reason:'No searchable approved TXT/Markdown terms'};
   const tf=chunks.map(c=>{
     const map=new Map();const ts=tokenize(c.quote);
     for(const t of ts) map.set(t,(map.get(t)||0)+1);
