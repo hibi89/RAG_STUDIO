@@ -128,3 +128,84 @@ $('searchButton').addEventListener('click',()=>void ask('search'));
 for(const button of document.querySelectorAll('[data-question]'))button.addEventListener('click',()=>{$('question').value=button.dataset.question;$('question').focus();});
 try{const data=await api('/api/overview');renderOverview(data);setHealth('검증된 로컬 데이터');}
 catch(e){setHealth(sessionToken?'데이터 검증 실패':'세션 연결 필요',true);replace($('documentCards'),element('p','', '데이터 출처를 확인할 수 없습니다.'));}
+
+
+/* P5.14: this preview uses only an authorized same-origin localhost request.
+ * The original dashboard's approved KPI/project stay completely separate.
+ */
+function previewMessage(message,warning=false){
+  replace($('smaxResult'),element('p',warning?'smax-warning':'placeholder',message));
+}
+function encodedSource(bytes){
+  const parts=[];
+  for(let i=0;i<bytes.length;i+=16384)
+    parts.push(String.fromCharCode(...bytes.subarray(i,i+16384)));
+  return btoa(parts.join(''));
+}
+function displaySmax(result){
+  const area=$('smaxResult');replace(area);
+  if(result.status==='REVIEW_HOLD'){
+    area.append(element('span','answer-status warn','REVIEW_HOLD · 검토 전 집계 보류'));
+    area.append(element('p','','검토 대상 '+result.review_rows+'행이 있으므로 금액과 상품별 결과를 표시하지 않습니다.'));
+    return;
+  }
+  if(result.status!=='CALCULATED_PREVIEW_NOT_APPROVED'){
+    previewMessage('검증되지 않은 상태입니다. 수치를 표시하지 않습니다.',true);return;
+  }
+  area.append(element('span','answer-status warn','CALCULATED_PREVIEW_NOT_APPROVED · 미승인 계산 결과'));
+  const grid=element('div','smax-preview-kpis');
+  for(const [label,value] of [
+    ['매출 합계',comma(result.revenue_krw)+'원'],
+    ['주문 건수',comma(result.orders)+'건'],
+    ['판매 수량',comma(result.units)+'개']
+  ]){
+    const metric=element('div','metric');
+    metric.append(element('span','',label),element('strong','',value));
+    grid.append(metric);
+  }
+  area.append(grid);
+  area.append(element('p','','원본 CSV SHA-256 대조 완료 · 미승인 미리보기이며 기존 대시보드 수치에는 반영되지 않습니다.'));
+  const wrap=element('div','table-container smax-preview-sku');
+  const table=element('table');
+  const caption=element('caption','','원본 대조된 상품별 임시 집계');
+  const thead=element('thead'),tr=element('tr');
+  for(const label of ['SKU','주문','수량','매출']){
+    const th=element('th','',label);th.scope='col';tr.append(th);
+  }
+  thead.append(tr);
+  const tbody=element('tbody');
+  for(const item of result.sku_totals??[]){
+    const row=element('tr');
+    for(const value of [item.sku,item.orders+'건',item.units+'개',comma(item.revenue_krw)+'원'])
+      row.append(element('td','',value));
+    tbody.append(row);
+  }
+  table.append(caption,thead,tbody);wrap.append(table);area.append(wrap);
+}
+async function submitSmaxPreview(){
+  const json=$('smaxJson').files?.[0],csv=$('smaxCsv').files?.[0];
+  if(!json||!csv){previewMessage('SMAX JSON과 원본 CSV 파일 두 개가 모두 필요합니다.',true);return;}
+  if(!/\.json$/i.test(json.name)||!/\.csv$/i.test(csv.name)||
+    json.size<2||json.size>4*1024*1024||csv.size<1||csv.size>2*1024*1024){
+    previewMessage('JSON 4MiB, CSV 2MiB 이하의 지정된 확장자만 지원합니다.',true);return;
+  }
+  const button=$('smaxButton');button.disabled=true;
+  previewMessage('원본 해시와 매출 계산식을 검증 중입니다.');
+  try{
+    const [jsonBytes,csvBytes]=await Promise.all([json.arrayBuffer(),csv.arrayBuffer()]);
+    if(jsonBytes.byteLength>4*1024*1024||csvBytes.byteLength>2*1024*1024)
+      throw new Error('SOURCE_SIZE_LIMIT');
+    const v1=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(jsonBytes));
+    const result=await api('/api/smax-preview',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({v1,source_csv_base64:encodedSource(new Uint8Array(csvBytes))})
+    });
+    displaySmax(result);
+  }catch{
+    // Never echo private source cells, file names/paths or server exceptions.
+    previewMessage('원본 불일치, 검토 필요, 지원하지 않는 매핑 또는 세션 오류로 검증하지 못했습니다.',true);
+  }finally{button.disabled=false;}
+}
+$('smaxForm').addEventListener('submit',event=>{event.preventDefault();void submitSmaxPreview();});
+for(const id of ['smaxJson','smaxCsv'])
+  $(id).addEventListener('change',()=>previewMessage('선택한 파일이 변경됐습니다. 다시 원본을 대조하세요.'));
