@@ -31,3 +31,5 @@ jobs:
         run: npm run doctor
       - name: Synthetic mixed-query demo
         run: npm run demo:router
+      - name: Real ChromeDriver localhost browser interaction smoke
+        run: node scripts/p32-browser-smoke.mjs
