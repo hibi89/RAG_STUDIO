@@ -111,6 +111,12 @@ Knowledge Base의 검색 방식에서 **BM25 (기본)** 또는 **BM25 + 문자 n
 
 [계측표, 코드 및 검증 한계](docs/P520_RETRIEVAL_SCALING_GATE.md). 최대 96개 문서에서 Recall@3 **BM25 85/120 대 lexical 120/120**이었으나 생성된 식별자 띄어쓰기·오타 사례에 편향된 결과이며, lexical 중앙 처리시간은 **8.302ms 대 16.968ms**로 더 길었습니다. **BM25 기본값 유지**, Dense/FAISS 미구현·상용 QA 미완입니다.
 
+## P5.21 — 한국어·영어 의미 검색 격차 측정
+
+`node scripts/p521-bilingual-benchmark.mjs`는 별도 합성 **한국어·영어 문서 20개**를 만들고, 같은 언어 검색 60문항·언어 간 검색 60문항·무관 질문 12문항에서 두 어휘 검색기의 **정답 출처 ID**를 비교합니다. [검증 방법·결과·모델 도입 조건](docs/P521_BILINGUAL_SEMANTIC_EVALUATION.md).
+
+[CI 379 PASS](https://github.com/hibi89/RAG_STUDIO/actions/runs/40498808959): 두 검색기 모두 동일 언어 Recall@3 60/60, **한국어↔영어 교차 검색 0/60**. 실제 로컬 Dense·FAISS 및 다국어 임베딩은 여전히 미구현이고 라이선스/Windows/실사용 검수 전까지 기존 BM25 기본값을 유지합니다.
+
 ## 방향
 RAG Studio는 로컬 PC에서 고객이 승인한 업무 자료를 구조화·검색·분석하고, 문서 출처와 정확한 데이터 집계를 결합해 활용 가능한 대시보드를 만드는 제품을 목표로 한다.
 
