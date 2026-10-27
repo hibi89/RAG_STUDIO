@@ -80,10 +80,11 @@ export function previewSmaxSales(pkg,sourceBytes){
  const {header,records}=parseRecords(sourceBytes);
  if(records.length!==pkg.rows.length||header.length!==pkg.source.headers.length||
    JSON.stringify(header)!==JSON.stringify(pkg.source.headers))fail('PROVENANCE_MISMATCH');
- if(pkg.fields.length!==HEADERS.length||
+ const fields=new Map(pkg.fields.map(f=>[f.key,f]));
+ if(pkg.fields.length!==HEADERS.length||fields.size!==HEADERS.length||
    !HEADERS.every((name,index)=>{
-     const f=pkg.fields[index];
-     return f.key===name&&f.source===name&&f.required===true&&
+     const f=fields.get(name);
+     return f?.source===name&&f.required===true&&
        f.type===(index<2?'text':'integer')&&header.includes(name);
    }))fail('UNSUPPORTED_MAPPING');
  const hold=refuseApprovalOnly(gate,pkg);
