@@ -12,7 +12,7 @@
 <div class="layout">
 <aside class="rail">
   <div class="logo"><div class="logo-mark">R</div><div><strong>RAG STUDIO</strong><small>AX EDITION · LOCAL</small></div></div>
-  <nav aria-label="페이지 탐색"><a href="#overview">개요 및 KPI</a><a href="#query">통합 질의</a><a href="#documents">문서와 출처</a><a href="#provenance">계산 근거</a></nav>
+  <nav aria-label="페이지 탐색"><a href="#overview">개요 및 KPI</a><a href="#smaxPreview">SMAX 미리보기</a><a href="#query">통합 질의</a><a href="#documents">문서와 출처</a><a href="#provenance">계산 근거</a></nav>
   <div class="rail-foot">외부 서버 연결 없음<br>합성 데이터 테스트용 빌드 <span class="version">P3.1</span></div>
 </aside>
 <main>
@@ -27,6 +27,20 @@
   </div>
 </section>
 <section id="sku" class="section" aria-labelledby="skuTitle"><div class="section-heading"><div><p class="eyebrow">01-B / PRODUCT MIX</p><h2 id="skuTitle">상품별 매출</h2></div><span class="table-note">검증된 CSV · SQLite 집계</span></div><div id="skuChart" class="sku-chart" role="group" aria-label="상품별 매출 비교"><p>SKU별 집계 검증 중…</p></div></section>
+<section id="smaxPreview" class="section" aria-labelledby="smaxTitle">
+  <div class="section-heading"><div><p class="eyebrow">02 / LOCAL SOURCE CHECK</p><h2 id="smaxTitle">SMAX 매출 미리보기</h2></div><span class="table-note">원본 대조 · 승인되지 않은 분석</span></div>
+  <div class="workbench smax-workbench">
+    <p class="smax-intro">SMAX 전처리 결과 JSON과 같은 작업에서 사용한 원본 CSV를 선택하세요. 브라우저는 이 로컬 프로그램(127.0.0.1)으로만 파일을 보내며, 파일은 저장하거나 기존 대시보드의 검증된 데이터에 병합하지 않습니다.</p>
+    <form id="smaxForm" class="smax-form">
+      <div class="smax-fields">
+        <div><label for="smaxJson">SMAX V1 결과 JSON (최대 4MiB)</label><input id="smaxJson" type="file" accept=".json,application/json" required></div>
+        <div><label for="smaxCsv">대응하는 원본 CSV (최대 2MiB)</label><input id="smaxCsv" type="file" accept=".csv,text/csv" required></div>
+      </div>
+      <div class="smax-controls"><button id="smaxButton" type="submit">원본 대조 후 집계</button><span>자동 승인 없음 · 고객 데이터 반입 인증 아님</span></div>
+    </form>
+    <div id="smaxResult" class="smax-result" role="status" aria-live="polite"><p class="placeholder">두 파일을 선택하면 로컬 미리보기 결과가 표시됩니다.</p></div>
+  </div>
+</section>
 <section id="query" class="section" aria-labelledby="queryTitle"><div class="section-heading"><div><p class="eyebrow">02 / GROUNDED INTELLIGENCE</p><h2 id="queryTitle">근거 기반 질의</h2></div></div>
   <div class="workbench">
   <form id="askForm"><label for="question">분석 질문 입력</label><textarea id="question" maxlength="500" rows="3" required placeholder="총 매출과 반품 기간, 배송 준비 기간은?">총 매출과 반품 기간, 배송 준비 기간은?</textarea>
