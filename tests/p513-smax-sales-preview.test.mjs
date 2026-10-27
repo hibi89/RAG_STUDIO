@@ -96,7 +96,7 @@ test('P5.13 forged unregistered issue or wrong unmapped source field denied',()=
  pkg.rows[0].issues=[{field:'not_present',code:'UNMAPPED_FORMULA_RISK'}];
  pkg.rows[0].status='NEEDS_REVIEW';pkg.review_queue=[{source_record:2,issues:pkg.rows[0].issues}];
  pkg.quality.review_rows=1;pkg.quality.formula_risk_cells=1;
- assert.throws(()=>previewSmaxSales(pkg,input),/ISSUE_INVALID/);
+ assert.throws(()=>previewSmaxSales(pkg,input),{code:'ISSUE_INVALID'});
 });
 test('P5.13 extra original CSV column bound through unchanged SMAX mapping is verified',()=>{
  const values=structuredClone(originalRecords);
