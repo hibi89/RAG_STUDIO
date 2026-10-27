@@ -2,6 +2,17 @@
 
 # RAG Studio — Local AI Data & Knowledge Workspace
 
+## P5.35 — 실제 로컬 3파일 선택 후 검토 전용 (`REVIEW_HOLD`)
+
+이제 공개 합성 fixture만 보던 단계에서 한 걸음 더 나아가 **사용자가 직접 지정한 SMAX V1 JSON·원본 CSV·TXT/Markdown 문서**를 로컬에서 검증할 수 있다. 단 아직 승인·SQLite 반입은 **불가능**하다.
+
+```bat
+RUN_LOCAL_SMAX_REVIEW.cmd "C:\data\smax-v1.json" "C:\data\original.csv" "C:\data\policy.txt"
+```
+
+또는 개발 체크아웃에서 `npm run review:smax:local -- <v1.json> <source.csv> <document.txt>`를 실행한다. 원본 해시·행 계보·정확한 매출 계산·문서 행 개수를 검사하고 정상 자료도 반드시 `REVIEW_HOLD`로 처리한다. 이상 행은 잠정 합계가 null이며 고객 실제 자료를 승인·저장·업로드하지 않는다. [Windows+Linux **465/465 PASS**](https://github.com/hibi89/RAG_STUDIO/actions/runs/40533429780); 해당 실행의 **Artifacts → RAG_STUDIO_P535_LOCAL_REVIEW_MVP**에 Windows용 ZIP이 있다. **Windows 사전 설치 Node 22.23.0 필요**. [사용법과 승인 전 제한](docs/P535_LOCAL_SMAX_REVIEW_HOLD.md).
+
+
 ## 2026-10-28 — P5.34: SMAX 형식 → SQLite·문서 검색 연결형 최소 MVP
 
 **실제 실행되는 하나의 흐름**이 연결됐다. `npm run mvp:smax`는 공개 합성 SMAX V1 JSON과 원본 CSV를 검증하고, SHA/행·계산 대조 후 임시 AX 패키지를 생성해 SQLite 매출과 반품 규정 문서를 근거로 답하는 로컬 대시보드를 실행한다. Windows ZIP에서도 `RUN_SMAX_SYNTHETIC_MVP.cmd`를 실행할 수 있다. GitHub [CI #40530670061](https://github.com/hibi89/RAG_STUDIO/actions/runs/40530670061) **Windows/Linux 각 454/454 PASS**, 실제 HTTP SQL+문서 통합 검사와 ZIP 재검사 PASS.
