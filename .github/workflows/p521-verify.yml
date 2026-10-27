@@ -1,0 +1,36 @@
+name: P5.21 bilingual semantic gap evaluation
+on:
+  push:
+    branches:
+      - feature/p521-bilingual-semantic-gate
+    paths:
+      - .github/workflows/p521-verify.yml
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Syntax
+        run: |
+          node --check scripts/p521-bilingual-corpus.mjs
+          node --check scripts/p521-bilingual-benchmark.mjs
+          node --check tests/p521-bilingual.test.mjs
+      - name: Full regression
+        run: npm test
+      - name: Existing safety and evidence gates
+        run: |
+          npm run doctor
+          npm run test:gold
+          npm run test:negative
+          npm run test:heldout
+      - name: Evaluate 132 authored synthetic bilingual queries
+        run: node scripts/p521-bilingual-benchmark.mjs
