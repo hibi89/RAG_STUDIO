@@ -53,6 +53,21 @@ npm run preview:smax -- "./local/smax-v1.json" "./local/original.csv"
 
 현재는 `order_id`, `sku`, `quantity`, `unit_price_krw`, `amount_krw`를 갖춘 **엄격한 매출 스키마 전용**입니다. `NOT_GRANTED`/검토 필요 데이터를 승인된 AX 데이터로 자동 변환하지 않으며, 오류나 검토 행이 있으면 합계 표시를 차단합니다. 실제 SMAX Native 런타임의 양쪽 저장소 교차 실행은 별도 검증입니다. [연동 범위·한계](docs/P513_SMAX_SALES_PREVIEW.md).
 
+## P5.14 — 브라우저에서 SMAX JSON·CSV 두 파일 선택
+
+이미 실행 중인 **로컬 대시보드** 화면에 `SMAX 매출 미리보기` 작업 공간이 추가되었습니다.
+
+```bash
+npm ci --no-audit --no-fund --ignore-scripts
+npm run demo:zip
+# 출력된 비공개 로컬 주소 열기 → SMAX 매출 미리보기
+# 합성 예제: fixtures/smax_p42/synthetic_v1.json + fixtures/ax_multi_doc_v0/sales.csv
+```
+
+해당 화면은 두 파일을 내 PC의 **127.0.0.1 서버에만 전달**하여 원본 SHA·행 값·수식과 대조합니다. 미승인 결과는 기존 KPI·SQLite에 합치지 않고 임시로 별도 표시합니다. 검토 필요 행이 있으면 합계가 표시되지 않습니다. 로컬 파일도 브라우저에서 Node 로컬 프로세스로 전달되므로 독립적인 고객 데이터 승인/권리 확인 기능은 아닙니다.
+
+[실제 파일 선택·보안 한계](docs/P514_SMAX_LOCAL_BROWSER_PREVIEW.md) · [검증 실행 현황](STATUS.md).
+
 ## 방향
 RAG Studio는 로컬 PC에서 고객이 승인한 업무 자료를 구조화·검색·분석하고, 문서 출처와 정확한 데이터 집계를 결합해 활용 가능한 대시보드를 만드는 제품을 목표로 한다.
 
