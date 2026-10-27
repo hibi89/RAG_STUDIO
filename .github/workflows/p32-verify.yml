@@ -1,0 +1,33 @@
+name: P3.2 one-time synthetic regression
+on:
+  push:
+    branches:
+      - feature/p32-provenance-drilldown
+    paths:
+      - .github/workflows/p32-verify.yml
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout public synthetic source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Use Node 22.16.0
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Verify syntax of browser modules
+        run: |
+          node --check ui/app.js
+          node --check ui/provenance.js
+          node --check src/dashboard-server.mjs
+      - name: Full Node regression suite including live HTTP smoke
+        run: npm test
+      - name: Synthetic local preflight
+        run: npm run doctor
+      - name: Synthetic mixed-query demo
+        run: npm run demo:router
