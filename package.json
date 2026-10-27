@@ -11,7 +11,8 @@
     "demo:router": "node src/router-cli.mjs fixtures/ax_multi_doc_v0 \"총 매출과 반품 기간, 배송 준비 기간은?\"",
     "dashboard": "node src/dashboard-cli.mjs",
     "doctor": "node src/doctor.mjs",
-    "inspect:smax": "node src/smax-intake-cli.mjs fixtures/smax_v1_boundary/unapproved.json --source fixtures/smax_v1_boundary/source.csv"
+    "inspect:smax": "node src/smax-intake-cli.mjs fixtures/smax_v1_boundary/unapproved.json --source fixtures/smax_v1_boundary/source.csv",
+    "demo:smax:review": "node scripts/p41-synthetic-review.mjs"
   },
   "engines": {
     "node": ">=22.16.0"
