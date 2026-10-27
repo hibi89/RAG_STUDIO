@@ -123,6 +123,10 @@ SHA-256으로 검증된 **로컬 모델 파일**이 별도로 제공될 때에�
 
 **주의:** [P5.22 구현과 테스트의 정확한 범위](docs/P522_OFFLINE_DENSE_ADAPTER.md). 테스트의 벡터는 합성 입력이며 실제 E5 ONNX 가중치 추론/Windows 호환/한영 의미 검색 성능은 아직 미검증입니다. FAISS 구현이나 상용 Dense 출시 완료를 의미하지 않습니다. [CI 389 PASS](https://github.com/hibi89/RAG_STUDIO/actions/runs/40501134514).
 
+## P5.30 — 실제 Chrome 검증 및 Windows QA 차단
+
+GitHub Actions에서 Chrome 155 실제 브라우저 11/11 PASS와 Linux Node 전체 441/441 PASS 확인. Windows 호스트의 합성 사전검사는 PASS지만 Windows 회귀 테스트는 431/441로 FAIL이며, 현재 출시 차단 상태입니다. 상세 근거: [P5.30 검사 보고](docs/P530_REAL_BROWSER_WINDOWS_GATE.md). 기능 브랜치에서만 보존하며 기존 develop/main은 변경하지 않습니다.
+
 ## P5.29 — 브라우저 로컬 CSV 구조 검토 (개발자 미리보기)
 
 `npm run demo:zip`으로 로컬 대시보드를 연 후 **CSV 구조 검토** 메뉴에서 1MiB 이하 UTF-8 CSV 1개를 선택합니다. 컬럼·후보 타입·오류 위치를 표시하지만 모든 필드는 `NEEDS_REVIEW`이며 승인, SQLite 반입, 기존 KPI 변경은 하지 않습니다. [제약/테스트](docs/P529_BROWSER_CSV_REVIEW.md).
