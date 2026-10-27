@@ -6,7 +6,7 @@ import {fileURLToPath} from 'node:url';
 import {openSyntheticSmaxVertical} from '../src/smax-vertical-mvp.mjs';
 import {aggregateSales} from '../src/summary.mjs';
 import {routeQuestion} from '../src/evidence-router.mjs';
-const root=fileURLToPath(new URL('../fixtures/',import.meta.url));
+const root=new URL('../fixtures/',import.meta.url);
 const original=()=>({
  v1:JSON.parse(fs.readFileSync(new URL('smax_p42/synthetic_v1.json',root),'utf8')),
  csv:fs.readFileSync(new URL('ax_multi_doc_v0/sales.csv',root)),
