@@ -1,0 +1,67 @@
+name: P5.37 Windows interactive local-review wizard and portable regression
+on:
+  push:
+    branches:
+      - feature/p537-windows-local-review-wizard
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm test
+      - run: node scripts/p537-interactive-smoke.mjs
+      - run: node scripts/p535-local-review-smoke.mjs
+      - run: node scripts/p533-build-portable.mjs
+      - name: Portable interactive regression
+        env:
+          RAG_P537_FROM_PORTABLE: '1'
+        run: node scripts/p537-interactive-smoke.mjs
+      - name: Existing SMAX and SQL-document bridge preserved
+        env:
+          RAG_P534_FROM_PORTABLE: '1'
+        run: node scripts/p534-vertical-smoke.mjs
+  windows:
+    runs-on: windows-2025
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.0'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm test
+      - run: node scripts/p537-interactive-smoke.mjs
+      - run: node scripts/p535-local-review-smoke.mjs
+      - run: node scripts/p533-build-portable.mjs
+      - name: Copied Windows CMD interactive wizard
+        env:
+          RAG_P537_FROM_PORTABLE: '1'
+        run: node scripts/p537-interactive-smoke.mjs
+      - name: Existing Windows SMAX to SQL-document bridge
+        env:
+          RAG_P534_FROM_PORTABLE: '1'
+        run: node scripts/p534-vertical-smoke.mjs
+      - name: Re-extract ZIP and check integrity
+        shell: pwsh
+        run: |
+          Compress-Archive -Path 'dist/rag-studio-mvp/*' -DestinationPath 'dist/RAG_STUDIO_P537_SYNTHETIC_REVIEW.zip'
+          Expand-Archive -Path 'dist/RAG_STUDIO_P537_SYNTHETIC_REVIEW.zip' -DestinationPath 'dist/p537-unpacked'
+          node dist/p537-unpacked/scripts/p533-verify-portable.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RAG_STUDIO_P537_SYNTHETIC_REVIEW_MVP
+          path: dist/RAG_STUDIO_P537_SYNTHETIC_REVIEW.zip
+          retention-days: 7
+          if-no-files-found: error
