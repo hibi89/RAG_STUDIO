@@ -41,7 +41,6 @@ jobs:
           npm run test:heldout
       - name: Readonly dependency lock capture for reproducibility
         run: |
-          echo 'BEGIN_RAG_P512_LOCK_GZIP_B64'
-          gzip -cn -9 package-lock.json | base64 -w 0
-          echo
-          echo 'END_RAG_P512_LOCK_GZIP_B64'
+          echo 'BEGIN_RAG_P512_LOCK_JSON'
+          cat package-lock.json
+          echo 'END_RAG_P512_LOCK_JSON'
