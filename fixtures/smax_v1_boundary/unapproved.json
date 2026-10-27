@@ -1,0 +1,78 @@
+{
+  "schema_version": "SMAX_PREPROCESS_GENERIC_CSV_V1",
+  "source": {
+    "format": "UTF8_CSV",
+    "sha256": "25ebf0ff77a9ca2d906347e93bee13ec72f16e9f89562519d1ed2045061296ed",
+    "bytes": 56,
+    "headers": [
+      "order_id",
+      "quantity",
+      "amount_krw"
+    ],
+    "source_rows": 2
+  },
+  "fields": [
+    {
+      "key": "order_id",
+      "source": "order_id",
+      "type": "text",
+      "required": true
+    },
+    {
+      "key": "quantity",
+      "source": "quantity",
+      "type": "integer",
+      "required": true
+    },
+    {
+      "key": "amount_krw",
+      "source": "amount_krw",
+      "type": "integer",
+      "required": true
+    }
+  ],
+  "rows": [
+    {
+      "source_record": 2,
+      "source_cells": [
+        "A-001",
+        "2",
+        "12000"
+      ],
+      "values": {
+        "order_id": "A-001",
+        "quantity": "2",
+        "amount_krw": "12000"
+      },
+      "status": "READY_FOR_HUMAN_REVIEW",
+      "issues": []
+    },
+    {
+      "source_record": 3,
+      "source_cells": [
+        "A-002",
+        "3",
+        "9000"
+      ],
+      "values": {
+        "order_id": "A-002",
+        "quantity": "3",
+        "amount_krw": "9000"
+      },
+      "status": "READY_FOR_HUMAN_REVIEW",
+      "issues": []
+    }
+  ],
+  "review_queue": [],
+  "quality": {
+    "input_rows": 2,
+    "output_rows": 2,
+    "review_rows": 0,
+    "exact_duplicate_rows": 0,
+    "missing_required_cells": 0,
+    "invalid_cells": 0,
+    "formula_risk_cells": 0
+  },
+  "processing_mode": "DETERMINISTIC_LOCAL",
+  "approval": "NOT_GRANTED"
+}
