@@ -24,7 +24,7 @@ function validateGold(gold){
   const ids=new Set(),questions=new Set();
   for(const item of gold.items) {
     if(!object(item)||Object.keys(item).sort().join(',')!=='expected,id,question'||
-       typeof item.id!=='string'||!/^h-[a-z-]+-[0-9]{2}$/.test(item.id)||
+       typeof item.id!=='string'||!/^h-[a-z_-]+-[0-9]{2}$/.test(item.id)||
        typeof item.question!=='string'||!item.question.trim()||item.question.length>500||
        ids.has(item.id)||questions.has(item.question.trim())||
        !object(item.expected)||Object.keys(item.expected).sort().join(',')!=='document_ids,kind,status')
