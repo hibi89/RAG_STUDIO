@@ -10,6 +10,7 @@ import {fileURLToPath} from 'node:url';
 import {loadPackage} from './validate.mjs';
 import {withReadOnlySales} from './mixed-question.mjs';
 import {routeQuestion} from './evidence-router.mjs';
+import {answerFollowUp} from './conversation.mjs';
 import {searchDocuments} from './document-search.mjs';
 import {previewSmaxSales} from './smax-sales-preview.mjs';
 
@@ -97,6 +98,30 @@ async function readJson(req){
   if(!obj||Array.isArray(obj)||typeof obj!=='object'||Object.keys(obj).length!==1||typeof obj.question!=='string'||!obj.question.trim()||obj.question.length>500)
     throw Object.assign(new Error('Provide question text (1–500 characters)'),{statusCode:400});
   return obj.question;
+}
+/** P5.17: exact small JSON contract. Never accept a session-controlled filesystem path. */
+async function readFollowUp(req){
+ if(!/^application\/json(?:\s*;|\s*$)/i.test(req.headers['content-type']??''))
+   throw Object.assign(new Error('INVALID_MEDIA_TYPE'),{statusCode:415});
+ const chunks=[];let size=0;
+ for await(const chunk of req){
+   size+=chunk.length;
+   if(size>2048)throw Object.assign(new Error('PAYLOAD_TOO_LARGE'),{statusCode:413});
+   chunks.push(chunk);
+ }
+ let value;
+ try{value=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(Buffer.concat(chunks)));}
+ catch{throw Object.assign(new Error('INVALID_JSON'),{statusCode:400});}
+ if(!value||Array.isArray(value)||typeof value!=='object'||
+    Object.keys(value).length!==3||
+    !Object.hasOwn(value,'question')||!Object.hasOwn(value,'previous_question')||
+    !Object.hasOwn(value,'project_key')||
+    typeof value.question!=='string'||!value.question.trim()||value.question.length>500||
+    typeof value.previous_question!=='string'||!value.previous_question.trim()||
+    value.previous_question.length>500||
+    typeof value.project_key!=='string'||!/^[0-9a-f]{32}$/.test(value.project_key))
+   throw Object.assign(new Error('INVALID_FOLLOWUP_REQUEST'),{statusCode:400});
+ return value;
 }
 /** Separate strictly bounded browser handoff; no persistence, files or source echoes.
  * The JSON package remains NOT_GRANTED. The source bytes are SHA-bound by P5.13.
@@ -240,6 +265,20 @@ export function createDashboardServer({packageRoot,projectRoots=null}){
         if(result.error)return respond(res,result.statusCode,{error:result.error});
         return respond(res,200,result);
       }catch{return respond(res,422,{error:'PACKAGE_UNVERIFIED'});}
+    }
+    if(req.method==='POST'&&route==='/api/conversation'){
+      const origin=req.headers.origin;
+      if(origin&&origin!==`http://127.0.0.1:${port}`&&origin!==`http://localhost:${port}`)
+        return respond(res,403,{error:'FORBIDDEN_ORIGIN'});
+      try{
+        const payload=await readFollowUp(req);
+        // Reject stale context from another selected project (including an in-flight switch).
+        if(payload.project_key!==selected.key)return respond(res,409,{error:'WORKSPACE_CHANGED'});
+        return respond(res,200,answerFollowUp(selected.root,payload.question,payload.previous_question));
+      }catch(e){
+        if(e.statusCode)return respond(res,e.statusCode,{error:e.message});
+        return respond(res,422,{error:'PACKAGE_OR_QUERY_UNVERIFIED'});
+      }
     }
     if(req.method==='POST'&&route==='/api/smax-preview'){
       // Deliberately distinct from /api/query: larger limited payload, same bearer,

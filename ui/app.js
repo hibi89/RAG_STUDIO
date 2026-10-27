@@ -4,6 +4,17 @@ const $=(id)=>document.getElementById(id);
 let currentOverview=null;
 let highlighted=null;
 let docRequestSequence=0;
+let queryRequestSequence=0;
+let previousAnsweredQuestion=null;
+let activeProjectKey=null;
+function setFollowupState(){
+  const button=$('followupButton');
+  if(button)button.disabled=!previousAnsweredQuestion||!activeProjectKey;
+  const hint=$('conversationHint');
+  if(hint)hint.textContent=previousAnsweredQuestion
+    ?'이전 근거를 새로 확인해 제한형 후속 질문에 답합니다. 예: 그건 며칠이야?'
+    :'검증된 반품/배송 기간 질문 뒤 후속 질문을 사용할 수 있습니다. 대화는 저장하지 않습니다.';
+}
 // The secret is generated anew on server start. A URL fragment never reaches the server.
 const tokenMatch=/^#session=([A-Za-z0-9_-]{43})$/.exec(location.hash);
 const sessionToken=tokenMatch?.[1]??null;
@@ -14,6 +25,9 @@ const element=(tag,cls,content)=>{const e=document.createElement(tag);if(cls)e.c
 function replace(parent,...children){parent.replaceChildren(...children);}
 function setHealth(text,bad=false){$('health').textContent=text;$('health').classList.toggle('error',bad);}
 function renderOverview(data){
+  ++queryRequestSequence;
+  previousAnsweredQuestion=null;
+  setFollowupState();
   docRequestSequence++;
   if($('documentViewer'))$('documentViewer').textContent='문서를 선택하면 검증된 원문 행을 표시합니다.';
   currentOverview=data;
@@ -131,7 +145,7 @@ function renderResult(data,mode){
   const parent=$('answerPane');replace(parent);
   $('citationDetail').textContent='출처 링크를 선택하면 검증된 위치와 인용 내용을 표시합니다.';
   const isOk=['ANSWERED','FOUND'].includes(data.status);
-  parent.append(element('span',`answer-status${isOk?'':' warn'}`,`${data.status} · ${mode==='search'?'문서 검색':'통합 질의'}`));
+  parent.append(element('span',`answer-status${isOk?'':' warn'}`,`${data.status} · ${mode==='search'?'문서 검색':mode==='conversation'?'근거 재검증 후속 질문':'통합 질의'}`));
   const body=data.answer||(data.reason?`근거 확인 필요: ${data.reason}`:'지원되지 않는 질문입니다.');
   parent.append(element('p','answer-text',body));
   if(data.metric_evidence){
@@ -152,7 +166,8 @@ async function api(url,options={}){
       PACKAGE_UNVERIFIED:'데이터 파일이 변경되었거나 무결성 검사에 실패했습니다. 원본 패키지를 다시 확인하세요.',
       PACKAGE_OR_QUERY_UNVERIFIED:'데이터 또는 질의를 확인할 수 없습니다. 검토 항목과 입력을 확인하세요.',
       INVALID_REQUEST:'질문 형식 또는 길이가 올바르지 않습니다.',
-      FORBIDDEN_ORIGIN:'다른 웹사이트에서는 이 요청을 실행할 수 없습니다.'
+      FORBIDDEN_ORIGIN:'다른 웹사이트에서는 이 요청을 실행할 수 없습니다.',
+      WORKSPACE_CHANGED:'프로젝트가 바뀌었습니다. 새로운 프로젝트에서 다시 질문하세요.'
     }[body.error]??`요청을 처리하지 못했습니다 (HTTP ${response.status}).`;
     throw new Error(message);
   }
@@ -161,15 +176,37 @@ async function api(url,options={}){
 async function ask(mode){
   if(highlighted){highlighted.classList.remove('source-active');highlighted=null;}
   const question=$('question').value;
-  const controls=[$('askButton'),$('searchButton')];controls.forEach(b=>b.disabled=true);
+  const request=++queryRequestSequence;
+  const previous=previousAnsweredQuestion;
+  // Keep the current context only for an explicitly requested follow-up.
+  previousAnsweredQuestion=null;setFollowupState();
+  const controls=[$('askButton'),$('searchButton'),$('followupButton')].filter(Boolean);
+  controls.forEach(b=>b.disabled=true);
   replace($('answerPane'),element('p','placeholder','근거를 검증하고 있습니다…'));
   $('citationDetail').textContent='질의 결과를 확인 중입니다.';
-  try{renderResult(await api(mode==='search'?'/api/search':'/api/query',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question})}),mode);}
-  catch(e){replace($('answerPane'),element('p','answer-text',`결과를 표시할 수 없습니다: ${e.message}`));}
-  finally{controls.forEach(b=>b.disabled=false);}
+  try{
+    const route=mode==='search'?'/api/search':mode==='conversation'?'/api/conversation':'/api/query';
+    const body=mode==='conversation'
+      ?{question,previous_question:previous,project_key:activeProjectKey}
+      :{question};
+    const result=await api(route,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(request!==queryRequestSequence)return; // A project switch or newer query invalidates old answers.
+    renderResult(result,mode);
+    if(result.status==='ANSWERED')
+      previousAnsweredQuestion=mode==='conversation'?result.conversation?.resolved_question??null:mode==='query'?question:null;
+  }catch(e){
+    if(request!==queryRequestSequence)return;
+    replace($('answerPane'),element('p','answer-text',`결과를 표시할 수 없습니다: ${e.message}`));
+  }finally{
+    if(request===queryRequestSequence){
+      controls.forEach(b=>b.disabled=false);
+      setFollowupState();
+    }
+  }
 }
 $('askForm').addEventListener('submit',(event)=>{event.preventDefault();void ask('query');});
 $('searchButton').addEventListener('click',()=>void ask('search'));
+if($('followupButton'))$('followupButton').addEventListener('click',()=>void ask('conversation'));
 for(const button of document.querySelectorAll('[data-question]'))button.addEventListener('click',()=>{$('question').value=button.dataset.question;$('question').focus();});
 // P5.15: only allowlist entries from this session's server; no path entry.
 async function loadProjects(){
@@ -185,12 +222,15 @@ async function loadProjects(){
   });
   replace(select,...choices);
   select.value=list.selected;
+  activeProjectKey=list.selected;
+  setFollowupState();
   select.disabled=list.projects.length<2;
   button.disabled=list.projects.length<2;
   status.textContent=list.projects.length===1
     ?'현재 실행에 등록된 로컬 프로젝트가 1개입니다.'
     :'실행 시 지정한 로컬 프로젝트 '+list.projects.length+'개 중 선택할 수 있습니다.';
   button.addEventListener('click',async()=>{
+    ++queryRequestSequence; // Discard any in-flight answer from previous workspace.
     button.disabled=true;
     status.textContent='선택한 프로젝트의 원본 파일과 계산 근거를 검증 중입니다.';
     try{
@@ -200,6 +240,8 @@ async function loadProjects(){
       });
       if(result.status!=='PROJECT_SELECTED'||!result.overview)throw new Error('PROJECT_NOT_VERIFIED');
       renderOverview(result.overview);
+      activeProjectKey=result.selected;
+      setFollowupState();
       if(highlighted){highlighted.classList.remove('source-active');highlighted=null;}
       replace($('answerPane'),element('p','placeholder','프로젝트가 변경되었습니다. 새로 질문해 주세요.'));
       $('citationDetail').textContent='선택한 프로젝트의 원본 근거만 사용합니다.';

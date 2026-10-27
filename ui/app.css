@@ -48,3 +48,7 @@
 .document-lines li{padding:.25rem .2rem;border-bottom:1px solid #e2e8f0}
 .document-nav{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.75rem}
 .doc button{margin-top:.6rem}
+
+/* P5.17: local-only deterministic conversational continuation. */
+#conversationHint{margin:.65rem 0 1rem}
+#followupButton:disabled{opacity:.55;cursor:not-allowed}
