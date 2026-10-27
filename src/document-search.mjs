@@ -44,15 +44,25 @@ export function segmentsFromApprovedText(pkg,allowed=null) {
   return result;
 }
 
-function semanticPeriodConflict(question,evidence) {
-  if (!/반품|환불/.test(question)) return false;
-  const periods=new Map();
-  for(const e of evidence) {
-    if(!/반품|환불/.test(e.quote)) continue;
-    const match=e.quote.match(/(\d{1,3})\s*일\s*이내/);
-    if(match) periods.set(e.document_id,Number(match[1]));
+/** A lexical top-N result is not proof that the verified source corpus agrees.
+ * Inspect all eligible SHA-verified selected lines, independently of BM25 rank.
+ * Emit only two representative, bounded conflicting citations for human review.
+ * Supported pattern remains deliberately narrow; this is not legal reasoning.
+ */
+function corpusReturnPeriodConflict(question,chunks) {
+  if (!/(?:반품|환불)/u.test(question)) return null;
+  const byPeriod=new Map();
+  for(const source of chunks) {
+    if(!/(?:반품|환불)/u.test(source.quote) ||
+       !/(?:신청|가능|기간)/u.test(source.quote))continue;
+    const matches=source.quote.matchAll(/(\d{1,3})\s*일\s*이내/gu);
+    for(const match of matches){
+      const period=Number(match[1]);
+      if(!byPeriod.has(period))byPeriod.set(period,{...source,period,claim_kind:'calendar_days'});
+      if(byPeriod.size>=2)return [...byPeriod.values()];
+    }
   }
-  return new Set(periods.values()).size>1;
+  return null;
 }
 
 /** Every citation points to an approved, SHA-verified package file and one-based line. */
@@ -100,6 +110,8 @@ export function searchDocuments(root,question,{limit=5,documentIds=null}={}) {
     .sort((a,b)=>b.score-a.score || a.document_id.localeCompare(b.document_id) || a.line-b.line)
     .slice(0,limit).map(({_index,score,...c})=>({...c,score:Number(score.toFixed(6))}));
   if(!evidence.length) return {status:'NO_EVIDENCE',answer:null,evidence:[],reason:'No keyword overlap in approved documents'};
-  if(semanticPeriodConflict(question,evidence)) return {status:'POSSIBLE_CONFLICT',answer:null,evidence,reason:'Different return periods found; requires human review'};
+  const conflicts=corpusReturnPeriodConflict(question,chunks);
+  if(conflicts)return {status:'POSSIBLE_CONFLICT',answer:null,evidence,
+    review_evidence:conflicts,reason:'Different return periods found across verified documents; requires human review'};
   return {status:'FOUND',answer:'검색된 문서 발췌(자동 작성된 확정 답변이 아님):\n'+evidence.map(e=>`[${e.document_id}:${e.line}] ${e.quote}`).join('\n'),evidence,search_mode:'bm25_line_ngrams',reason:null};
 }
