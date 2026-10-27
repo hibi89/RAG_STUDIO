@@ -20,6 +20,14 @@ if errorlevel 1 (
  popd
  exit /b 2
 )
+if exist "native-portable-manifest.json" (
+ node "scripts\p543-verify-native-portable.mjs"
+ if errorlevel 1 (
+  echo Native preview bundle integrity check failed. No launch.
+  popd
+  exit /b 2
+ )
+)
 if exist "portable-manifest.json" (
  node "scripts\p533-verify-portable.mjs"
  if errorlevel 1 (
