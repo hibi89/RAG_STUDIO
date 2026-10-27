@@ -28,6 +28,7 @@ jobs:
           node --check src/workspace-cli.mjs
           node --check ui/app.js
           node --check tests/p515-project-workspace.test.mjs
+          node --check tests/p515-project-ui.test.mjs
       - name: Full native tests and actual localhost multi-project subprocess E2E
         run: npm test
       - name: Existing evidence regressions
