@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import crypto from 'node:crypto';
 const version='SMAX_PREPROCESS_GENERIC_CSV_V1';
 const allowedTypes=new Set(['text','integer','decimal','date','boolean']);
-const allowedIssues=new Set(['MISSING_REQUIRED','INVALID_DATE','INVALID_DECIMAL','INVALID_INTEGER','INVALID_BOOLEAN','FORMULA_RISK','DUPLICATE_SOURCE_ROW']);
+const allowedIssues=new Set(['MISSING_REQUIRED','INVALID_DATE','INVALID_DECIMAL','INVALID_INTEGER','INVALID_BOOLEAN','FORMULA_RISK','UNMAPPED_FORMULA_RISK','DUPLICATE_SOURCE_ROW']);
 const MAX_JSON_BYTES=4*1024*1024,MAX_CSV_BYTES=2*1024*1024;
 const own=(x,k)=>Object.hasOwn(x,k);
 const obj=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
@@ -66,9 +66,11 @@ function validateShape(pkg){
       if(!sameKeys(issue,['field','code'])||!allowedIssues.has(issue.code)||
          !(issue.field===null||mapped.has(issue.field)))fail('ISSUE_INVALID');
       if(issue.code==='DUPLICATE_SOURCE_ROW'){if(seenDup||!duplicate||issue.field!==null)fail('DUPLICATE_PROVENANCE_INVALID');seenDup=true;}
-      else if(issue.field===null)fail('ISSUE_INVALID');
+      else if(issue.code==='UNMAPPED_FORMULA_RISK'){
+        if(typeof issue.field!=='string'||!s.headers.includes(issue.field)||headers.has(issue.field))fail('ISSUE_INVALID');
+      }else if(issue.field===null)fail('ISSUE_INVALID');
       if(issue.code==='MISSING_REQUIRED')missing++;
-      else if(issue.code==='FORMULA_RISK')formula++;
+      else if(issue.code==='FORMULA_RISK'||issue.code==='UNMAPPED_FORMULA_RISK')formula++;
       else if(issue.code.startsWith('INVALID_'))invalid++;
     }
     if(duplicate!==seenDup)fail('DUPLICATE_PROVENANCE_INVALID');
