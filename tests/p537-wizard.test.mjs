@@ -50,12 +50,12 @@ test('P5.37 actual stdin path wizard runs HOLD checklist, no customer source out
 });
 test('P5.37 tampered original cannot produce approval readiness report',t=>{
   const sample=copies(t);
-  fs.appendFileSync(sample.paths[1],'invalid');
+  fs.appendFileSync(sample.paths[1],'SOURCE_PRIVATE_MARKER_537');
   const r=execute(sample.paths);
   assert.equal(r.status,1);
   assert.equal(r.stdout,'');
   assert.match(r.stderr,/LOCAL_SMAX_WIZARD_BLOCKED/u);
-  assert.doesNotMatch(r.stderr,/LOCAL_SECRET|O-1001|invalid/u);
+  assert.doesNotMatch(r.stderr,/LOCAL_SECRET|O-1001|SOURCE_PRIVATE_MARKER_537/u);
 });
 test('P5.37 early EOF and relative paths fail closed',t=>{
   const sample=copies(t);
