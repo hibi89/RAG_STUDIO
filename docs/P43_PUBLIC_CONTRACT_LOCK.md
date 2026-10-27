@@ -19,3 +19,13 @@
 ## Next
 
 Native producer/consumer acceptance via an approved private execution boundary; then true local reviewer authorization, durable audit record and separately reviewed arbitrary-file intake. Existing P4.2 synthetic-export SHA allowlist must remain enabled.
+
+## 2026-10-27 KST verification amendment — PUBLIC Native Node test now PASS
+
+The earlier section stating "full public Node regression not run" is superseded **for the public consumer contract only**:
+
+- Downloaded exact PUBLIC GitHub archive SHA `2c0bbda2c87b48ebd2923a602673e9bf7d8b1117` into an ephemeral, isolated connected-app compute VM (Node v22.23.4). Executed the repo's Node test script equivalent, `node --test tests/*.test.mjs`, in the checked-out archive, 13 files: **183 tests, 183 PASS, 0 FAIL, 0 SKIP**, exit 0.
+- Five additional CLI checks exit 0 on exact public SHA: P4.0 verified source, P4.1 synthetic review intent, P4.2 synthetic AX export and post-export validation, doctor PREFLIGHT_OK, mixed router ANSWERED. No private files passed into VM.
+- Current VM lacked chromedriver (`spawn chromedriver ENOENT`); P4.3 fresh Chrome test **not verified**. Existing P4.2 real Chrome checks were PASS on the prior tested code SHA, and P4.3 changed no UI/server.
+- **Still pending:** actual Private SMAX producer Native CLI to Public consumer E2E, trusted real human/data approval, arbitrary source import, Windows hardware, original RAG ZIP, production/commercial release. The previous isolated Private SMAX producer comparison remains a separate, narrower observation.
+- Native-run tested SHA is before docs-only STATUS/HANDOFF and this amendment. Verify no runtime modifications before develop fast-forward. This was an isolated real Node run, **not GitHub Actions CI**.
