@@ -15,6 +15,7 @@ import {searchDocuments} from './document-search.mjs';
 import {knowledgeSearch,knowledgeCompare} from './knowledge-base.mjs';
 import {previewSmaxSales} from './smax-sales-preview.mjs';
 import {inspectCsvBytes} from './local-csv-review.mjs';
+import {planBrowserSmaxReview} from './smax-browser-review-plan.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const ASSETS={
@@ -27,6 +28,8 @@ const MAX_BODY=2048;
 const MAX_SMAX_JSON=4*1024*1024;
 const MAX_SMAX_CSV=2*1024*1024;
 const MAX_SMAX_BODY=8*1024*1024+256*1024;
+const MAX_BROWSER_DOC_REVIEW=256*1024;
+const MAX_BROWSER_REVIEW_BODY=MAX_SMAX_BODY+4*Math.ceil(MAX_BROWSER_DOC_REVIEW/3)+512;
 const MAX_CSV_REVIEW=1024*1024;
 const MAX_CSV_REVIEW_BODY=4*Math.ceil(MAX_CSV_REVIEW/3)+256;
 const sessions=new WeakMap();
@@ -187,6 +190,46 @@ async function readSmaxPreview(req){
   finally{bytes.fill(0);}
 }
 /** Browser explicit CSV choice: no path, no import, no source cell echo. */
+/** Explicit local browser JSON + CSV + TXT/MD HOLD plan. No AX promotion. */
+async function readSmaxBrowserReviewPlan(req){
+ if(!/^application\/json(?:\s*;|\s*$)/i.test(req.headers['content-type']??''))
+  throw Object.assign(Error('INVALID_MEDIA_TYPE'),{statusCode:415});
+ let size=0;const chunks=[];
+ for await(const chunk of req){
+  size+=chunk.length;
+  if(size>MAX_BROWSER_REVIEW_BODY)
+   throw Object.assign(Error('PAYLOAD_TOO_LARGE'),{statusCode:413});
+  chunks.push(chunk);
+ }
+ let value;
+ try{value=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(Buffer.concat(chunks)));}
+ catch{throw Object.assign(Error('INVALID_JSON'),{statusCode:400});}
+ const valid64=(v,max)=>typeof v==='string'&&v.length>=4&&
+  v.length<=4*Math.ceil(max/3)&&
+  /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/u.test(v);
+ if(!value||typeof value!=='object'||Array.isArray(value)||
+  Object.keys(value).length!==4||!Object.hasOwn(value,'v1')||
+  !Object.hasOwn(value,'source_csv_base64')||
+  !Object.hasOwn(value,'document_base64')||
+  !Object.hasOwn(value,'document_kind')||
+  !value.v1||typeof value.v1!=='object'||Array.isArray(value.v1)||
+  !['.txt','.md'].includes(value.document_kind)||
+  !valid64(value.source_csv_base64,MAX_SMAX_CSV)||
+  !valid64(value.document_base64,MAX_BROWSER_DOC_REVIEW)||
+  Buffer.byteLength(JSON.stringify(value.v1),'utf8')>MAX_SMAX_JSON)
+  throw Object.assign(Error('INVALID_REVIEW_FORM'),{statusCode:400});
+ const csv=Buffer.from(value.source_csv_base64,'base64');
+ const document=Buffer.from(value.document_base64,'base64');
+ try{
+  if(!csv.length||csv.length>MAX_SMAX_CSV||
+     !document.length||document.length>MAX_BROWSER_DOC_REVIEW||
+     csv.toString('base64')!==value.source_csv_base64||
+     document.toString('base64')!==value.document_base64)
+   throw Object.assign(Error('INVALID_REVIEW_FORM'),{statusCode:400});
+  return planBrowserSmaxReview(value.v1,csv,document,value.document_kind);
+ }finally{csv.fill(0);document.fill(0);}
+}
+
 async function readCsvBrowserReview(req){
   if(!/^application\/json(?:\s*;|\s*$)/i.test(req.headers['content-type']??''))
     throw Object.assign(new Error('INVALID_MEDIA_TYPE'),{statusCode:415});
@@ -363,6 +406,17 @@ export function createDashboardServer({packageRoot,projectRoots=null}){
       catch(e){
         if(e.statusCode)return respond(res,e.statusCode,{error:e.message});
         return respond(res,422,{error:'CSV_REVIEW_UNVERIFIED'});
+      }
+    }
+    if(req.method==='POST'&&route==='/api/smax-review-plan'){
+      // Same bearer, localhost Host, and strict Origin boundary as SMAX preview.
+      const origin=req.headers.origin;
+      if(origin&&origin!==('http://127.0.0.1:'+port)&&origin!==('http://localhost:'+port))
+        return respond(res,403,{error:'FORBIDDEN_ORIGIN'});
+      try{return respond(res,200,await readSmaxBrowserReviewPlan(req));}
+      catch(e){
+        if(e.statusCode)return respond(res,e.statusCode,{error:e.message});
+        return respond(res,422,{error:'SMAX_REVIEW_UNVERIFIED'});
       }
     }
     if(req.method==='POST'&&route==='/api/smax-preview'){

@@ -457,6 +457,58 @@ async function submitSmaxPreview(){
     previewMessage('원본 불일치, 검토 필요, 지원하지 않는 매핑 또는 세션 오류로 검증하지 못했습니다.',true);
   }finally{button.disabled=false;}
 }
+
+/** P5.44: review the third policy document while retaining all ten HOLD gates.
+ * This is a distinct local-only API; it can NEVER update approved dashboard data.
+ */
+async function submitSmaxReviewPlan(){
+ const json=$('smaxJson')?.files?.[0],csv=$('smaxCsv')?.files?.[0],
+       doc=$('smaxDocument')?.files?.[0];
+ const area=$('smaxReviewPlanResult'),button=$('smaxReviewPlanButton');
+ const notice=msg=>replace(area,element('p','smax-warning',msg));
+ if(!json||!csv||!doc||
+   !/\.json$/iu.test(json.name)||!/\.csv$/iu.test(csv.name)||
+   !/\.(txt|md)$/iu.test(doc.name)||
+   json.size<2||json.size>4*1024*1024||
+   csv.size<1||csv.size>2*1024*1024||
+   doc.size<1||doc.size>256*1024){
+   notice('JSON·CSV·TXT/MD 세 파일이 필요하며 크기 제한을 지켜야 합니다.');return;
+ }
+ button.disabled=true;
+ notice('원본 SHA와 문서 사용 가능 여부를 검증 중입니다.');
+ try{
+  const [j,c,d]=await Promise.all([json.arrayBuffer(),csv.arrayBuffer(),doc.arrayBuffer()]);
+  const v1=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(j));
+  const payload={v1,source_csv_base64:encodedSource(new Uint8Array(c)),
+    document_base64:encodedSource(new Uint8Array(d)),
+    document_kind:doc.name.toLowerCase().endsWith('.md')?'.md':'.txt'};
+  const result=await api('/api/smax-review-plan',{method:'POST',
+    headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  if(result.contract!=='RAG_LOCAL_SMAX_APPROVAL_PLAN_V1'||
+     result.status!=='REVIEW_HOLD'||
+     result.promotion_status!=='NOT_AUTHORIZED_FOR_AX_PROMOTION'||
+     result.ax_package_created!==false||result.sqlite_imported!==false||
+     result.authenticated_reviewer!==false||
+     result.source_rights_verified!==false||
+     !Array.isArray(result.review_items)||result.review_items.length!==10||
+     result.review_items.some(x=>x.status!=='UNVERIFIED'))
+    throw Error('INVALID_REVIEW_PLAN');
+  const nodes=[element('strong','smax-warning','REVIEW_HOLD · 고객 데이터 승인/SQLite 반입 없음'),
+    element('p','','확인되지 않은 검토 항목 '+result.unresolved_review_items+'개. 원본 정보는 저장하거나 이 화면에 표시하지 않습니다.')];
+  const list=element('ul','evidence-list');
+  for(const item of result.review_items){
+   const li=element('li','',item.area+' · '+item.question_code+' · UNVERIFIED');
+   list.append(li);
+  }
+  nodes.push(list);
+  replace(area,...nodes);
+ }catch{
+  notice('세 파일의 무결성·매핑·인용 검토를 수행하지 못했습니다. 승인/반입은 차단됩니다.');
+ }finally{button.disabled=false;}
+}
+if($('smaxReviewPlanButton'))
+ $('smaxReviewPlanButton').addEventListener('click',()=>void submitSmaxReviewPlan());
+
 $('smaxForm').addEventListener('submit',event=>{event.preventDefault();void submitSmaxPreview();});
 for(const id of ['smaxJson','smaxCsv'])
   $(id).addEventListener('change',()=>previewMessage('선택한 파일이 변경됐습니다. 다시 원본을 대조하세요.'));
