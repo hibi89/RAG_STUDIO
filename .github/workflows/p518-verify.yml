@@ -36,6 +36,8 @@ jobs:
           npm run test:gold
           npm run test:negative
           npm run test:heldout
+      # ChromeDriver startup exceeded a fixed 15s WebDriver session timeout on runner 40493170813.
+      # Only session startup has a 45s threshold; browser assertions are unchanged.
       - name: Actual Chromium scoped knowledge UI (runner-dependent)
         continue-on-error: true
         timeout-minutes: 2

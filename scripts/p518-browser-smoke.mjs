@@ -12,7 +12,7 @@ const child=spawn(binary,['--port='+driverPort,'--allowed-ips=127.0.0.1'],{stdio
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 async function call(url,method='GET',body){
  const r=await fetch(url,{method,headers:body?{'Content-Type':'application/json'}:{},
- body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(15000)});
+ body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(url.endsWith('/session')?45000:15000)});
  const data=await r.json();if(!r.ok||data.value?.error)throw Error('CHROMEDRIVER_REQUEST_FAILED');
  return data.value;
 }
