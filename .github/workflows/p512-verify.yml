@@ -20,9 +20,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22.16.0'
-      - name: Resolve pinned OSS dependencies and generate lock candidate
-        run: npm install --package-lock-only --no-audit --no-fund --ignore-scripts
-      - name: Install from generated lock with lifecycle scripts disabled
+      - name: Install exactly locked dependencies, no scripts
         run: npm ci --no-audit --no-fund --ignore-scripts
       - name: Source syntax; browser baseline already covered by P5.11
         run: |
@@ -39,8 +37,3 @@ jobs:
           npm run test:gold
           npm run test:negative
           npm run test:heldout
-      - name: Readonly dependency lock capture for reproducibility
-        run: |
-          echo 'BEGIN_RAG_P512_LOCK_JSON'
-          cat package-lock.json
-          echo 'END_RAG_P512_LOCK_JSON'
