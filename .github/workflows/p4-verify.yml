@@ -27,8 +27,8 @@ jobs:
         run: npm test
       - name: SMAX review-only CLI smoke and explicit fail-closed assertion
         run: |
-          npm run inspect:smax > /tmp/rag-smax-report.json
-          node -e 'const r=require("/tmp/rag-smax-report.json");if(r.status!=="REVIEW_REQUIRED"||r.provenance!=="SOURCE_DIGEST_VERIFIED"||r.ax_package_created!==false)process.exit(1);console.log("SMAX BRIDGE: REVIEW_REQUIRED, SOURCE_DIGEST_VERIFIED, no AX package");'
+          npm run inspect:smax
+          node --input-type=module -e 'import {inspectSmaxFiles} from "./src/smax-intake.mjs"; const r=inspectSmaxFiles("fixtures/smax_v1_boundary/unapproved.json","fixtures/smax_v1_boundary/source.csv"); if(r.status!=="REVIEW_REQUIRED"||r.provenance!=="SOURCE_DIGEST_VERIFIED"||r.ax_package_created!==false)process.exit(1); console.log("SMAX BOUNDARY VERIFIED");'
       - name: Existing local doctor
         run: npm run doctor
       - name: Existing synthetic mixed question
