@@ -1,0 +1,38 @@
+name: P5.14 local SMAX file-picker integration
+on:
+  push:
+    branches:
+      - feature/p514-smax-browser-preview
+    paths:
+      - .github/workflows/p514-verify.yml
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Read only source checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Node 22.16
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Install pinned dependencies without scripts
+        run: npm ci --no-audit --no-fund --ignore-scripts
+      - name: Validate full UI/API syntax
+        run: |
+          node --check src/dashboard-server.mjs
+          node --check ui/app.js
+          node --check tests/p514-smax-browser.test.mjs
+          node --check tests/p514-smax-ui.test.mjs
+      - name: Full Node regression including live loopback API and actual UI module
+        run: npm test
+      - name: Retain all existing data-evidence reliability tests
+        run: |
+          npm run doctor
+          npm run test:gold
+          npm run test:negative
+          npm run test:heldout
