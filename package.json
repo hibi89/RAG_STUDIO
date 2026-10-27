@@ -13,7 +13,8 @@
     "doctor": "node src/doctor.mjs",
     "inspect:smax": "node src/smax-intake-cli.mjs fixtures/smax_v1_boundary/unapproved.json --source fixtures/smax_v1_boundary/source.csv",
     "demo:smax:review": "node scripts/p41-synthetic-review.mjs",
-    "demo:smax:export": "node scripts/p42-synthetic-export-demo.mjs"
+    "demo:smax:export": "node scripts/p42-synthetic-export-demo.mjs",
+    "test:gold": "node scripts/p5-gold-eval.mjs"
   },
   "engines": {
     "node": ">=22.16.0"
