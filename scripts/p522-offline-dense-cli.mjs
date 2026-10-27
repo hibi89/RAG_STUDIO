@@ -21,7 +21,11 @@ if(!modelDir){
 }else{
  if(!path.isAbsolute(modelDir))throw Error('MODEL_FOLDER_ABSOLUTE_REQUIRED');
  let manifest;
- try{manifest=verifyLocalModelFolder(modelDir);}
+ try{
+   const local=fs.realpathSync(modelDir);
+   const modelProfile=path.basename(path.dirname(local))==='Xenova'?'xenova-q8':'legacy';
+   manifest=verifyLocalModelFolder(modelDir,{modelProfile});
+ }
  catch{output=safeFallback('MODEL_INTEGRITY_FAILED');}
  if(manifest){
   // Import optional native inference only AFTER full local file integrity checks.
@@ -34,13 +38,13 @@ if(!modelDir){
     runtime.env.allowLocalModels=true;
     runtime.env.useFSCache=false;
     runtime.env.localModelPath=path.dirname(path.dirname(fs.realpathSync(modelDir)))+path.sep;
-    // The local directory must match <base>/intfloat/multilingual-e5-small
-    if(path.basename(path.dirname(fs.realpathSync(modelDir)))!=='intfloat'||
-       path.basename(fs.realpathSync(modelDir))!=='multilingual-e5-small')
+    // Both supported IDs must match their declared local directory exactly.
+    if(path.basename(path.dirname(fs.realpathSync(modelDir)))!==manifest.model_id.split('/')[0]||
+       path.basename(fs.realpathSync(modelDir))!==manifest.model_id.split('/')[1])
       throw Error('MODEL_LOCATION_MUST_MATCH_ID');
     // Node native ONNX CPU runtime is optional. An absent one fails closed.
     await import('onnxruntime-node');
-    const extractor=await runtime.pipeline('feature-extraction','intfloat/multilingual-e5-small',{
+    const extractor=await runtime.pipeline('feature-extraction',manifest.model_id,{
       device:'cpu',dtype:'q8',local_files_only:true});
     const embedder=async input=>{
       const result=await extractor(input,{pooling:'mean',normalize:true});
