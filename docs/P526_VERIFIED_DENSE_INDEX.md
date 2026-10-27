@@ -1,0 +1,16 @@
+# P5.26 — bounded reusable dense index and source re-verification
+
+Date 2026-10-27 KST; base `ad80f7b6f2fc9ddc5e75e33c4519593d12cbcdfc`.
+
+## Actual functionality
+
+P5.24's experimental locally run E5 evaluation parsed/normalised the same document embeddings on every query. The model adapter cached raw embeddings, but per-query allocation still repeated. P5.26 adds `createVerifiedDenseIndex(root,{embedder,documentIds?})` for **local opt-in benchmarking only**. It validates the AX_DATA_PACKAGE_V0 manifest and all ACCEPTED source SHA-256 bytes, bounds TXT/MD source lines to 768, embeds all selected passages once in RAM as validated 384d unit Float32 vectors, and then answers multiple benchmark queries through one read-only in-RAM index. `search(...)` still re-runs whole package source integrity checks before and after each query; a modified source fails closed instead of using stale cached vectors. It returns verified file/document/title/line/quote candidates with `answer:null`, never a factual generated answer. No persistence or SQLite/FAISS/ANN, no newly accepted formats, no global model dependency, no internet access or weights distribution.
+
+The real-model benchmark script `scripts/p524-offline-e5-eval.mjs` uses the indexed path **only after model SHA/revision preflight and operator-supplied native runtime**. Reports `index_build_ms`, `index_memory_rss_bytes`, number of passages/documents, p50/p95 query latency and CPU/RSS, on the same 132 author-labelled Korean/English examples. Index build/precompute time is separate from per-query timing, to avoid hiding model cold-start cost. No real model weights were installed, imported, inferred, or benchmarked during CI; the separate index smoke uses deterministic **untrained synthetic vectors**. No claims of semantic recall improvements.
+
+### Evidence and limits
+- New seven targeted Node tests: indexed vs old untrained rank parity, passage embeddings once vs repeated queries, source tampering **before/during** a query, invalid selectors/vectors, candidate provenance and 132-query author-labelled synthetic evaluation.
+- The model preload may still be slow and CPU/memory intensive when real E5 ONNX is supplied; 768 source-line bound and hardware 3-PC tests are not yet satisfied. Each query SHA-verifies all accepted source files, so per-query I/O may dominate model inference at scale. This prioritizes correctness and source changes detection for small, opt-in synthetic tests over throughput.
+- **Negative query caveat:** with no trained abstention calibration, Dense retrieval always ranks some candidates. On 12 unrelated science queries, synthetic index candidate count is 12/12; this is *not* a claimed hallucination/answer rate, because the API returns `answer:null`. Production semantic abstention needs an independently validated confidence gate.
+- No customer data, auto-download, Windows installer, real-trained multilingual Recall, licensing clearance, public release, `main` promotion, or Private SMAX changes.
+- Recovery: baseline `ad80f7b6f2fc9ddc5e75e33c4519593d12cbcdfc`; code CI SHA from GitHub Actions; docs-only follow-up after fully green CI, then compare + non-force fast-forward `develop`. Commands `npm test`; `node scripts/p524-offline-e5-eval.mjs` returns `MODEL_NOT_PROVIDED` if no weights.

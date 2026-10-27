@@ -5,7 +5,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {createBilingualCorpus,authoredCases} from './p521-bilingual-corpus.mjs';
 import {verifyLocalModelFolder} from '../src/local-model-preflight.mjs';
-import {searchLocalDense} from '../src/local-dense.mjs';
+import {createVerifiedDenseIndex} from '../src/local-dense-index.mjs';
+import {performance} from 'node:perf_hooks';
 import {runDenseCases} from '../src/dense-evaluation.mjs';
 
 const args=process.argv.slice(2);
@@ -50,14 +51,22 @@ if(!args.length){
     };
     corpus=createBilingualCorpus();
     const before=process.cpuUsage(),start=process.memoryUsage().rss;
+    const buildStarted=performance.now();
+    const index=await createVerifiedDenseIndex(corpus.root,{embedder});
+    const index_build_ms=Number((performance.now()-buildStarted).toFixed(3));
+    const index_memory_rss_bytes=process.memoryUsage().rss;
     const score=await runDenseCases(authoredCases(),question=>
-      searchLocalDense(corpus.root,question,{embedder,limit:3,mode:'dense'}));
+      index.search(question,{limit:3}));
     const cpu=process.cpuUsage(before);
     summary={status:'REAL_MODEL_EVALUATION_NOT_RELEASE_CERTIFICATION',
       actual_trained_model_run:true,model_id:manifest.model_id,
       revision_status:manifest.revision_status,
       cold_start_memory_rss_bytes:start,final_memory_rss_bytes:process.memoryUsage().rss,
       embedding_cache_entries:cache.size,
+      index_build_ms,index_memory_rss_bytes,
+      index_passage_embeddings:index.passage_embeddings,
+      index_document_count:index.document_count,
+      index_source_sha_reverified_each_query:true,
       cpu_user_ms:Number((cpu.user/1000).toFixed(2)),
       cpu_system_ms:Number((cpu.system/1000).toFixed(2)),
       ...score};

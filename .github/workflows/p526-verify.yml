@@ -1,0 +1,38 @@
+name: P5.26 opt-in verified precomputed dense index
+on:
+  push:
+    branches:
+      - feature/p526-verified-dense-index
+    paths:
+      - .github/workflows/p526-verify.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Syntax and full suite
+        run: |
+          node --check src/local-dense-index.mjs
+          node --check scripts/p524-offline-e5-eval.mjs
+          node --check tests/p526-verified-dense-index.test.mjs
+          npm test
+          npm run doctor
+          npm run test:gold
+          npm run test:negative
+          npm run test:heldout
+      - name: No local model remains explicit and BM25 remains operational
+        run: |
+          node scripts/p524-offline-e5-eval.mjs | tee /tmp/p526-no-model.json
+          node --input-type=module -e "import fs from 'node:fs';const d=JSON.parse(fs.readFileSync('/tmp/p526-no-model.json'));if(d.status!=='MODEL_NOT_PROVIDED'||d.production_ready!==false)process.exit(1)"
+          node scripts/p522-offline-dense-cli.mjs "$PWD/fixtures/ax_multi_doc_v0" "반품 기간은?" | tee /tmp/p526-bm25.json
+          node --input-type=module -e "import fs from 'node:fs';const d=JSON.parse(fs.readFileSync('/tmp/p526-bm25.json'));if(d.status!=='FALLBACK_BM25'||d.result.fallback.actual!=='bm25_line_ngrams')process.exit(1)"
