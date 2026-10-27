@@ -10,7 +10,7 @@ const valid=JSON.stringify({source_csv_base64:source.toString('base64')});
 async function boot(t){
  const server=createDashboardServer({packageRoot:fixture});
  const base=await listenDashboard(server,0);
- t.after(()=>new Promise(done=>server.close(done)));
+ t.after(async()=>{const closing=new Promise(done=>server.close(done));server.closeAllConnections();await closing;});
  const token=dashboardLaunchUrl(server).split('#session=')[1];
  return {base,headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'}};
 }
