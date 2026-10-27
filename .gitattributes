@@ -1,0 +1,3 @@
+# Preserve exact synthetic fixture bytes across Windows/macOS/Linux Git checkouts.
+# AX manifests pin SHA-256 of CSV/TXT inputs; CRLF conversion must never change them.
+fixtures/** -text
