@@ -72,8 +72,8 @@ try{
   });
   await check('verified-sales-kpis',async()=>{
    assert.match(await page.locator('#revenue').innerText(),/157,000/);
-   assert.equal(await page.locator('#orders').innerText(),'6');
-   assert.equal(await page.locator('#units').innerText(),'10');
+   assert.equal(await page.locator('#orders').innerText(),'6건');
+   assert.equal(await page.locator('#units').innerText(),'10개');
   });
   await check('real-csv-file-input-and-review',async()=>{
    await page.locator('#csvReviewFile').setInputFiles({name:'synthetic.csv',mimeType:'text/csv',buffer:csv});
@@ -113,7 +113,7 @@ try{
   });
   await check('baseline-unchanged-and-unauthorized-api-denied',async()=>{
    assert.match(await page.locator('#revenue').innerText(),/157,000/);
-   assert.equal(await page.locator('#orders').innerText(),'6');
+   assert.equal(await page.locator('#orders').innerText(),'6건');
    const res=await fetch(origin+'/api/csv-review',{method:'POST',
     headers:{'Content-Type':'application/json'},body:JSON.stringify({source_csv_base64:csv.toString('base64')})});
    assert.equal(res.status,401);
