@@ -41,6 +41,9 @@ jobs:
       - name: Single command verification smoke
         shell: pwsh
         run: .\verify_local.ps1 -Quick
+      - name: Prepare fresh portable output parent
+        shell: pwsh
+        run: New-Item -ItemType Directory -Path dist -Force | Out-Null
       - name: Build native portable runtime once
         run: node scripts/p543-native-portable.mjs "${{ github.workspace }}\dist\rag-native-preview"
       - name: Verify copied portable folder and actual HTTP search
