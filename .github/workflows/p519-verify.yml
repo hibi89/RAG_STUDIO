@@ -28,6 +28,7 @@ jobs:
           node --check ui/app.js
           node --check tests/p519-hybrid.test.mjs
           node --check scripts/p519-retrieval-benchmark.mjs
+          node --check scripts/p519-browser-smoke.mjs
       - name: Native entire suite
         run: npm test
       - name: Existing evidence regression
@@ -38,3 +39,7 @@ jobs:
           npm run test:heldout
       - name: CPU and memory trade-off numbers
         run: node scripts/p519-retrieval-benchmark.mjs
+      - name: Real Chromium baseline-to-experimental selector (runner-dependent)
+        continue-on-error: true
+        timeout-minutes: 2
+        run: node scripts/p519-browser-smoke.mjs
