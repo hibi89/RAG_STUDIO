@@ -1,0 +1,37 @@
+name: P4 SMAX contract gate synthetic regression
+on:
+  push:
+    branches: [feature/p4-smax-contract-gate]
+    paths: [.github/workflows/p4-verify.yml]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout synthetic public source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Static JS syntax checks
+        run: |
+          node --check src/smax-intake.mjs
+          node --check src/smax-intake-cli.mjs
+          node --check tests/smax-intake.test.mjs
+      - name: Full synthetic regression
+        run: npm test
+      - name: SMAX review-only CLI smoke and explicit fail-closed assertion
+        run: |
+          npm run inspect:smax > /tmp/rag-smax-report.json
+          node -e 'const r=require("/tmp/rag-smax-report.json");if(r.status!=="REVIEW_REQUIRED"||r.provenance!=="SOURCE_DIGEST_VERIFIED"||r.ax_package_created!==false)process.exit(1);console.log("SMAX BRIDGE: REVIEW_REQUIRED, SOURCE_DIGEST_VERIFIED, no AX package");'
+      - name: Existing local doctor
+        run: npm run doctor
+      - name: Existing synthetic mixed question
+        run: npm run demo:router
+      - name: Existing actual Chrome interaction regression
+        run: node scripts/p32-browser-smoke.mjs
