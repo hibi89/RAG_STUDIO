@@ -2,7 +2,7 @@
   "schema_version": "RAG_P5_GOLD_V0",
   "fixture": "ax_multi_doc_v0",
   "scope": "synthetic_read_only",
-  "gold_source": "manual_compilation_from_public_fixtures",
+  "gold_source": "curated_expectations_from_public_synthetic_contract_not_external_validation",
   "metric": {
     "orders": 6,
     "units": "10",
@@ -262,6 +262,762 @@
     {
       "id": "abstain-delivery-eta",
       "question": "배송은 총 며칠 걸려?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-s-01",
+      "question": "현재 합계 매출 알려줘",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_ONLY",
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-s-02",
+      "question": "매출 총합은?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_ONLY",
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-s-03",
+      "question": "매상 합계를 계산해줘",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_ONLY",
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-s-04",
+      "question": "주문 수가 몇 건이지?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_ONLY",
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-s-05",
+      "question": "주문건수는 몇 건?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_ONLY",
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-s-06",
+      "question": "판매수량 전체 알려줘",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_ONLY",
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-s-07",
+      "question": "판매 수량 총합",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_ONLY",
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-s-08",
+      "question": "총매출과 주문 건수를 같이 알려줘",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_ONLY",
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-r-01",
+      "question": "반품 가능 기간 며칠?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-returns"
+        ]
+      }
+    },
+    {
+      "id": "p51-r-02",
+      "question": "환불 가능한 기간은?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-returns"
+        ]
+      }
+    },
+    {
+      "id": "p51-r-03",
+      "question": "반품 규정 확인",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-returns"
+        ]
+      }
+    },
+    {
+      "id": "p51-r-04",
+      "question": "환불정책 보여줘",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-returns"
+        ]
+      }
+    },
+    {
+      "id": "p51-r-05",
+      "question": "반품 신청은 언제까지?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-returns"
+        ]
+      }
+    },
+    {
+      "id": "p51-r-06",
+      "question": "환불 신청 가능한 일수는?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-returns"
+        ]
+      }
+    },
+    {
+      "id": "p51-r-07",
+      "question": "반품 기간 근거가 어디야?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-returns"
+        ]
+      }
+    },
+    {
+      "id": "p51-r-08",
+      "question": "환불규정의 신청 기간을 알려줘",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-returns"
+        ]
+      }
+    },
+    {
+      "id": "p51-d-01",
+      "question": "배송준비는 언제 시작되나요?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "p51-d-02",
+      "question": "발송 준비 시작 기준은?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "p51-d-03",
+      "question": "배송 준비 시점 알려줘",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "p51-d-04",
+      "question": "결제 후 배송 준비 기간은?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "p51-d-05",
+      "question": "발송 준비가 시작되는 기간?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "p51-d-06",
+      "question": "배송 준비 언제인가요?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "p51-d-07",
+      "question": "배송 준비 정책의 시작 시기는?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "p51-d-08",
+      "question": "발송준비 소요일수 알려줘",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "p51-sr-01",
+      "question": "매출 합계와 반품 기간을 각각 말해줘",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_DOCUMENT",
+        "document_ids": [
+          "document-returns"
+        ]
+      }
+    },
+    {
+      "id": "p51-sr-02",
+      "question": "주문 수와 환불 가능한 기간을 알려줘",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_DOCUMENT",
+        "document_ids": [
+          "document-returns"
+        ]
+      }
+    },
+    {
+      "id": "p51-sr-03",
+      "question": "판매 수량 및 반품 정책은?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_DOCUMENT",
+        "document_ids": [
+          "document-returns"
+        ]
+      }
+    },
+    {
+      "id": "p51-sr-04",
+      "question": "전체 매상, 환불 신청 기간 확인",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_DOCUMENT",
+        "document_ids": [
+          "document-returns"
+        ]
+      }
+    },
+    {
+      "id": "p51-sd-01",
+      "question": "매출 및 배송 준비 시작 기간 알려줘",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_DOCUMENT",
+        "document_ids": [
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "p51-sd-02",
+      "question": "판매 수량과 배송 준비 시점",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_DOCUMENT",
+        "document_ids": [
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "p51-sd-03",
+      "question": "주문 건수와 발송 준비 기간",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_DOCUMENT",
+        "document_ids": [
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "p51-sd-04",
+      "question": "매상 합계와 발송 준비는 언제 시작해?",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_DOCUMENT",
+        "document_ids": [
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "p51-rd-01",
+      "question": "반품 규정과 배송 준비 기간 비교해서 정리",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-returns",
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "p51-rd-02",
+      "question": "환불 신청 기간 및 발송 준비 기간",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-returns",
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "p51-rd-03",
+      "question": "배송 준비 시작 시점과 반품 가능 기간",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-returns",
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "p51-rd-04",
+      "question": "발송 준비 기간, 환불 정책 둘 다",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "DOCUMENT_ONLY",
+        "document_ids": [
+          "document-returns",
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "p51-srd-01",
+      "question": "매출과 배송 준비 기간 그리고 반품 기간",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_DOCUMENT",
+        "document_ids": [
+          "document-returns",
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "p51-srd-02",
+      "question": "판매 수량, 발송 준비 시점, 환불 규정",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_DOCUMENT",
+        "document_ids": [
+          "document-returns",
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "p51-srd-03",
+      "question": "매상·환불 신청 기간·배송 준비 시작을 요약",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_DOCUMENT",
+        "document_ids": [
+          "document-returns",
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "p51-srd-04",
+      "question": "주문 건수 + 반품 정책 + 배송 준비 시점",
+      "expected": {
+        "status": "ANSWERED",
+        "kind": "SQL_DOCUMENT",
+        "document_ids": [
+          "document-returns",
+          "document-shipping"
+        ]
+      }
+    },
+    {
+      "id": "p51-n-01",
+      "question": "반품 접수번호 조회해줘",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-02",
+      "question": "상품 SKU N-01의 재고는?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-03",
+      "question": "주문 취소 절차 알려줘",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-04",
+      "question": "이메일 템플릿 써줘",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-05",
+      "question": "배송조회 가능한가요?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-06",
+      "question": "재고 부족 알림을 설정해줘",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-07",
+      "question": "반품 상태 조회해줘",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-08",
+      "question": "어느 택배사 써?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-09",
+      "question": "이번 달 매출은?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-10",
+      "question": "지난주 매출은?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-11",
+      "question": "SKU별 매출 집계",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-12",
+      "question": "제품별 매상 순위",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-13",
+      "question": "어제 주문 건수는?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-14",
+      "question": "올해 매출 추이는?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-15",
+      "question": "평균 주문 금액은?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-16",
+      "question": "상품 N-01 매출만",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-17",
+      "question": "환불 수수료는 얼마야?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-18",
+      "question": "환불 처리 방법을 알려줘",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-19",
+      "question": "교환은 몇 일 안에 가능한가?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-20",
+      "question": "반품 신청 제외 상품은?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-21",
+      "question": "환불 신청 후 입금까지 며칠?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-22",
+      "question": "배송료는 얼마인가요?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-23",
+      "question": "배송준비 후 도착까지 시간은?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-24",
+      "question": "배송 준비 중 택배사 조회",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-25",
+      "question": "배송 준비 완료 날짜는?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-26",
+      "question": "발송 준비가 끝나면 배송추적은?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-27",
+      "question": "총 매출과 현재 재고를 알려줘",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-28",
+      "question": "지난달 매출과 반품 기간은?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-29",
+      "question": "반품 기간과 환불 수수료 알려줘",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-30",
+      "question": "배송 준비 기간과 배송비는?",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-31",
+      "question": "판매 수량과 평균 판매가격 알려줘",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-32",
+      "question": "매출과 제품별 순위를 알려줘",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-33",
+      "question": "주문 건수와 결제 취소 건수 알려줘",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-34",
+      "question": "환불 정책과 교환 절차 알려줘",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-35",
+      "question": "매출과 배송 준비 기간, 배송 추적 정보 보여줘",
+      "expected": {
+        "status": "NOT_SUPPORTED",
+        "kind": null,
+        "document_ids": []
+      }
+    },
+    {
+      "id": "p51-n-36",
+      "question": "판매 수량과 고객별 매출 알려줘",
       "expected": {
         "status": "NOT_SUPPORTED",
         "kind": null,
