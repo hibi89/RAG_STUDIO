@@ -1,0 +1,69 @@
+name: P5.34 SMAX-shaped synthetic input to SQL/document MVP
+on:
+  push:
+    branches:
+      - feature/p534-smax-vertical-mvp
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Full unit regression and hostile-input negative cases
+        run: npm test
+      - name: Real producer V1 to AX package to SQL/document HTTP answer
+        run: node scripts/p534-vertical-smoke.mjs
+      - name: Build portable source-only copy
+        run: node scripts/p533-build-portable.mjs
+      - name: End-to-end again from separately generated portable folder
+        env:
+          RAG_P534_FROM_PORTABLE: '1'
+        run: node scripts/p534-vertical-smoke.mjs
+      - name: Run previous portable MVP regression from output folder
+        run: node scripts/p533-portable-smoke.mjs
+  windows:
+    runs-on: windows-2025
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.0'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Complete Windows native regression
+        run: npm test
+      - name: Windows SMAX-style V1 CLI and real CMD HTTP evidence
+        run: node scripts/p534-vertical-smoke.mjs
+      - name: Create fresh portable MVP copy
+        run: node scripts/p533-build-portable.mjs
+      - name: Real Windows copied CMD to SQL/document evidence
+        env:
+          RAG_P534_FROM_PORTABLE: '1'
+        run: node scripts/p534-vertical-smoke.mjs
+      - name: Previous Windows portable MVP still runs
+        run: node scripts/p533-portable-smoke.mjs
+      - name: Compress offline portable MVP
+        shell: pwsh
+        run: Compress-Archive -Path 'dist/rag-studio-mvp/*' -DestinationPath 'dist/RAG_STUDIO_MVP_SYNTHETIC_ONLY.zip'
+      - name: Extract ZIP and re-verify bytes, including SMAX fixture and bridge
+        shell: pwsh
+        run: |
+          Expand-Archive -Path 'dist/RAG_STUDIO_MVP_SYNTHETIC_ONLY.zip' -DestinationPath 'dist/reextracted_mvp'
+          node dist/reextracted_mvp/scripts/p533-verify-portable.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RAG_STUDIO_P534_SMAX_SYNTHETIC_MVP
+          path: dist/RAG_STUDIO_MVP_SYNTHETIC_ONLY.zip
+          retention-days: 7
+          if-no-files-found: error
