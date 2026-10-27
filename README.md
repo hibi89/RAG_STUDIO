@@ -99,6 +99,12 @@ npm run workspace -- "/local/AX-project-1" "/local/AX-project-2"
 
 `npm run demo:zip` (합성 예제), `npm run workspace -- <verified-AX-folder>` (이미 검증된 패키지). [P5.18 사용법과 검증](docs/P518_KNOWLEDGE_COLLECTION.md). 자동 승인된 실제 비즈니스 정책 분석이나 임의 문서 비교/LLM 생성 답변은 아닙니다.
 
+## P5.19 — 로컬 검색 방식 실험 (BM25 기본 유지)
+
+Knowledge Base의 검색 방식에서 **BM25 (기본)** 또는 **BM25 + 문자 n-gram RRF (실험)** 을 선택할 수 있습니다. 두 방식 모두 SHA-256으로 검증한 선택 문서만 검색합니다. 두 번째 방식은 로컬 **어휘형 결합 검색**으로, 최초 설계의 임베딩/FAISS 기반 의미형 하이브리드를 구현한 것이 아닙니다.
+
+[실제 측정과 한계](docs/P519_OFFLINE_LEXICAL_RETRIEVAL_EVALUATION.md) · [CI 368 PASS / Chromium 15 PASS](https://github.com/hibi89/RAG_STUDIO/actions/runs/40495256771). 합성 8문항에서 두 방식 Recall@3이 동일하고 실험 방식 중앙 처리시간이 더 느리므로 기본값은 BM25로 유지합니다.
+
 ## 방향
 RAG Studio는 로컬 PC에서 고객이 승인한 업무 자료를 구조화·검색·분석하고, 문서 출처와 정확한 데이터 집계를 결합해 활용 가능한 대시보드를 만드는 제품을 목표로 한다.
 
