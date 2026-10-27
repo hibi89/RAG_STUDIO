@@ -7,6 +7,7 @@ import {searchDocuments} from './document-search.mjs';
 
 const MAX_DOC_LINES = 10_000;
 const MAX_LINE = 4_096;
+const SUPPORTED_TEXT = /\.(?:txt|md)$/i;
 const RETURNS = /반품|환불/u;
 const RETURN_SCOPE = /신청|기간|규정|정책|가능|이내|언제/u;
 const SHIPPING = /(?:배송|발송)\s*준비/u;
@@ -33,13 +34,13 @@ function intents(question) {
   });
 }
 
-// Scan all approved TXT lines, not merely the top N hits, to avoid missing
+// Scan all approved TXT/Markdown lines, not merely the top N hits, to avoid missing
 // contradictory periods when BM25 truncates its result list.
 function verifiedLines(pkg) {
   const result=[];
   for (const document of pkg.manifest.documents) {
     const f=pkg.fileMap.get(document.file_id);
-    if(f?.kind!=='document'||f.import_status!=='ACCEPTED'||!f.relative_path.toLowerCase().endsWith('.txt')) continue;
+    if(f?.kind!=='document'||f.import_status!=='ACCEPTED'||!SUPPORTED_TEXT.test(f.relative_path)) continue;
     const txt=pkg.textMap.get(f.file_id);
     if(typeof txt!=='string') continue;
     const lines=txt.replace(/\r\n/g,'\n').split('\n');
