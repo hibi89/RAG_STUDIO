@@ -29,3 +29,6 @@ npm run plan:smax:wizard
 
 ## Next implementation direction
 After P5.37 CI passes, review the original roadmap's still-unmet **functionality** rather than add another declarative approval checklist: improve local document indexing/query behavior or integrate an owner-approved SMAX Native interface. Any authorization/promotion beyond REVIEW_HOLD requires user policy approval and separate auditable acceptance logic.
+
+## Verification checkpoint — 2026-10-28 KST
+Actual GitHub Actions [#40538676154](https://github.com/hibi89/RAG_STUDIO/actions/runs/40538676154) at `30caaf1eb9ba439d2b2b99a2395824c2c01d02c5`: Linux Node22.16 full **477/477 PASS**; Windows Node22.23 full **477/477 PASS**; direct/portable wizard smoke, legacy local reviewer and SMAX SQL/document flow, portable ZIP extract/manifest all PASS. First test-only failure caused by a substring collision with a generic error word, not the application; fixed sentinel assertion and reran complete test matrix. No real customer files, physical Windows 3-PC, publisher signature, native SMAX authentication or product deployment. After this documentation commit, re-fetch latest SHA, not assume CI tested doc-only delta.

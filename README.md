@@ -213,3 +213,6 @@ SMAX의 기존 사장님 SELF 출시 일정 및 기술 지원 범위를 본 통�
 
 ## P5.36 — 로컬 데이터 승인 전 점검표 (승인 기능 아님)
 `npm run plan:smax:local -- <smax-v1.json> <original.csv> <document.txt|md>` 명령은 명시한 로컬 3개 파일의 P5.35 무결성 검사를 거친 뒤, **권리·동의·매출/VAT 정의·문서 버전·검토자 확인이 아직 필요하다는 10개 항목**을 출력합니다. 결과는 무조건 `REVIEW_HOLD`이며 실제 사용자 승인, AX 패키지 생성, SQLite 반입이나 데이터 업로드가 아닙니다. [정확한 구현 범위와 검증](docs/P536_LOCAL_APPROVAL_READINESS.md).
+
+## P5.37 — Windows local interactive review-plan launcher
+Run `RUN_LOCAL_SMAX_APPROVAL_PLAN.cmd` on Windows Node22.23+; supply the three requested absolute local JSON/CSV/TXT|MD filenames when prompted. No CMD path interpolation, no approval or import. Both Linux and Windows test suites **477/477 PASS** at source SHA `30caaf1eb9ba439d2b2b99a2395824c2c01d02c5`; see [P5.37 documentation](docs/P537_WINDOWS_LOCAL_REVIEW_WIZARD.md) and [CI #40538676154](https://github.com/hibi89/RAG_STUDIO/actions/runs/40538676154). Only synthetic fixtures tested; not a signed installer or commercial app.
