@@ -37,3 +37,10 @@ P3.2 further UI interaction QA (authorized Windows/browser), source drill-down, 
 - All nine GitHub blob SHA values matched the locally tested code, UI, tests and documents. Commit Git author and committer both identified as **hibi89** with matching email; no force push, no private SMAX/SOVIA changes.
 - Node 22.16.0 (Linux) local `npm test`: **92 passed / 0 failed / 0 skipped**. Running local server: unauthenticated `GET /api/overview` HTTP 401, correct per-run bearer HTTP 200, exact synthetic SKU sums KRW 157,000. Not a real-browser/Windows/Production test.
 - This checkpoint document is added as a separate documentation commit. Re-fetch the latest GitHub branch SHA to see the documentation commit and whether `develop` fast-forwarded; the document cannot truthfully include its own not-yet-created SHA.
+
+## 2026-10-27 KST P3.2 feature checkpoint — scoped offline diagnostics
+- Verified develop baseline HEAD: 45e96b7870168a7ec38e55f5ed004b9f53655eec. Kept default main unchanged; new branch feature/p32-offline-diagnostics created from develop.
+- Added src/doctor.mjs, tests/doctor.test.mjs, npm run doctor script, docs/P32_OFFLINE_DIAGNOSTICS.md. No new dependencies, network listener, external calls or customer files.
+- Local Linux Node 22.16.0 isolated command node --test tests/doctor.test.mjs: **11 PASS / 0 FAIL / 0 SKIP**. GitHub module/test blob SHAs matched locally tested artifacts exactly. This is a new isolated test batch; do NOT add 11 to historical 92 as if the entire 103-test suite ran.
+- Existing 2026-10-26 develop P3.1 evidence remains historical 92/92 PASS; **full regression in this session NOT RUN** due blocked GitHub clone DNS. Real fixture CLI, Windows browser/install and production NOT TESTED.
+- Before integration verify remote feature HEAD, author/committer and changed paths, then merge to develop by normal fast-forward only if regressions are acceptable. Keep main not released. Next P3.2 source drill-down / clear error UX; P4/P5 still pending.
