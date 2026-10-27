@@ -227,3 +227,6 @@ Run `RUN_LOCAL_SMAX_APPROVAL_PLAN.cmd` on Windows Node22.23+; supply the three r
 기존 P5.12 단일 파일 미리보기에 더해, 2–4개 PDF/DOCX 경로를 함께 지정해 동일한 로컬 세션에서 검색할 수 있습니다.
 `npm run preview:document -- ./fixtures/ax_multi_doc_v0 /absolute/a.pdf /absolute/b.docx`
 PDF는 실제 추출 페이지 표시, DOCX는 문단 표시를 검증된 임시 TXT 인용으로 제공합니다. **사용자 파일·권리 승인/고객 데이터 영구 반입은 지원하지 않습니다.** [작업 범위](docs/P540_MULTIDOC_NATIVE_SEARCH.md) · [Linux/Windows 각각 501 PASS](https://github.com/hibi89/RAG_STUDIO/actions/runs/40544130047).
+
+## P5.41 — 인용 문장 원문 직접 확인
+기존 PDF·DOCX 검색의 '문서 출처 찾기'를 누르면, 단순 문서 카드가 아니라 **서버가 SHA-256을 재검증한 정확한 인용 행**을 표시하고 강조합니다. 출처에는 합성 미리보기 문서 순서와 PDF 추출 페이지 / DOCX 추출 문단을 구분해 표시합니다. 원문과 인용이 다르면 표시를 거부합니다. [기능과 한계](docs/P541_VERIFIED_CITATION_JUMP.md). 판매 승인·고객 문서 소유권 입증·실제 PDF 좌표 확인 기능은 아닙니다.
