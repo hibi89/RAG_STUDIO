@@ -5,3 +5,6 @@ local-models/
 *.onnx
 *.safetensors
 rag_model_manifest.json
+
+# P5.33: generated offline synthetic MVP package (not a source artifact)
+dist/
