@@ -36,3 +36,11 @@ P5.35 local user-selected SMAX review (NO IMPORT OR APPROVAL):
  No network, writes, user source paths, raw cells, source text or identity attestations.
  User owns responsibility for selecting authorized local files; this is a review,
  not permission to publish, copy or permanently import customer data.
+
+P5.37 interactive local unapproved review (three prompts, no CMD path parsing):
+ On Windows Node22.23+, run RUN_LOCAL_SMAX_APPROVAL_PLAN.cmd.
+ Enter the absolute paths of your SMAX V1 JSON, original CSV and TXT/MD file.
+ File paths may be pasted with surrounding double quotes. Every selected file
+ is re-read/verified locally; output remains REVIEW_HOLD and never approves AX,
+ creates SQLite, writes customer data or contacts any server. Never share logs
+ or run this launcher on customer files without their permission.

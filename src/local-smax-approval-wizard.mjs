@@ -2,7 +2,6 @@
  * No CMD expansion of input, no remote calls, no rights approval or AX import.
  * The original P5.35 verifier is re-run by P5.36's plan CLI.
  */
-import fs from 'node:fs';
 import path from 'node:path';
 import {createInterface} from 'node:readline';
 import {fileURLToPath} from 'node:url';
