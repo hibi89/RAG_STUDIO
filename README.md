@@ -68,6 +68,17 @@ npm run demo:zip
 
 [실제 파일 선택·보안 한계](docs/P514_SMAX_LOCAL_BROWSER_PREVIEW.md) · [검증 실행 현황](STATUS.md).
 
+## P5.15 — 검증된 로컬 프로젝트 여러 개를 브라우저에서 선택
+
+```bash
+npm ci --no-audit --no-fund --ignore-scripts
+npm run workspace -- "/local/AX-project-1" "/local/AX-project-2"
+```
+
+실행할 때 명시한 최대 8개 `AX_DATA_PACKAGE_V0` 폴더의 해시·스키마·SQLite 집계를 검증하고, 화면의 **로컬 프로젝트 선택**에서 전환합니다. 그때마다 매출·SKU·문서 검색의 출처도 같이 변경되며 이전 질문 내용은 지웁니다. 파일 경로를 브라우저에 전송하거나 외부 네트워크에 업로드하지 않습니다. 단일 프로젝트 데모·SMAX 별도 미승인 계산·PDF/DOCX 로컬 미리보기도 이전과 같이 유지됩니다.
+
+`ACCEPTED`는 패키지 내부 표기이지 실제 SMAX Native 서명·사용권·고객 동의의 증거는 아닙니다. 정식 고객용 인입 및 설치 프로그램은 미완성입니다. [기능·제약·검증](docs/P515_LOCAL_WORKSPACE_SWITCHER.md).
+
 ## 방향
 RAG Studio는 로컬 PC에서 고객이 승인한 업무 자료를 구조화·검색·분석하고, 문서 출처와 정확한 데이터 집계를 결합해 활용 가능한 대시보드를 만드는 제품을 목표로 한다.
 
