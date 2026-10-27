@@ -12,6 +12,9 @@ const own=(x,k)=>Object.hasOwn(x,k);
 const obj=x=>x!==null&&typeof x==='object'&&!Array.isArray(x);
 const id=x=>typeof x==='string'&&/^[a-z][a-z0-9_]{0,63}$/.test(x);
 const nat=x=>Number.isSafeInteger(x)&&x>=0;
+// Reject ambiguous Unicode/control headers without importing Private SMAX code.
+const unsafeHeader=/[\u0000-\u001f\u007f-\u009f\p{Default_Ignorable_Code_Point}]/u;
+const canonicalHeader=x=>x.normalize('NFKC').toLocaleLowerCase('ko-KR');
 function sameKeys(x,expected){
   return obj(x)&&Object.keys(x).length===expected.length&&expected.every(k=>own(x,k));
 }
@@ -25,8 +28,8 @@ function validateShape(pkg){
      s.format!=='UTF8_CSV'||!/^[a-f0-9]{64}$/.test(s.sha256)||
      !nat(s.bytes)||s.bytes>MAX_CSV_BYTES||!nat(s.source_rows)||
      !Array.isArray(s.headers)||!s.headers.length||s.headers.length>256||
-     s.headers.some(x=>typeof x!=='string'||!x.trim()||/[\u0000-\u001f\u007f-\u009f]/u.test(x))||
-     new Set(s.headers).size!==s.headers.length)fail('SOURCE_METADATA_INVALID');
+     s.headers.some(x=>typeof x!=='string'||!x||x!==x.trim()||unsafeHeader.test(x))||
+     new Set(s.headers.map(canonicalHeader)).size!==s.headers.length)fail('SOURCE_METADATA_INVALID');
   if(!Array.isArray(pkg.fields)||pkg.fields.length<1||pkg.fields.length>64||
      !Array.isArray(pkg.rows)||pkg.rows.length>100000||
      !Array.isArray(pkg.review_queue)||pkg.review_queue.length>pkg.rows.length||
