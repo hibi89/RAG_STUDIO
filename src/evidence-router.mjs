@@ -11,6 +11,18 @@ const RETURNS = /반품|환불/u;
 const RETURN_SCOPE = /신청|기간|규정|정책|가능|이내|언제/u;
 const SHIPPING = /(?:배송|발송)\s*준비/u;
 const UNSUPPORTED_FEES = /(?:배송|발송)\s*(?:비|비용|료|요금)|(?:반품|환불)\s*(?:금액|비|비용|수수료)/u;
+const UNSUPPORTED_SCOPE = [
+  // Fixed full-period sales totals are the only numeric capabilities.
+  /(?:이번\s*(?:주|달|월|분기|년)|지난\s*(?:주|달|월|분기|해)|어제|오늘|올해|작년|지난해|전년|전월)/u,
+  /(?:SKU|제품|상품|품목|고객|지역|거래처|지점|브랜드|카테고리)\s*별/iu,
+  /(?:SKU|제품|상품)\s+[A-Z0-9-]+\s*매출(?:만)?/iu,
+  /(?:평균|순위|추이|추세|예측|증감|순이익|영업이익|마진|판매\s*가격)/u,
+  // No stock, cancellations, exchanges, payment timing, delivery tracking or ETA.
+  /(?:재고|(?:결제|주문)\s*취소|취소\s*건수|교환|입금|택배사|택배\s*회사)/u,
+  /(?:배송|발송)\s*(?:추적|조회|도착|완료|소요|예정)/u,
+  /(?:배송|발송)\s*준비.{0,18}(?:도착|완료|추적)/u,
+  /반품\s*신청\s*(?:제외|불가)|(?:반품|환불)\s*(?:제외\s*상품|불가\s*상품|처리\s*방법|처리\s*절차)/u
+];
 const SALES = /매출|매상|주문\s*(?:건수|수)|판매\s*수량/u;
 
 function intents(question) {
@@ -77,9 +89,9 @@ export function routeQuestion(root, question) {
   if(typeof question!=='string'||!question.trim()||question.length>500) fail('router: question must be 1..500 characters');
   // Fees/refund amounts are outside the time-period vocabulary. Abstain
   // entirely instead of answering only a supported fragment of a mixed query.
-  if(UNSUPPORTED_FEES.test(question)) return {
+  if(UNSUPPORTED_FEES.test(question)||UNSUPPORTED_SCOPE.some(rule=>rule.test(question))) return {
     status:'NOT_SUPPORTED',answer:null,
-    reason:'Fees and refund amounts are outside the supported synthetic intents'
+    reason:'Requested scope is outside fixed synthetic totals and verified policy periods'
   };
   const request=intents(question);
   if(!request.sales&&!request.returns&&!request.shipping){
