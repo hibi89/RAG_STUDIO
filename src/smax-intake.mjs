@@ -63,12 +63,11 @@ function validateShape(pkg){
     if(duplicate)duplicates++;
     let seenDup=false;
     for(const issue of row.issues){
-      if(!sameKeys(issue,['field','code'])||!allowedIssues.has(issue.code)||
-         !(issue.field===null||mapped.has(issue.field)))fail('ISSUE_INVALID');
+      if(!sameKeys(issue,['field','code'])||!allowedIssues.has(issue.code))fail('ISSUE_INVALID');
       if(issue.code==='DUPLICATE_SOURCE_ROW'){if(seenDup||!duplicate||issue.field!==null)fail('DUPLICATE_PROVENANCE_INVALID');seenDup=true;}
       else if(issue.code==='UNMAPPED_FORMULA_RISK'){
         if(typeof issue.field!=='string'||!s.headers.includes(issue.field)||headers.has(issue.field))fail('ISSUE_INVALID');
-      }else if(issue.field===null)fail('ISSUE_INVALID');
+      }else if(issue.field===null||!mapped.has(issue.field))fail('ISSUE_INVALID');
       if(issue.code==='MISSING_REQUIRED')missing++;
       else if(issue.code==='FORMULA_RISK'||issue.code==='UNMAPPED_FORMULA_RISK')formula++;
       else if(issue.code.startsWith('INVALID_'))invalid++;
