@@ -16,6 +16,7 @@ import {knowledgeSearch,knowledgeCompare} from './knowledge-base.mjs';
 import {previewSmaxSales} from './smax-sales-preview.mjs';
 import {inspectCsvBytes} from './local-csv-review.mjs';
 import {planBrowserSmaxReview} from './smax-browser-review-plan.mjs';
+import {exportHeldReviewSummary} from './review-hold-export.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const ASSETS={
@@ -413,7 +414,12 @@ export function createDashboardServer({packageRoot,projectRoots=null}){
       const origin=req.headers.origin;
       if(origin&&origin!==('http://127.0.0.1:'+port)&&origin!==('http://localhost:'+port))
         return respond(res,403,{error:'FORBIDDEN_ORIGIN'});
-      try{return respond(res,200,await readSmaxBrowserReviewPlan(req));}
+      try{
+        const plan=await readSmaxBrowserReviewPlan(req);
+        const reviewExport=exportHeldReviewSummary(plan);
+        return respond(res,200,{...plan,review_export_json:reviewExport.json,
+          review_export_sha256:reviewExport.sha256});
+      }
       catch(e){
         if(e.statusCode)return respond(res,e.statusCode,{error:e.message});
         return respond(res,422,{error:'SMAX_REVIEW_UNVERIFIED'});
