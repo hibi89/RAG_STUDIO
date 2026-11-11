@@ -78,7 +78,40 @@
     if(!report.evidence_truncated && report.source_evidence.length!==report.source_rows)reject();
     return report;
   }
-  scope.RagPrepOwnerUI=Object.freeze({checkPlan,createOwnerDraft,checkSalesPreview});
+  function checkMixedPreview(report,currentPlan){
+    if(!plain(report)||report.contract!=='RAG_PREP_MIXED_PREVIEW_V1'||
+       !['PREVIEW_WITH_CITATIONS','POSSIBLE_CONFLICT','INSUFFICIENT_DOCUMENT_EVIDENCE'].includes(report.status)||
+       report.approval!=='NOT_GRANTED'||report.answer!==null||report.customer_data_approved!==false||
+       report.source_rights_verified!==false||report.smax_native_approved!==false||
+       report.ax_package_created!==false||report.sqlite_imported!==false||report.document_indexed!==false||
+       report.remote_upload!==false||report.source_modified!==false||
+       typeof report.source_sha256!=='string'||!/^[a-f0-9]{64}$/.test(report.source_sha256)||
+       !Number.isSafeInteger(report.source_rows)||report.source_rows<1||report.source_rows>2000||
+       !plain(report.metric_evidence)||!plain(report.metric_evidence.metrics)||
+       report.metric_evidence.metrics.orders!==report.source_rows||
+       !exactDecimal(report.metric_evidence.metrics.units)||!exactDecimal(report.metric_evidence.metrics.revenue_krw)||
+       !Array.isArray(report.metric_evidence.source_lines)||report.metric_evidence.source_lines.length<1||
+       report.metric_evidence.source_lines.length>40||
+       !plain(report.document_evidence)||typeof report.document_evidence.sha256!=='string'||
+       !/^[a-f0-9]{64}$/.test(report.document_evidence.sha256)||
+       !Number.isSafeInteger(report.document_evidence.size_bytes)||report.document_evidence.size_bytes<1||
+       report.document_evidence.size_bytes>262144||!Array.isArray(report.document_evidence.source_lines)||
+       report.document_evidence.source_lines.length>10||
+       !Array.isArray(report.blockers)||!report.blockers.includes('UNAPPROVED_TEXT_NOT_INDEXED'))reject();
+    if(currentPlan&&report.source_sha256!==currentPlan.source_sha256)reject();
+    let prev=0;
+    for(const e of report.document_evidence.source_lines){
+      if(!plain(e)||e.kind!=='UNAPPROVED_SOURCE_EXCERPT'||
+         !Number.isSafeInteger(e.source_line)||e.source_line<1||e.source_line<=prev||
+         typeof e.quote!=='string'||!e.quote.trim()||e.quote.length>1024||
+         /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/u.test(e.quote))reject();
+      prev=e.source_line;
+    }
+    if(report.status==='PREVIEW_WITH_CITATIONS'&&report.document_evidence.source_lines.length===0)reject();
+    if(report.status==='INSUFFICIENT_DOCUMENT_EVIDENCE'&&report.document_evidence.source_lines.length!==0)reject();
+    return report;
+  }
+  scope.RagPrepOwnerUI=Object.freeze({checkPlan,createOwnerDraft,checkSalesPreview,checkMixedPreview});
   if(typeof document==='undefined')return;
   const file=document.getElementById('plan'),summary=document.getElementById('summary'),
     editor=document.getElementById('editor'),rows=document.getElementById('rows'),
@@ -137,6 +170,25 @@
       const result=checkSalesPreview(JSON.parse(await selected.text()),plan);
       displayReport(result);
     }catch{reportSummary.textContent='보고서 형식/집계/원본 SHA 검증 실패: 표시를 차단했습니다.';}
+  });
+  const mixedInput=document.getElementById('mixed-report'),mixedSummary=document.getElementById('mixed-summary'),
+    mixedContent=document.getElementById('mixed-content'),mixedMetrics=document.getElementById('mixed-metrics'),
+    mixedLines=document.getElementById('mixed-lines');
+  mixedInput.addEventListener('change',async()=>{
+    mixedContent.hidden=true;mixedLines.replaceChildren();mixedMetrics.textContent='';
+    const file=mixedInput.files&&mixedInput.files[0];if(!file)return;
+    try{
+      if(file.size<2||file.size>262144)reject();
+      const result=checkMixedPreview(JSON.parse(await file.text()),plan);
+      mixedSummary.textContent=result.status==='POSSIBLE_CONFLICT'?'정책 기간 충돌: 확정 답변 보류':
+        result.status==='INSUFFICIENT_DOCUMENT_EVIDENCE'?'문서 근거 없음: 답변 보류':
+        'REVIEW HOLD · 문서 인용만 표시. 사용권·데이터 승인·정식 RAG 아님.';
+      mixedMetrics.textContent='잠정 매출 '+result.metric_evidence.metrics.revenue_krw+' KRW · CSV SHA256 '+result.source_sha256+' · 문서 SHA256 '+result.document_evidence.sha256;
+      for(const e of result.document_evidence.source_lines){
+        const li=document.createElement('li');li.textContent='문서 '+e.source_line+'행 · '+e.quote;mixedLines.appendChild(li);
+      }
+      mixedContent.hidden=false;
+    }catch{mixedSummary.textContent='보고서 형식/출처 검증 실패: 표시를 차단했습니다.';}
   });
   save.addEventListener('click',()=>{
     try{

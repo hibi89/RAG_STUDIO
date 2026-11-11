@@ -22,6 +22,12 @@
     <div id="report-summary" role="status" aria-live="polite">보고서를 선택하지 않았습니다.</div>
     <div id="report-content" hidden><div class="kpis" id="report-kpis"></div><h3>SKU별 집계 (미승인)</h3><ol id="report-skus"></ol><h3>원본 행 위치 (최대 10개 표시)</h3><ol id="report-lines"></ol></div>
   </section>
+  <section id="mixed-report-section"><h2>매출·정책 문서 출처 대조</h2>
+    <p>로컬 CLI의 미승인 CSV+TXT 보고서를 선택하여 근거와 충돌 여부만 검토합니다. 생성된 답변·승인·정식 문서 인덱스는 아닙니다.</p>
+    <label for="mixed-report">로컬 매출·정책 검토 JSON</label><input id="mixed-report" type="file" accept=".json,application/json">
+    <p id="mixed-summary" role="status" aria-live="polite">아직 보고서를 선택하지 않았습니다.</p>
+    <div id="mixed-content" hidden><p id="mixed-metrics"></p><h3>문서 인용 (미승인)</h3><ol id="mixed-lines"></ol></div>
+  </section>
   <p id="message" role="status" aria-live="polite"></p>
   <footer>오프라인 로컬 페이지 · 외부 연결 없음 · 원본 CSV 불변 · 저장 후 Node 검증 명령으로 물리 SHA 재확인 필수</footer>
 </main>

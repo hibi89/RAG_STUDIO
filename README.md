@@ -1,3 +1,17 @@
+## P5.52–P5.53 미승인 매출·정책 문서 인용 UI 및 로컬 검토 패키지
+
+이미 P5.49–P5.51 방식으로 생성한 `proposal.json`, `sales-review.json`에 더해 `node src/prep-mixed-preview-cli.mjs "/absolute/source.csv" "/absolute/rag-prep-owner-draft.json" "/absolute/policy.txt" "매출과 반품 기간은?" > mixed-review.json`을 실행할 수 있습니다. `npm run review:prep:owner`의 로컬 화면에서 두 JSON을 선택하면 **출처 행·잠정 매출·정책 충돌**을 표시합니다. 스크립트가 고객을 대신해 승인하거나 반품 정책을 확정하지 않습니다.
+
+사용자가 명시적으로 새 출력 폴더를 지정해, 고객 검토만 할 수 있는 Node22 기반 오프라인 폴더를 생성할 수도 있습니다.
+
+```shell
+node src/prep-review-bundle-cli.mjs "/absolute/source.csv" "/absolute/rag-prep-owner-draft.json" "/absolute/policy.txt" "/absolute/new-review-folder"
+```
+
+이 폴더는 **원본 CSV/TXT/매핑 JSON을 복사하지 않고**, SHA256 검증 가능한 요약 보고서 2개 + 정적 UI + Windows/Unix 시작 스크립트만 담습니다. `RUN_LOCAL_REVIEW_WINDOWS.cmd` 또는 `RUN_LOCAL_REVIEW_UNIX.sh`는 무결성 확인 후 localhost UI를 실행하며, 사용자는 파일 선택창에서 보고서를 직접 읽습니다. 보고서에는 매출 합계·상품 코드·일부 출처 발췌가 포함되므로 비공개로 보관해야 합니다. SHA256 매니페스트는 **전자서명이나 승인 증거가 아닙니다.**
+
+이 기능은 여전히 `REVIEW_HOLD`이며 Private SMAX 승인·원본 사용권·고객 설치·Windows 브라우저·전체 GitHub CI 검증이 끝나지 않았습니다. [P5.52–P5.53 구현과 제약](docs/P552_P553_CITED_REVIEW_BUNDLE.md).
+
 ## P5.49–P5.51 로컬 PREP 매핑 → 출처 기반 잠정 검색 (REVIEW HOLD)
 
 Node.js 22 이상 개발 체크아웃에서, **소유하거나 처리가 허가된 로컬 파일**에 한해 아래 순서를 사용합니다.
