@@ -1,3 +1,15 @@
+## 2026-11-12 KST — P5.49/P5.50/P5.51 to 81% provisional (10-point)
+1. Objective/stack: RAG Studio AX Edition public Node22 local-first; expand prior P5.48 73% owner mapping into source-cited provisional CSV+TXT review, 85 target.
+2. Changes/decision: fixed approved-schema-like *unapproved* 5-column mapped sales preview selected vs arbitrary SQL/general free-form customer importer rejected. Exact local file bytes/SHA, duplicate/integer/sum and SKU checks; UI JSON report, TXT/MD line evidence/conflict refusal. No SMAX source, no external AI/API or actual AX import.
+3. Verification: local Linux Node22.16 exact source tests 48/48 PASS, CLI real subprocess, SHA mutation, multi-line CSV, symlink/hardlink, document conflict, forged report. Chromium144 synthetic DOM (not file:// or HTTP) UI/download→CLI→KPI 3/6/360 and 3 source lines, JS/network errors0. Full repo/Github Windows CI failure pre-job 0 jobs/unverified.
+4. State: P5.49–P5.51 scoped source complete, final product **81% provisional**, 85 NOT achieved, RELEASE HOLD (no actual customer/SMAX/installer/rights).
+5. Errors/pivot: Git checkout DNS resolution blocked; use local exact Git blob copies and GitHub connector. GitHub Actions #43092180863 0 jobs, cannot inspect test logs; no repeated empty rerun. Direct Chromium localhost ERR_BLOCKED_BY_ADMINISTRATOR, synthetic DOM fallback clearly separated.
+6. Repo: hibi89/RAG_STUDIO@feature/p546-rag-prep-mapping parent 1430c244e08de34bf9941c0ac21e68754ba7e9ca; source new src/prep-mapped-sales*.mjs, src/prep-mixed-preview*.mjs, UI prep-owner.*, tests/p549..p551, docs/P549_P551_LOCAL_MAPPING_CITED_PREVIEW.md. New commit SHA verify after push. Parent commit reversible; develop/main untouched.
+7. Deployment: no Vercel/Production; local static 127.0.0.1 server and user-specified absolute inputs. Windows Node22.23 native flow unverified.
+8. Preservation/security: only source and synthetic fixtures/tests to public repo; private SMAX producer/other repos/customer data/credentials untouched; no user file modifications or network transmission.
+9. Next: investigate GitHub Actions zero jobs; verify full npm and both OS, actual Windows browser localhost; add mixed preview UI acceptance and signed customer/test/rights gates, 85 requires further product coverage.
+10. Updated 2026-11-12 KST; exact local scope tests and product code hash, browser synthetic; central kmong hub needs sync after confirmed feature SHA.
+
 ## 2026-11-12 KST — RAG P5.48 local owner UI + provisional 73% checkpoint (10-point)
 1. Goal: progress RAG 70→85%, currently 73% provisional after scoped local owner review path.
 2. Completed/tradeoffs: P5.47 reviewed mapping JSON and actual CSV SHA recheck (+2p), P5.48 loopback-only static UI launch (+1p); rejected disabling browser file:// policy or copying private SMAX.

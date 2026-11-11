@@ -26,7 +26,10 @@ jobs:
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: node --test tests/p547-owner-ui.test.mjs tests/p547-owner-verify.test.mjs
       - run: node --test tests/p548-local-ui-server.test.mjs
+      - run: node --test tests/p549-mapped-sales.test.mjs tests/p550-preview-ui.test.mjs tests/p551-mixed-preview.test.mjs
       - run: node --check ui/prep-owner.js
+      - run: node --check src/prep-mapped-sales.mjs
+      - run: node --check src/prep-mixed-preview.mjs
       - run: npm test
       - run: npm run test:gold
       - run: npm run test:negative

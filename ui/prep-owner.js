@@ -42,7 +42,43 @@
     return {contract:'RAG_PREP_OWNER_MAPPING_V1',source_sha256:plan.source_sha256,
       source_size_bytes:plan.source_size_bytes,fields};
   }
-  scope.RagPrepOwnerUI=Object.freeze({checkPlan,createOwnerDraft});
+  const exactDecimal=x=>typeof x==='string'&&/^(0|[1-9][0-9]*)$/u.test(x)&&BigInt(x)<=BigInt(Number.MAX_SAFE_INTEGER);
+  function checkSalesPreview(report, currentPlan){
+    if(!plain(report)||report.contract!=='RAG_PREP_SALES_PREVIEW_V1'||report.status!=='REVIEW_HOLD'||
+       report.metric_status!=='PROVISIONAL_UNAPPROVED'||report.source_rights_verified!==false||
+       report.customer_data_approved!==false||report.smax_native_approved!==false||
+       report.ax_package_created!==false||report.sqlite_imported!==false||report.document_indexed!==false||
+       report.remote_upload!==false||report.source_modified!==false||
+       !/^[a-f0-9]{64}$/u.test(report.source_sha256)||!Number.isSafeInteger(report.source_size_bytes)||
+       report.source_size_bytes<1||report.source_size_bytes>1048576||
+       !Number.isInteger(report.source_rows)||report.source_rows<1||report.source_rows>2000||
+       !plain(report.metrics)||report.metrics.orders!==report.source_rows||
+       !exactDecimal(report.metrics.units)||!exactDecimal(report.metrics.revenue_krw)||
+       !Array.isArray(report.sku_totals)||report.sku_totals.length<1||report.sku_totals.length>100||
+       !Array.isArray(report.source_evidence)||report.source_evidence.length<1||report.source_evidence.length>40||
+       report.evidence_truncated!==(report.source_rows>report.source_evidence.length)||
+       !Array.isArray(report.blockers)||!report.blockers.includes('SALES_PREVIEW_NOT_AN_AUTHORIZED_IMPORT'))reject();
+    if(currentPlan&&(report.source_sha256!==currentPlan.source_sha256||
+       report.source_size_bytes!==currentPlan.source_size_bytes))reject();
+    let orders=0n,units=0n,revenue=0n;
+    const keys=new Set();
+    for(const s of report.sku_totals){
+      if(!plain(s)||typeof s.sku!=='string'||!/^[A-Z0-9][A-Z0-9-]{0,39}$/u.test(s.sku)||keys.has(s.sku)||
+         !Number.isSafeInteger(s.orders)||s.orders<1||!exactDecimal(s.units)||!exactDecimal(s.revenue_krw))reject();
+      keys.add(s.sku);orders+=BigInt(s.orders);units+=BigInt(s.units);revenue+=BigInt(s.revenue_krw);
+    }
+    if(orders!==BigInt(report.metrics.orders)||units!==BigInt(report.metrics.units)||
+       revenue!==BigInt(report.metrics.revenue_krw))reject();
+    let last=1;
+    for(const e of report.source_evidence){
+      if(!plain(e)||!Number.isInteger(e.source_line)||e.source_line<=last||e.source_line<2||
+         typeof e.sku!=='string'||!keys.has(e.sku)||!exactDecimal(e.quantity)||!exactDecimal(e.amount_krw))reject();
+      last=e.source_line;
+    }
+    if(!report.evidence_truncated && report.source_evidence.length!==report.source_rows)reject();
+    return report;
+  }
+  scope.RagPrepOwnerUI=Object.freeze({checkPlan,createOwnerDraft,checkSalesPreview});
   if(typeof document==='undefined')return;
   const file=document.getElementById('plan'),summary=document.getElementById('summary'),
     editor=document.getElementById('editor'),rows=document.getElementById('rows'),
@@ -74,6 +110,33 @@
       const p=checkPlan(JSON.parse(await selected.text()));
       plan=p;render(p);
     }catch{summary.textContent='제안 JSON을 검증하지 못했습니다.';message.textContent='검증되지 않은 파일은 사용하지 않습니다.';}
+  });
+  const reportInput=document.getElementById('report'),reportSummary=document.getElementById('report-summary'),
+    reportContent=document.getElementById('report-content'),reportKpis=document.getElementById('report-kpis'),
+    reportSkus=document.getElementById('report-skus'),reportLines=document.getElementById('report-lines');
+  function displayReport(r){
+    reportKpis.replaceChildren();reportSkus.replaceChildren();reportLines.replaceChildren();
+    for(const [label,value] of [['주문 건수',String(r.metrics.orders)],['총 수량',r.metrics.units],['잠정 매출(KRW)',r.metrics.revenue_krw]]){
+      const card=document.createElement('div');card.className='kpi';
+      const labelNode=document.createElement('span');labelNode.textContent=label;
+      const val=document.createElement('strong');val.textContent=value;
+      card.append(labelNode,val);reportKpis.appendChild(card);
+    }
+    for(const s of r.sku_totals){const li=document.createElement('li');
+      li.textContent=s.sku+' · 주문 '+s.orders+'건 · 수량 '+s.units+' · 매출 '+s.revenue_krw+' KRW';reportSkus.appendChild(li);}
+    for(const e of r.source_evidence.slice(0,10)){const li=document.createElement('li');
+      li.textContent='CSV 원본 '+e.source_line+'행 · SKU '+e.sku+' · 수량 '+e.quantity+' · 금액 '+e.amount_krw+' KRW';reportLines.appendChild(li);}
+    reportSummary.textContent='REVIEW HOLD · 이 숫자는 로컬 CLI가 계산한 잠정 결과입니다. 고객 승인/SQLite 반입 아님. 원본 SHA256: '+r.source_sha256;
+    reportContent.hidden=false;
+  }
+  reportInput.addEventListener('change',async()=>{
+    reportContent.hidden=true;reportKpis.replaceChildren();reportSkus.replaceChildren();reportLines.replaceChildren();
+    const selected=reportInput.files&&reportInput.files[0];if(!selected)return;
+    try{
+      if(selected.size<2||selected.size>262144)reject();
+      const result=checkSalesPreview(JSON.parse(await selected.text()),plan);
+      displayReport(result);
+    }catch{reportSummary.textContent='보고서 형식/집계/원본 SHA 검증 실패: 표시를 차단했습니다.';}
   });
   save.addEventListener('click',()=>{
     try{

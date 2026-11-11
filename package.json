@@ -30,7 +30,9 @@
     "review:smax:local": "node src/local-smax-review-cli.mjs",
     "plan:smax:local": "node src/local-smax-approval-plan-cli.mjs",
     "plan:smax:wizard": "node src/local-smax-approval-wizard.mjs",
-    "review:prep:owner": "node src/prep-owner-serve-cli.mjs"
+    "review:prep:owner": "node src/prep-owner-serve-cli.mjs",
+    "preview:prep:sales": "node src/prep-mapped-sales-cli.mjs",
+    "preview:prep:mixed": "node src/prep-mixed-preview-cli.mjs"
   },
   "engines": {
     "node": ">=22.16.0"

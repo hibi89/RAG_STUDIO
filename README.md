@@ -1,3 +1,14 @@
+## P5.49–P5.51 로컬 PREP 매핑 → 출처 기반 잠정 검색 (REVIEW HOLD)
+
+Node.js 22 이상 개발 체크아웃에서, **소유하거나 처리가 허가된 로컬 파일**에 한해 아래 순서를 사용합니다.
+
+1. `node src/prep-mapping-cli.mjs "/absolute/source.csv" > proposal.json` — 열·원본 SHA만 추출, 행 내용은 출력하지 않음.
+2. `npm run review:prep:owner` — localhost 주소를 열어 proposal.json 선택 → 다섯 필수 열(order_id/sku/quantity/unit_price_krw/amount_krw)의 **명시적 열/형식 선택** → 다운로드한 `rag-prep-owner-draft.json` 보관.
+3. `node src/prep-mapped-sales-cli.mjs "/absolute/source.csv" "/absolute/rag-prep-owner-draft.json" > sales-review.json` — 물리 원본 SHA·매핑·수량×단가=금액/중복·원본 행 번호 대조; 웹 UI에서 sales-review.json을 선택해 잠정 KPI와 출처를 표시.
+4. `node src/prep-mixed-preview-cli.mjs "/absolute/source.csv" "/absolute/rag-prep-owner-draft.json" "/absolute/policy.txt" "매출과 반품 신청 기간은?"` — 판매 합계와 문서 인용을 별도 검토용 JSON으로 출력. 충돌하면 `POSSIBLE_CONFLICT`, 근거 없으면 `INSUFFICIENT_DOCUMENT_EVIDENCE`, 임의 질문/SQL은 지원하지 않음.
+
+위 기능은 **고객 데이터 사용권 승인, 비공개 SMAX Native 생산자 신뢰, AX 패키지 승인·SQLite 임포트, 정식 RAG 답변이 아닙니다.** 모두 `REVIEW_HOLD` 및 미승인 출처 표시입니다. 별도 GitHub Actions 전체 CI와 Windows 최종 검증을 통과하기 전 판매 금지. 자세한 범위: [P5.49–P5.51](docs/P549_P551_LOCAL_MAPPING_CITED_PREVIEW.md).
+
 > **새 채팅 바로 재개:** `[RAG_STUDIO 깃헙 레포지토리 보고 작업이어가셈]` → [CHAT_BOOTSTRAP.md](CHAT_BOOTSTRAP.md) → [AGENTS.md](AGENTS.md) → [STATUS.md](STATUS.md) → [다음 구현 단위](docs/NEXT_IMPLEMENTATION_UNIT.md). 입력 시 GitHub 최신 조회 후 안전한 실제 코딩/테스트 단위로 진행.
 
 # RAG Studio — Local AI Data & Knowledge Workspace

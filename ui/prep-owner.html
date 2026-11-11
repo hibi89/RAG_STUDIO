@@ -14,6 +14,14 @@
   <section class="notice" role="note"><strong>REVIEW HOLD</strong><p>이 화면은 매핑 <em>초안</em>을 작성합니다. 고객 데이터 처리 승인, SMAX Native 검증, AX 패키지 생성 및 SQLite 반입은 수행하지 않습니다.</p></section>
   <section><label for="plan">매핑 제안 JSON</label><input id="plan" type="file" accept=".json,application/json"><p id="summary" aria-live="polite">아직 파일을 선택하지 않았습니다.</p></section>
   <section id="editor" hidden><h2>열 의미와 형식 선택</h2><p>각 원본 열에 소문자 영문 키를 지정하고 자료형을 선택하십시오. 빈 줄은 매핑하지 않습니다.</p><div id="rows"></div><button id="save" type="button">미승인 매핑 초안 저장</button></section>
+  <section id="report-section">
+    <h2>출처 기반 읽기 전용 매출 미리보기</h2>
+    <p>별도의 <code>prep-mapped-sales-cli.mjs</code>가 만든 <code>RAG_PREP_SALES_PREVIEW_V1</code> JSON을 선택하십시오. 보고서 JSON만으로 원본 파일 진본성을 증명할 수는 없습니다.</p>
+    <label for="report">로컬 매출 미리보기 JSON</label>
+    <input id="report" type="file" accept=".json,application/json">
+    <div id="report-summary" role="status" aria-live="polite">보고서를 선택하지 않았습니다.</div>
+    <div id="report-content" hidden><div class="kpis" id="report-kpis"></div><h3>SKU별 집계 (미승인)</h3><ol id="report-skus"></ol><h3>원본 행 위치 (최대 10개 표시)</h3><ol id="report-lines"></ol></div>
+  </section>
   <p id="message" role="status" aria-live="polite"></p>
   <footer>오프라인 로컬 페이지 · 외부 연결 없음 · 원본 CSV 불변 · 저장 후 Node 검증 명령으로 물리 SHA 재확인 필수</footer>
 </main>
