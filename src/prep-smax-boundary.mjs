@@ -14,7 +14,7 @@ export function verifyRagPrepSmaxBoundary(review,draft,pkg,sourceBytes){
  if(plan.blockers.includes('MAPPING_INCOMPLETE'))fail();
  const check=inspectSmaxV1(pkg,{sourceBytes});
  if(check.status!=='REVIEW_REQUIRED'||check.provenance!=='SOURCE_DIGEST_VERIFIED')fail('PUBLIC_V1_GATE');
- if(check.source_sha256!==plan.source_sha256)fail('SOURCE_SHA');
+ if(pkg.source.sha256!==plan.source_sha256)fail('SOURCE_SHA');
  if(check.source_rows!==plan.source_rows)fail('SOURCE_ROWS');
  if(pkg.source.headers.length!==review.columns.length)fail('SOURCE_HEADER_COUNT');
  if(pkg.source.headers.some((name,i)=>name!==review.columns[i].name))fail('SOURCE_HEADERS');
