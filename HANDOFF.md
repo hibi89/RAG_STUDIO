@@ -1,3 +1,15 @@
+## 2026-11-12 KST — RAG P5.48 local owner UI + provisional 73% checkpoint (10-point)
+1. Goal: progress RAG 70→85%, currently 73% provisional after scoped local owner review path.
+2. Completed/tradeoffs: P5.47 reviewed mapping JSON and actual CSV SHA recheck (+2p), P5.48 loopback-only static UI launch (+1p); rejected disabling browser file:// policy or copying private SMAX.
+3. Tests: Linux Node22.16 exact local source Node `node --test tests/p547-owner-ui.test.mjs tests/p547-owner-verify.test.mjs tests/p548-local-ui-server.test.mjs` 19/19 PASS. Chromium synthetic DOM P5.47 file selection/download/CLI succeeded. GitHub Actions P5.47 prior 0 jobs pre-test FAILURE; full npm/Windows/HTTP browser E2E unverified.
+4. Status: 73% engineering provisional, 85% not attained, all release gates HOLD.
+5. Errors: local Git DNS unavailable; file:// ERR_BLOCKED_BY_ADMINISTRATOR not app failure. Remote Actions zero-job pre-run cause unknown. Native full repo not cloned; no ungrounded CI PASS.
+6. Repo: hibi89/RAG_STUDIO@feature/p546-rag-prep-mapping base f18c02558fbce82d6f42da5570de7bc501001256; next source commit SHA verify after push. New src/prep-owner-local-server.mjs, src/prep-owner-serve-cli.mjs, tests/p548-local-ui-server.test.mjs, docs/P548_PREP_OWNER_LOCAL_UI.md.
+7. Environment/Production: local-only Node22+; no Vercel/Production deployment, browser file/HTTP access needs customer Windows test.
+8. Backup/source: Git parent preserves prior, no changes develop/main/SMAX/SOVIA/real customer assets/accounts/token/rights. No API costs.
+9. Next priority: recover CI ability, actual Windows/Chromium/Edge HTTP UI acceptance, then RAG owned mapping→cited local preview; SMAX producer trust/rights gated separately. Complete 85 on tested product scenarios, never by test counts alone.
+10. Time: 2026-11-12 KST; exact new local source/Node tests 19 and prior synthetic Chromium only. Central kmong-productization manual sync after commit.
+
 ## 2026-11-12 KST — P5.47 additional synthetic Chromium evidence (10-point checkpoint)
 1. Goal unchanged: RAG 70→85 target, owner mapping user experience without private SMAX.
 2. Work: corrected Windows symlink test error handling; no production UI/CSP/schema change. Added synthetic Chromium interaction evidence.

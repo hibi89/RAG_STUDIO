@@ -1,3 +1,8 @@
+## 2026-11-12 KST — P5.48 bounded local PREP review UI server, provisional RAG 73%
+- P5.47 owner mapping draft/physical CSV SHA recheck plus P5.48 no-upload loopback static UI launcher added. `npm run review:prep:owner` serves only HTML/JS/CSS on ephemeral 127.0.0.1; GET/HEAD exact paths, Host/Origin guards, CSP connect-src none, POST/file browsing blocked.
+- Linux Node22.16 **19/19 PASS** isolated P5.47+P5.48. P5.47 synthetic Chromium144 browser DOM + JSON download + actual CLI passed; direct file:// was blocked by sandbox. New HTTP browser rendering, Windows, full npm/Gold/Negative/Heldout, actual SMAX producer/customer unverified; previous GitHub Actions #43090370088 0 jobs/FAILURE pre-run.
+- Product engineering estimate **RAG 70→73% provisional** (+2 owner mapping/recheck +1 loopback entrypoint). Not 85%; all releases HOLD. Public UI/source-only, no private SMAX, customer data, AX/SQLite import, production, billing or permissions modified. See docs/P548_PREP_OWNER_LOCAL_UI.md.
+
 ## 2026-11-12 KST — P5.47 Chromium DOM isolated acceptance and test correction
 - Python Playwright + headless Chromium 144 synthetic DOM (not file://): actual P5.47 HTML/CSS/JS injected as local text after removing CSP meta **in harness only**, proposal JSON file selected, 3 controls filled, JSON draft downloaded, actual Node owner verify CLI returned REVIEW_HOLD/NOT_GRANTED, no page JS errors/external HTTP, original synthetic CSV bytes unchanged.
 - Direct file:// navigation was blocked by environment policy ERR_BLOCKED_BY_ADMINISTRATOR; Windows browser/native file UX **not verified**. Production HTML/CSP unchanged.

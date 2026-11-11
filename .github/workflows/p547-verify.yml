@@ -25,6 +25,7 @@ jobs:
         with: {node-version: ${{ matrix.node }}}
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: node --test tests/p547-owner-ui.test.mjs tests/p547-owner-verify.test.mjs
+      - run: node --test tests/p548-local-ui-server.test.mjs
       - run: node --check ui/prep-owner.js
       - run: npm test
       - run: npm run test:gold
