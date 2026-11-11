@@ -1,3 +1,15 @@
+## 2026-11-12 KST — P5.47 local owner mapping review; scoped tests, full release HOLD (10-point)
+1. Goal/stack: 70→85% final product target; Node22 RAG-owned public mapping draft UI + actual CSV SHA recheck, SMAX producer private and unmodified.
+2. Implementation/tradeoff: private producer copy (rejected: disclosure/coupling) vs local public draft + independently re-read CSV (chosen). UI file input of proposal JSON, explicit key/type, downloaded unapproved mapping JSON, CLI strict schema/physical file recheck, no import/net.
+3. Commands/results: `node --test tests/p547-owner-ui.test.mjs tests/p547-owner-verify.test.mjs` scoped Linux Node22.16 **14 PASS/0 FAIL/0 SKIP**; existing CSV/plan blobs exact to tested local files. GitHub Actions cross-platform `npm test` and browser UI real clicks PENDING, not passed.
+4. State: feature P5.47 scoped-local complete; 85% target NOT reached, central product final estimate **70%** unchanged; all releases HOLD.
+5. Failures: full Git checkout blocked by local github.com DNS; continued exact-blob scoped validation and remotely defined CI. Chromium manual file URL attempt timed out, not counted PASS or app regression. Do not repeat network retries without new environment.
+6. Repo/SHA: hibi89/RAG_STUDIO@feature/p546-rag-prep-mapping baseline 5dca9368d40992ad9233529f0ec8d73145ce2e55; new commit SHA to be verified after GitHub ref update. Key paths src/prep-owner-verify.mjs, src/prep-owner-verify-cli.mjs, ui/prep-owner.{html,js,css}, tests/p547-owner-{ui,verify}.test.mjs.
+7. Deployment/env: Node22.16 Linux scoped local test; Production/Vercel N/A; Windows Node22.23 CI defined but execution unverified.
+8. Preservation: existing develop/main and private SMAX/SOVIA/customer assets untouched, public artifacts contain only code/synthetic tests; no secret/real customer rows.
+9. Next priority: observe exact SHA GitHub Actions full npm/Gold/Negative/Heldout, actual local browser clicks and Windows review; then verified owner mapping→source-cited preview, optional SMAX producer only with separate owner approval. Never classify draft as approval.
+10. Time: 2026-11-12 KST; evidence scope isolated Node tests + local original Git blob cross-check, rest pending; central hub sync after confirmed product-scale gain only.
+
 # HANDOFF — RAG Studio AX Edition · P3.1
 
 Updated 2026-10-26 KST. Resume commands: `[RAG_STUDIO 깃헙 레포지토리 보고 작업이어가셈]` or `ㄱ`. Recheck live GitHub/code/test results; no background work is running.

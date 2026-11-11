@@ -1,3 +1,9 @@
+## 2026-11-12 KST — P5.47 RAG-owned local mapping editor + byte-pinned draft recheck (scoped verification)
+- From P5.46 branch baseline 5dca9368d40992ad9233529f0ec8d73145ce2e55, added offline mapping draft UI, strict JSON draft verifier and CLI with immutable CSV SHA/size recheck. No external network, no SMAX private code, no SQL import/customer approval.
+- Node22.16 Linux local isolated tests **14 PASS/0 FAIL/0 SKIP**, covering actual synthetic CSV CLI, source immutability, modified source/JSON/symlink refusal and UI contract via Node VM. Existing P5.28 CSV reader and P5.46 mapping engine exact local Git blobs checked. Actual Chromium file:// clicks, Windows UI and full repository npm/Gold/Negative/Heldout remain UNVERIFIED until GitHub Actions result.
+- Full product final readiness remains **70% provisional**; scoped source tests are not a 15-point product jump. All customer/SMAX integration and public release gates remain HOLD.
+- See docs/P547_RAG_LOCAL_OWNER_MAPPING.md and .github/workflows/p547-verify.yml. Feature branch only; develop/main unchanged; reference code SHA is the next commit, to be checked post-push.
+
 # STATUS — RAG Studio AX Edition
 
 Updated: 2026-10-26 KST. Check live GitHub SHA/code on every resume; documents are not runtime evidence. **No release or production deployment.**

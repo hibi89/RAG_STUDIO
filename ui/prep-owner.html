@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>RAG Studio | 로컬 CSV 열 매핑 검토</title>
+<link rel="stylesheet" href="prep-owner.css">
+<script src="prep-owner.js" defer></script>
+</head>
+<body>
+<main>
+  <header><p class="eyebrow">RAG STUDIO AX EDITION · LOCAL REVIEW</p><h1>CSV 열 매핑 검토</h1><p>원본 행 데이터를 업로드하거나 저장하지 않습니다. 먼저 로컬 CLI가 만든 <code>RAG_PREP_MAPPING_PLAN_V1</code> JSON 파일을 선택하십시오.</p></header>
+  <section class="notice" role="note"><strong>REVIEW HOLD</strong><p>이 화면은 매핑 <em>초안</em>을 작성합니다. 고객 데이터 처리 승인, SMAX Native 검증, AX 패키지 생성 및 SQLite 반입은 수행하지 않습니다.</p></section>
+  <section><label for="plan">매핑 제안 JSON</label><input id="plan" type="file" accept=".json,application/json"><p id="summary" aria-live="polite">아직 파일을 선택하지 않았습니다.</p></section>
+  <section id="editor" hidden><h2>열 의미와 형식 선택</h2><p>각 원본 열에 소문자 영문 키를 지정하고 자료형을 선택하십시오. 빈 줄은 매핑하지 않습니다.</p><div id="rows"></div><button id="save" type="button">미승인 매핑 초안 저장</button></section>
+  <p id="message" role="status" aria-live="polite"></p>
+  <footer>오프라인 로컬 페이지 · 외부 연결 없음 · 원본 CSV 불변 · 저장 후 Node 검증 명령으로 물리 SHA 재확인 필수</footer>
+</main>
+</body>
+</html>
