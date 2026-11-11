@@ -1,3 +1,15 @@
+## 2026-11-12 KST — P5.47 additional synthetic Chromium evidence (10-point checkpoint)
+1. Goal unchanged: RAG 70→85 target, owner mapping user experience without private SMAX.
+2. Work: corrected Windows symlink test error handling; no production UI/CSP/schema change. Added synthetic Chromium interaction evidence.
+3. Tests: Node22.16 Linux 14/14 PASS; Python Playwright Chromium144 synthetic DOM selected proposal, filled 3 mappings, downloaded JSON, actual CLI VERIFIED_REVIEW_HOLD, 0 JS errors/0 outbound HTTP, original CSV immutable.
+4. Limit: actual file:// navigation blocked by sandbox ERR_BLOCKED_BY_ADMINISTRATOR; not a browser product failure finding, Windows/real source acceptance not verified.
+5. Failure: GitHub Actions #43090370088 zero jobs pre-run; existing P545 same, no actionable test logs. No ungrounded green claim.
+6. Repo/branch: hibi89/RAG_STUDIO@feature/p546-rag-prep-mapping prior SHA e9254c05e2d79783fac52b6683f90170733c2d16; new fix+doc SHA check after push.
+7. Deployment: none, RELEASE HOLD.
+8. Preservation: no source data, private SMAX, production, access policy changes.
+9. Next: full CI environment availability, real Windows CSP/file/UX, signed product integration with explicit approval and native SMAX producer; target 85 not reached.
+10. KST 2026-11-12, scoped Linux + synthetic browser only; central percentage remains 70.
+
 ## 2026-11-12 KST — P5.47 local owner mapping review; scoped tests, full release HOLD (10-point)
 1. Goal/stack: 70→85% final product target; Node22 RAG-owned public mapping draft UI + actual CSV SHA recheck, SMAX producer private and unmodified.
 2. Implementation/tradeoff: private producer copy (rejected: disclosure/coupling) vs local public draft + independently re-read CSV (chosen). UI file input of proposal JSON, explicit key/type, downloaded unapproved mapping JSON, CLI strict schema/physical file recheck, no import/net.

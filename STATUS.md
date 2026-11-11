@@ -1,3 +1,8 @@
+## 2026-11-12 KST — P5.47 Chromium DOM isolated acceptance and test correction
+- Python Playwright + headless Chromium 144 synthetic DOM (not file://): actual P5.47 HTML/CSS/JS injected as local text after removing CSP meta **in harness only**, proposal JSON file selected, 3 controls filled, JSON draft downloaded, actual Node owner verify CLI returned REVIEW_HOLD/NOT_GRANTED, no page JS errors/external HTTP, original synthetic CSV bytes unchanged.
+- Direct file:// navigation was blocked by environment policy ERR_BLOCKED_BY_ADMINISTRATOR; Windows browser/native file UX **not verified**. Production HTML/CSP unchanged.
+- Fixed Windows symlink test to skip only unavailable symlink creation, not inadvertently swallow assertion failures. Linux scoped 14/14 PASS after change. Remote Actions jobs=0 / FAILURE, still unverified full suite. RAG product estimate 70% unchanged, release HOLD.
+
 ## 2026-11-12 KST — P5.47 RAG-owned local mapping editor + byte-pinned draft recheck (scoped verification)
 - From P5.46 branch baseline 5dca9368d40992ad9233529f0ec8d73145ce2e55, added offline mapping draft UI, strict JSON draft verifier and CLI with immutable CSV SHA/size recheck. No external network, no SMAX private code, no SQL import/customer approval.
 - Node22.16 Linux local isolated tests **14 PASS/0 FAIL/0 SKIP**, covering actual synthetic CSV CLI, source immutability, modified source/JSON/symlink refusal and UI contract via Node VM. Existing P5.28 CSV reader and P5.46 mapping engine exact local Git blobs checked. Actual Chromium file:// clicks, Windows UI and full repository npm/Gold/Negative/Heldout remain UNVERIFIED until GitHub Actions result.

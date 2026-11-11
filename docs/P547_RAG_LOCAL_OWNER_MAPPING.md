@@ -30,3 +30,11 @@ The browser editor loads only the plan JSON from user selection, uses text-only 
 ## Next safe milestone
 
 Real local browser UI interaction test (HTML file selection, mapping, downloaded draft, returned CLI), **full repo Windows+Linux CI**, then independent public contract integration and no-row-data cited search preview. The private SMAX producer/owner signature and actual customer acceptance remain separate user-approved gates. Until then the project retains its documented **70% provisional final-product score**; this source-only review unit does not independently establish 85% readiness, and RELEASE HOLD continues.
+
+## 2026-11-12 Chromium synthetic DOM acceptance (not file:// navigation)
+
+When this execution environment blocked a direct `file://` page navigation with `net::ERR_BLOCKED_BY_ADMINISTRATOR`, it was treated as a browser sandbox policy, not as product evidence of failure. A different local-only synthetic DOM route loaded the **exact local HTML, CSS, JavaScript** into Chromium 144 using Playwright `page.set_content` and `page.add_script_tag`; the HTML's CSP meta tag was omitted **in the test harness only** because inline fixture injection is prohibited by production CSP. Test inputs were a disposable synthetic 3-column CSV.
+
+Observed browser interactions: selected saved proposal JSON, rendered 3 mapping rows, filled key and type controls, clicked save, downloaded `rag-prep-owner-draft.json`, and passed the saved JSON plus the original CSV into the real `src/prep-owner-verify-cli.mjs` process. The result was `REVIEW_HOLD` with 3 requested mappings, `NOT_GRANTED`, CLI exit 0, original bytes unchanged, no page JavaScript errors, and no outgoing HTTP requests.
+
+**Important boundary:** the test **did not** verify the actual `file://` CSP/script loading or download UX in Windows Edge/Chrome. That specific end-user workflow and real customer/SMAX integrations remain unverified. This synthetic Chromium test is separate from 14/14 Node tests and does not excuse GitHub CI pre-job failure.
