@@ -3,7 +3,7 @@ import crypto from 'node:crypto';
 import {buildRagPrepReviewFromDraft} from './prep-mapping-draft.mjs';
 import {inspectSmaxV1} from './smax-intake.mjs';
 import {previewSmaxSales} from './smax-sales-preview.mjs';
-const fail=()=>{throw Object.assign(Error('RAG_PREP_SMAX_BOUNDARY_BLOCKED'),{code:'RAG_PREP_SMAX_BOUNDARY_BLOCKED'});};
+const fail=reason=>{throw Object.assign(Error('RAG_PREP_SMAX_BOUNDARY_BLOCKED'+(reason?':'+reason:'')),{code:'RAG_PREP_SMAX_BOUNDARY_BLOCKED'});};
 const salesKeys=['order_id','sku','quantity','unit_price_krw','amount_krw'];
 export function verifyRagPrepSmaxBoundary(review,draft,pkg,sourceBytes){
  const plan=buildRagPrepReviewFromDraft(review,draft);
@@ -13,11 +13,12 @@ export function verifyRagPrepSmaxBoundary(review,draft,pkg,sourceBytes){
  // Never equate a mapping proposal to semantic approval.
  if(plan.blockers.includes('MAPPING_INCOMPLETE'))fail();
  const check=inspectSmaxV1(pkg,{sourceBytes});
- if(check.status!=='REVIEW_REQUIRED'||check.provenance!=='SOURCE_DIGEST_VERIFIED'||
-   check.source_sha256!==plan.source_sha256||check.source_rows!==plan.source_rows||
-   pkg.source.headers.length!==review.columns.length||
-   pkg.source.headers.some((name,i)=>name!==review.columns[i].name)||
-   pkg.fields.length!==plan.requested_mapping.length)fail();
+ if(check.status!=='REVIEW_REQUIRED'||check.provenance!=='SOURCE_DIGEST_VERIFIED')fail('PUBLIC_V1_GATE');
+ if(check.source_sha256!==plan.source_sha256)fail('SOURCE_SHA');
+ if(check.source_rows!==plan.source_rows)fail('SOURCE_ROWS');
+ if(pkg.source.headers.length!==review.columns.length)fail('SOURCE_HEADER_COUNT');
+ if(pkg.source.headers.some((name,i)=>name!==review.columns[i].name))fail('SOURCE_HEADERS');
+ if(pkg.fields.length!==plan.requested_mapping.length)fail('MAPPING_COUNT');
  const map=new Map(pkg.fields.map(f=>[f.key,f]));
  for(const m of plan.requested_mapping){
    const f=map.get(m.key);
