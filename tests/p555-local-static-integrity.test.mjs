@@ -53,6 +53,31 @@ test('P5.55 file replacement during physical read fails closed',t=>{
 });
 test('P5.55 root directory swap during file read is rejected',t=>{
  const root=fixture(t),moved=root+'-moved',original=fs.readFileSync;
+ // Windows holds the original directory open while its child file descriptor
+ // exists, so a physical rename is prohibited by the OS (EPERM). Inject an
+ // after-read directory identity change to exercise the SAME fail-closed guard.
+ if(process.platform==='win32'){
+  const priorStat=fs.lstatSync;
+  let read=false,changed=false;
+  try{
+   fs.readFileSync=function(target,...rest){
+    const bytes=original.call(this,target,...rest);
+    if(typeof target==='number')read=true;
+    return bytes;
+   };
+   fs.lstatSync=function(target,...rest){
+    const stat=priorStat.call(this,target,...rest);
+    if(read&&target===root){
+     changed=true;
+     return {...stat,ino:stat.ino+1,isDirectory:()=>true,isSymbolicLink:()=>false};
+    }
+    return stat;
+   };
+   assert.throws(()=>readPinnedStaticAsset(root,'prep-owner.js'),/STATIC_FILE_CHANGED/u);
+  }finally{fs.readFileSync=original;fs.lstatSync=priorStat;}
+  assert.equal(read,true);assert.equal(changed,true);
+  return;
+ }
  let swapped=false;
  t.after(()=>{if(fs.existsSync(moved))fs.rmSync(moved,{recursive:true,force:true});});
  try{
