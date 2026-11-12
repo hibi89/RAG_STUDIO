@@ -36,7 +36,12 @@ export function buildPortableMvp(target){
  if(!fs.statSync(parent).isDirectory()||fs.lstatSync(parent).isSymbolicLink())throw Error('UNSAFE_PARENT');
  // All src modules are already PUBLIC source, copied as inert text; only the
  // known dashboard CLI and its imports are executed in this synthetic build.
- const src=fs.readdirSync(path.join(ROOT,'src')).filter(n=>/^[a-z0-9-]+\.mjs$/u.test(n)).sort().map(n=>'src/'+n);
+ // Preserve the frozen P5.33 synthetic MVP. Later P5.46-P5.58 owner PREP
+ // review/ZIP tools belong to a separately authorized local review flow and
+ // must not bloat or cross-expose this older fixed synthetic-only package.
+ const src=fs.readdirSync(path.join(ROOT,'src'))
+  .filter(n=>/^[a-z0-9-]+\.mjs$/u.test(n)&&!n.startsWith('prep-')&&!n.startsWith('review-bundle-')&&n!=='review-zip-verify.mjs')
+  .sort().map(n=>'src/'+n);
  const files=[...fixed,...src].sort();
  const data=files.map(relative=>({relative,bytes:verifySource(relative)}));
  if(data.length>80)throw Error('FILE_BUDGET_EXCEEDED');
@@ -56,7 +61,11 @@ export function buildPortableMvp(target){
   fs.writeFileSync(path.join(target,'portable-manifest.json'),JSON.stringify(output,null,2)+'\n',{flag:'wx',mode:0o600});
   return {status:'BUNDLE_CREATED',contract:output.contract,
    file_count:manifest.length,synthetic_only:true,no_dependencies_installed:true};
- }catch(e){fs.rmSync(target,{recursive:true,force:true});throw e;}
+ }catch(e){
+  // Do NOT delete a failed output path: an unrelated owner directory may have
+  // replaced it after creation. Leave unverified partial files for inspection.
+  throw e;
+ }
 }
 const direct=process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url);
 if(direct){
