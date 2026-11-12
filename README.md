@@ -1,3 +1,13 @@
+## P5.56–P5.57: 검수 보고서 내부 수치 대조 + 검증된 오프라인 ZIP
+
+서로 다른 매출/문서 보고서의 주문·SKU 소계·인용 행·미승인 상태가 일치하는지 검증합니다. SHA 매니페스트는 인증서가 아니므로 실제 소유권이나 고객 승인으로 간주하지 않습니다.
+
+먼저 기존 명령으로 검토 전용 새 폴더를 생성·검증한 뒤, 선택한 새 ZIP 출력 경로에 한해 다음을 실행합니다:
+
+    npm run export:prep:review-zip -- "ABSOLUTE_VERIFIED_REVIEW_FOLDER" "ABSOLUTE_NEW_REVIEW.zip"
+
+이 ZIP은 원본 CSV/TXT/승인 JSON이 아닌 11개의 검수 자산만 저장합니다. 새 파일만 생성하고 기존 ZIP을 덮어쓰지 않습니다. 실패 시 부분 출력이 남아 있을 수 있으므로 원본으로 취급하지 마세요. ZIP의 SHA256과 보존 권한은 별개입니다. Node22 설치가 필요하고 Windows 실제 사용자 환경과 전체 원본 회귀는 아직 미검증입니다. **90% 잠정 엔지니어링 / 목표 95% 미달 / 판매 RELEASE HOLD.** [P5.56/P5.57 근거](docs/P556_P557_REVIEW_ZIP_INTEGRITY_20261112.md).
+
 ## P5.52–P5.53 미승인 매출·정책 문서 인용 UI 및 로컬 검토 패키지
 
 이미 P5.49–P5.51 방식으로 생성한 `proposal.json`, `sales-review.json`에 더해 `node src/prep-mixed-preview-cli.mjs "/absolute/source.csv" "/absolute/rag-prep-owner-draft.json" "/absolute/policy.txt" "매출과 반품 기간은?" > mixed-review.json`을 실행할 수 있습니다. `npm run review:prep:owner`의 로컬 화면에서 두 JSON을 선택하면 **출처 행·잠정 매출·정책 충돌**을 표시합니다. 스크립트가 고객을 대신해 승인하거나 반품 정책을 확정하지 않습니다.
