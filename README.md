@@ -1,3 +1,17 @@
+## 2026-11-12 — RAG Studio 내부 엔지니어링 목표 95% 달성, 상용 RELEASE HOLD
+
+실행·검증 기능 SHA `0e88301059c9cb6b876dd0f9cd9181e6fb5c6dc2` · [GitHub Actions #43231121679](https://github.com/hibi89/RAG_STUDIO/actions/runs/43231121679) **2/2 SUCCESS**. Linux Node22.16 전체 635 발견/633 PASS/2 SKIP/0 FAIL, Windows2025 Node22.23 전체 635 발견/634 PASS/1 SKIP/0 FAIL. 각각 Gold100/100, Negative20/20, Heldout24/24 PASS. 별도 Windows 실제 사용자 PC/브라우저/SMAX Private/고객 원본 권리·3개 고객군 검증은 아직 되지 않았습니다.
+
+검증된 검토 폴더의 오프라인 ZIP 생성:
+
+    npm run export:prep:review-zip -- "ABSOLUTE_REVIEW_FOLDER" "ABSOLUTE_NEW_FILE.zip"
+
+압축 해제 **전에** Node22 내장 검사로 ZIP의 정확한 11개 파일·CRC·SHA·매출/인용 일관성 확인:
+
+    npm run verify:prep:review-zip -- "ABSOLUTE_NEW_FILE.zip"
+
+결과 `RAG_REVIEW_ZIP_INTEGRITY_PASS_NOT_APPROVED`는 파일 내부 일관성 확인이며 **전자서명·고객 승인·원본 사용권·완제품 출시를 뜻하지 않습니다**. 명시적 고객 동의와 원본 데이터 검증 전까지 판매·원격 전송 금지. [P5.58](docs/P558_OFFLINE_ZIP_VERIFY_20261112.md) · [P5.59–P5.61 최종 CI 검증](docs/P559_P561_CI_RECOVERY_P95_20261112.md).
+
 ## P5.56–P5.57: 검수 보고서 내부 수치 대조 + 검증된 오프라인 ZIP
 
 서로 다른 매출/문서 보고서의 주문·SKU 소계·인용 행·미승인 상태가 일치하는지 검증합니다. SHA 매니페스트는 인증서가 아니므로 실제 소유권이나 고객 승인으로 간주하지 않습니다.
