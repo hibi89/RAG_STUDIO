@@ -149,7 +149,6 @@ test('P5.57 extracted ZIP independently re-verifies from relocated directory',t=
  assert.equal(JSON.parse(verified.stdout).status,'RAG_REVIEW_BUNDLE_INTEGRITY_PASS');
 });
 
-
 // P5.58 pre-extraction ZIP verification without external unzip or paid services.
 test('P5.58 exact deterministic ZIP passes independent offline pre-extraction verifier',t=>{
  const b=build(t),dest=b.root+'.p558.zip';
