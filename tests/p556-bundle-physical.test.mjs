@@ -120,3 +120,17 @@ test('P5.57 relative output, source-inside output and symlink parent blocked',t=
   assert.throws(()=>exportVerifiedReviewZip(b.root,path.join(parent,'review.zip')));
  }
 });
+test('P5.57 CLI emits only integrity summary and blocks repeated output',t=>{
+ const b=build(t),dest=b.root+'.cli.zip';
+ t.after(()=>{if(fs.existsSync(dest))fs.unlinkSync(dest);});
+ const before=fs.readFileSync(path.join(b.root,'sales-review.json'));
+ const first=spawnSync(process.execPath,['src/review-bundle-zip-cli.mjs',b.root,dest],{cwd:here,encoding:'utf8'});
+ assert.equal(first.status,0,first.stderr);
+ const result=JSON.parse(first.stdout);
+ assert.equal(result.status,'RAG_REVIEW_ZIP_CREATED_NOT_APPROVED');
+ assert.equal(result.files,11);
+ assert.equal(first.stdout.includes(b.root),false);
+ const again=spawnSync(process.execPath,['src/review-bundle-zip-cli.mjs',b.root,dest],{cwd:here,encoding:'utf8'});
+ assert.equal(again.status,2);assert.match(again.stderr,/RAG_REVIEW_ZIP_BLOCKED/);
+ assert.deepEqual(fs.readFileSync(path.join(b.root,'sales-review.json')),before);
+});
