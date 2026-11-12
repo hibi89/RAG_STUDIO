@@ -67,13 +67,29 @@ test('P5.53 CLI returns no filesystem paths and client files are unchanged',t=>{
 function request(port,url){return new Promise((resolve,reject)=>{const req=http.get({hostname:'127.0.0.1',port,path:url},res=>{let body='';res.on('data',chunk=>body+=chunk);res.on('end',()=>resolve({status:res.statusCode,headers:res.headers,body}));});req.on('error',reject);});}
 test('P5.53 launched standalone relocated Node server serves only UI, never JSON reports',async t=>{
  const x=build(t);const child=spawn(process.execPath,['src/prep-owner-serve-cli.mjs'],{cwd:x.dest,stdio:['ignore','pipe','pipe']});
- t.after(()=>{child.kill();});
- const url=await Promise.race([new Promise((resolve,reject)=>{
-    let buf='';child.stdout.on('data',b=>{buf+=b.toString();const m=/http:\/\/127\.0\.0\.1:(\d+)\//u.exec(buf);if(m)resolve(Number(m[1]));});child.on('exit',()=>reject(Error('server exited')));
-   }),new Promise((_,reject)=>setTimeout(()=>reject(Error('server timeout')),4000))]);
- const good=await request(url,'/');assert.equal(good.status,200);assert.match(good.body,/RAG Studio/);
- const hidden=await request(url,'/sales-review.json');assert.equal(hidden.status,404);
- assert.match(good.headers['content-security-policy'],/connect-src 'none'/);
+ let startupTimer;
+ try{
+  const url=await Promise.race([new Promise((resolve,reject)=>{
+     let buf='';child.stdout.on('data',b=>{buf+=b.toString();const m=/http:\/\/127\.0\.0\.1:(\d+)\//u.exec(buf);if(m)resolve(Number(m[1]));});
+     child.once('exit',()=>reject(Error('server exited before URL')));
+    }),new Promise((_,reject)=>{startupTimer=setTimeout(()=>reject(Error('server timeout')),4000);})]);
+  clearTimeout(startupTimer);
+  const good=await request(url,'/');assert.equal(good.status,200);assert.match(good.body,/RAG Studio/);
+  const hidden=await request(url,'/sales-review.json');assert.equal(hidden.status,404);
+  assert.match(good.headers['content-security-policy'],/connect-src 'none'/);
+ }finally{
+  clearTimeout(startupTimer);
+  // Windows cannot unlink the extracted directory while this child still holds
+  // files. Wait for close BEFORE the fixture teardown removes that directory.
+  child.kill();
+  const stopped=await new Promise(resolve=>{
+   if(child.exitCode!==null||child.signalCode!==null){resolve(true);return;}
+   const timer=setTimeout(()=>resolve(false),3000);
+   child.once('close',()=>{clearTimeout(timer);resolve(true);});
+  });
+  child.stdout.destroy();child.stderr.destroy();child.unref();
+  assert.equal(stopped,true,'local-only server must terminate before temporary folder cleanup');
+ }
 });
 
 test('P5.54 output path replacement on manifest failure never deletes unrelated owner files',t=>{
