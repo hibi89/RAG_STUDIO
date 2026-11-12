@@ -7,6 +7,7 @@ import crypto from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {verifyReviewBundle} from '../src/review-bundle-verify.mjs';
 import {exportVerifiedReviewZip} from '../src/review-bundle-zip.mjs';
+import {verifyOfflineReviewZip} from '../src/review-zip-verify.mjs';
 import {spawnSync} from 'node:child_process';
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 const here=fileURLToPath(new URL('../',import.meta.url));
@@ -146,4 +147,63 @@ test('P5.57 extracted ZIP independently re-verifies from relocated directory',t=
  const verified=spawnSync(process.execPath,['src/review-bundle-verify.mjs'],{cwd:dest,encoding:'utf8'});
  assert.equal(verified.status,0,verified.stderr);
  assert.equal(JSON.parse(verified.stdout).status,'RAG_REVIEW_BUNDLE_INTEGRITY_PASS');
+});
+
+
+// P5.58 pre-extraction ZIP verification without external unzip or paid services.
+test('P5.58 exact deterministic ZIP passes independent offline pre-extraction verifier',t=>{
+ const b=build(t),dest=b.root+'.p558.zip';
+ t.after(()=>{if(fs.existsSync(dest))fs.unlinkSync(dest);});
+ exportVerifiedReviewZip(b.root,dest);
+ const verified=verifyOfflineReviewZip(dest);
+ assert.equal(verified.status,'RAG_REVIEW_ZIP_INTEGRITY_PASS_NOT_APPROVED');
+ assert.equal(verified.files,11);assert.equal(verified.customer_data_approved,false);
+});
+test('P5.58 CRC, end directory count, trailing bytes and archive truncation are blocked',t=>{
+ const b=build(t),dest=b.root+'.p558.zip';
+ t.after(()=>{if(fs.existsSync(dest))fs.unlinkSync(dest);});
+ exportVerifiedReviewZip(b.root,dest);
+ const original=fs.readFileSync(dest);
+ function refuse(bytes){fs.writeFileSync(dest,bytes);assert.throws(()=>verifyOfflineReviewZip(dest),/RAG_REVIEW_ZIP_INVALID/u);}
+ const crc=Buffer.from(original);crc.writeUInt32LE(0,14);refuse(crc);
+ const count=Buffer.from(original);count.writeUInt16LE(12,count.length-22+10);refuse(count);
+ refuse(Buffer.concat([original,Buffer.from('append')]));
+ refuse(original.subarray(0,original.length-1));
+});
+test('P5.58 relative path, symbolic link and malicious ZIP member names are blocked',t=>{
+ const b=build(t),dest=b.root+'.p558.zip';
+ t.after(()=>{for(const p of [dest,dest+'.zip'])if(fs.existsSync(p)||fs.lstatSync(p,{throwIfNoEntry:false}))fs.unlinkSync(p);});
+ exportVerifiedReviewZip(b.root,dest);
+ assert.throws(()=>verifyOfflineReviewZip('relative.zip'),/RAG_REVIEW_ZIP_INVALID/u);
+ if(process.platform!=='win32'){
+  fs.symlinkSync(dest,dest+'.zip');assert.throws(()=>verifyOfflineReviewZip(dest+'.zip'),/RAG_REVIEW_ZIP_INVALID/u);
+ }
+ const bts=fs.readFileSync(dest);
+ const first=bts.indexOf(Buffer.from('manifest.json'));
+ assert.ok(first>=0);bts.write('attack__.txt_',first,'utf8');
+ fs.writeFileSync(dest,bts);
+ assert.throws(()=>verifyOfflineReviewZip(dest),/RAG_REVIEW_ZIP_INVALID/u);
+});
+test('P5.58 valid ZIP structure cannot launder a rehashed forged KPI subtotal',t=>{
+ const b=build(t),dest=b.root+'.p558.zip';
+ t.after(()=>{if(fs.existsSync(dest))fs.unlinkSync(dest);});
+ const sales=JSON.parse(b.content.get('sales-review.json').toString());
+ sales.sku_totals[0].revenue_krw='999';
+ b.content.set('sales-review.json',Buffer.from(JSON.stringify(sales)));
+ b.save();
+ // The producer correctly refuses the invalid review folder, even with forged SHA manifest.
+ assert.throws(()=>exportVerifiedReviewZip(b.root,dest),/RAG_REVIEW_ZIP_BLOCKED/u);
+ assert.equal(fs.existsSync(dest),false);
+});
+test('P5.58 independent Node CLI verifies archive and never emits private paths',t=>{
+ const b=build(t),dest=b.root+'.p558.zip';
+ t.after(()=>{if(fs.existsSync(dest))fs.unlinkSync(dest);});
+ exportVerifiedReviewZip(b.root,dest);
+ const cli=spawnSync(process.execPath,['src/review-zip-verify.mjs',dest],{cwd:here,encoding:'utf8'});
+ assert.equal(cli.status,0,cli.stderr);
+ assert.equal(JSON.parse(cli.stdout).status,'RAG_REVIEW_ZIP_INTEGRITY_PASS_NOT_APPROVED');
+ assert.ok(!cli.stdout.includes(b.root));
+ fs.appendFileSync(dest,'attack');
+ const failed=spawnSync(process.execPath,['src/review-zip-verify.mjs',dest],{cwd:here,encoding:'utf8'});
+ assert.equal(failed.status,2);assert.match(failed.stderr,/RAG_REVIEW_ZIP_INVALID/u);
 });
