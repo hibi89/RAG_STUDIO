@@ -134,3 +134,16 @@ test('P5.57 CLI emits only integrity summary and blocks repeated output',t=>{
  assert.equal(again.status,2);assert.match(again.stderr,/RAG_REVIEW_ZIP_BLOCKED/);
  assert.deepEqual(fs.readFileSync(path.join(b.root,'sales-review.json')),before);
 });
+test('P5.57 extracted ZIP independently re-verifies from relocated directory',t=>{
+ if(process.platform==='win32')return t.skip('Linux unzip acceptance; Windows native remains separate');
+ const b=build(t),zip=b.root+'.extract.zip',dest=b.root+'.extracted';
+ t.after(()=>{if(fs.existsSync(zip))fs.unlinkSync(zip);if(fs.existsSync(dest))fs.rmSync(dest,{recursive:true,force:true});});
+ exportVerifiedReviewZip(b.root,zip);
+ fs.mkdirSync(dest);
+ const extracted=spawnSync('unzip',['-q',zip,'-d',dest],{encoding:'utf8'});
+ if(extracted.error)return t.skip('unzip unavailable');
+ assert.equal(extracted.status,0,extracted.stderr);
+ const verified=spawnSync(process.execPath,['src/review-bundle-verify.mjs'],{cwd:dest,encoding:'utf8'});
+ assert.equal(verified.status,0,verified.stderr);
+ assert.equal(JSON.parse(verified.stdout).status,'RAG_REVIEW_BUNDLE_INTEGRITY_PASS');
+});
