@@ -72,3 +72,52 @@ test('P5.53 launched standalone relocated Node server serves only UI, never JSON
  const hidden=await request(url,'/sales-review.json');assert.equal(hidden.status,404);
  assert.match(good.headers['content-security-policy'],/connect-src 'none'/);
 });
+
+test('P5.54 output path replacement on manifest failure never deletes unrelated owner files',t=>{
+ const x=fixture(t);
+ const unrelated=path.join(x.tmp,'unrelated-owner-folder');
+ const movedPartial=path.join(x.tmp,'partial-review-created-by-this-run');
+ fs.mkdirSync(unrelated);
+ const marker=path.join(unrelated,'keep-this.txt');
+ fs.writeFileSync(marker,'DO NOT DELETE');
+ const original=fs.writeFileSync;
+ let injected=false;
+ const sourceBefore=fs.readFileSync(x.csv);
+ try {
+  fs.writeFileSync=function(filename,...args){
+   if(filename===path.join(x.dest,'manifest.json')){
+    // Controlled temporary-directory race. No customer data is involved.
+    fs.renameSync(x.dest,movedPartial);
+    fs.renameSync(unrelated,x.dest);
+    injected=true;
+    throw new Error('SIMULATED_MANIFEST_IO_FAILURE');
+   }
+   return original.call(this,filename,...args);
+  };
+  assert.throws(()=>createLocalReviewBundle(x.csv,x.draft,x.doc,x.dest),/RAG_PREP_BUNDLE_BLOCKED/u);
+ }finally{fs.writeFileSync=original;}
+ assert.equal(injected,true);
+ assert.equal(fs.readFileSync(path.join(x.dest,'keep-this.txt'),'utf8'),'DO NOT DELETE');
+ assert.equal(fs.existsSync(movedPartial),true);
+ assert.deepEqual(fs.readFileSync(x.csv),sourceBefore);
+});
+
+test('P5.54 ordinary bundle write failure preserves partial output for explicit review',t=>{
+ const x=fixture(t),original=fs.writeFileSync;
+ let injected=false;
+ try{
+  fs.writeFileSync=function(filename,...args){
+   if(filename===path.join(x.dest,'sales-review.json')){
+    injected=true;
+    throw new Error('SIMULATED_DISK_FAILURE');
+   }
+   return original.call(this,filename,...args);
+  };
+  assert.throws(()=>createLocalReviewBundle(x.csv,x.draft,x.doc,x.dest),/RAG_PREP_BUNDLE_BLOCKED/u);
+ }finally{fs.writeFileSync=original;}
+ assert.equal(injected,true);
+ assert.equal(fs.existsSync(x.dest),true);
+ assert.equal(fs.existsSync(path.join(x.dest,'ui/prep-owner.html')),true);
+ assert.equal(fs.existsSync(path.join(x.dest,'manifest.json')),false);
+ assert.throws(()=>verifyReviewBundle(x.dest),/RAG_REVIEW_BUNDLE_INVALID/u);
+});
