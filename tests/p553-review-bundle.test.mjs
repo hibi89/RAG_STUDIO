@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
+import crypto from 'node:crypto';
 import {spawn,spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {inspectCsvBytes} from '../src/local-csv-review.mjs';
@@ -119,5 +120,27 @@ test('P5.54 ordinary bundle write failure preserves partial output for explicit 
  assert.equal(fs.existsSync(x.dest),true);
  assert.equal(fs.existsSync(path.join(x.dest,'ui/prep-owner.html')),true);
  assert.equal(fs.existsSync(path.join(x.dest,'manifest.json')),false);
+ assert.throws(()=>verifyReviewBundle(x.dest),/RAG_REVIEW_BUNDLE_INVALID/u);
+});
+
+test('P5.56 original producer output is accepted, but rehashed paired forged KPI is rejected',t=>{
+ const x=build(t);
+ assert.equal(verifyReviewBundle(x.dest).status,'RAG_REVIEW_BUNDLE_INTEGRITY_PASS');
+ const salesFile=path.join(x.dest,'sales-review.json'),mixedFile=path.join(x.dest,'mixed-review.json');
+ const manifestFile=path.join(x.dest,'manifest.json');
+ const sales=JSON.parse(fs.readFileSync(salesFile,'utf8'));
+ const mixed=JSON.parse(fs.readFileSync(mixedFile,'utf8'));
+ sales.metrics.revenue_krw='999';
+ mixed.metric_evidence.metrics.revenue_krw='999';
+ fs.writeFileSync(salesFile,JSON.stringify(sales));
+ fs.writeFileSync(mixedFile,JSON.stringify(mixed));
+ const manifest=JSON.parse(fs.readFileSync(manifestFile,'utf8'));
+ for(const filename of ['sales-review.json','mixed-review.json']){
+  const bytes=fs.readFileSync(path.join(x.dest,filename));
+  const item=manifest.files.find(f=>f.relative_path===filename);
+  item.size_bytes=bytes.length;
+  item.sha256=crypto.createHash('sha256').update(bytes).digest('hex');
+ }
+ fs.writeFileSync(manifestFile,JSON.stringify(manifest));
  assert.throws(()=>verifyReviewBundle(x.dest),/RAG_REVIEW_BUNDLE_INVALID/u);
 });
