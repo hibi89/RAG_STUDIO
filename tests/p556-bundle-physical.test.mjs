@@ -6,6 +6,8 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {verifyReviewBundle} from '../src/review-bundle-verify.mjs';
+import {exportVerifiedReviewZip} from '../src/review-bundle-zip.mjs';
+import {spawnSync} from 'node:child_process';
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 const here=fileURLToPath(new URL('../',import.meta.url));
 const HEX='a'.repeat(64);
@@ -77,4 +79,44 @@ test('P5.56 unrelated injected file is rejected, existing files preserved',t=>{
  const b=build(t);fs.writeFileSync(path.join(b.root,'secret.txt'),'PRIVATE TEST MARKER');
  assert.throws(()=>verifyReviewBundle(b.root),/RAG_REVIEW_BUNDLE_INVALID/);
  assert.equal(fs.readFileSync(path.join(b.root,'secret.txt'),'utf8'),'PRIVATE TEST MARKER');
+});
+
+test('P5.57 create-only deterministic ZIP of real verified synthetic folder (11 paths)',t=>{
+ const b=build(t),z1=b.root+'.first.zip',z2=b.root+'.second.zip';
+ t.after(()=>{for(const f of [z1,z2])if(fs.existsSync(f))fs.unlinkSync(f);});
+ const a=exportVerifiedReviewZip(b.root,z1),c=exportVerifiedReviewZip(b.root,z2);
+ assert.equal(a.status,'RAG_REVIEW_ZIP_CREATED_NOT_APPROVED');
+ assert.equal(a.files,11);assert.equal(a.sha256,c.sha256);
+ assert.deepEqual(fs.readFileSync(z1),fs.readFileSync(z2));
+ const data=fs.readFileSync(z1);
+ assert.equal(data.readUInt32LE(0),0x04034b50);
+ assert.equal(data.readUInt32LE(data.length-22),0x06054b50);
+ assert.equal(data.readUInt16LE(data.length-22+10),11);
+ if(process.platform!=='win32'){
+  const probe=spawnSync('unzip',['-t',z1],{encoding:'utf8'});
+  if(!probe.error)assert.equal(probe.status,0,probe.stdout+probe.stderr);
+ }
+});
+test('P5.57 existing ZIP is never overwritten or removed',t=>{
+ const b=build(t),dest=b.root+'.zip';
+ fs.writeFileSync(dest,'KEEP ORIGINAL OWNER FILE');t.after(()=>fs.unlinkSync(dest));
+ assert.throws(()=>exportVerifiedReviewZip(b.root,dest),/RAG_REVIEW_ZIP_BLOCKED/);
+ assert.equal(fs.readFileSync(dest,'utf8'),'KEEP ORIGINAL OWNER FILE');
+});
+test('P5.57 modified review report fails closed before ZIP creation',t=>{
+ const b=build(t),dest=b.root+'.zip';
+ fs.appendFileSync(path.join(b.root,'sales-review.json'),'tamper');
+ assert.throws(()=>exportVerifiedReviewZip(b.root,dest),/RAG_REVIEW_ZIP_BLOCKED/);
+ assert.equal(fs.existsSync(dest),false);
+});
+test('P5.57 relative output, source-inside output and symlink parent blocked',t=>{
+ const b=build(t);
+ assert.throws(()=>exportVerifiedReviewZip(b.root,'relative.zip'));
+ assert.throws(()=>exportVerifiedReviewZip(b.root,path.join(b.root,'review.zip')));
+ if(process.platform!=='win32'){
+  const parent=b.root+'-linked';
+  fs.symlinkSync(path.dirname(b.root),parent,'dir');
+  t.after(()=>fs.unlinkSync(parent));
+  assert.throws(()=>exportVerifiedReviewZip(b.root,path.join(parent,'review.zip')));
+ }
 });
