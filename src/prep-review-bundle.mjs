@@ -31,9 +31,8 @@ export function createLocalReviewBundle(csvPath,draftPath,documentPath,outputDir
  const salesAgain=previewLocalMappedSales(csvPath,draftPath);
  if(salesAgain.source_sha256!==sales.source_sha256||JSON.stringify(salesAgain.metrics)!==JSON.stringify(sales.metrics))fail();
  checkParent(outputDir);
- let created=false;
  try{
-  fs.mkdirSync(outputDir,{recursive:false,mode:0o700});created=true;
+  fs.mkdirSync(outputDir,{recursive:false,mode:0o700});
   fs.mkdirSync(path.join(outputDir,'src'),{mode:0o700});fs.mkdirSync(path.join(outputDir,'ui'),{mode:0o700});
   const content=new Map();
   for(const name of assets)content.set(name,fs.readFileSync(path.join(base,name)));
@@ -57,5 +56,11 @@ export function createLocalReviewBundle(csvPath,draftPath,documentPath,outputDir
     source_sha256:sales.source_sha256,files:manifest.files.length,
     approval:'NOT_GRANTED',ax_package_created:false,sqlite_imported:false,
     customer_data_approved:false,remote_upload:false,source_modified:false});
- }catch{if(created)fs.rmSync(outputDir,{recursive:true,force:true});fail();}
+ }catch{
+  // P5.54: never recursively delete the output path on failure. It may have
+  // been replaced after mkdir by a different directory (TOCTOU). Even an
+  // inode check before rm would leave a race. Fail closed and preserve any
+  // partial owner-only output for explicit inspection; do not overwrite it.
+  fail();
+ }
 }
