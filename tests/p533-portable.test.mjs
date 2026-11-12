@@ -45,3 +45,37 @@ test('P5.33 manifest rejects symlink substitution on supported hosts',t=>{
  catch{t.skip('symlink creation restricted on this host');return;}
  assert.equal(verifyPortableMvp(target).status,'PORTABLE_MVP_INTEGRITY_BLOCKED');
 });
+
+
+test('P5.59 fixed synthetic bundle excludes unapproved PREP and ZIP review modules',t=>{
+ const target=make(t),built=buildPortableMvp(target);
+ assert.ok(built.file_count>=25&&built.file_count<=80);
+ const listing=JSON.parse(fs.readFileSync(path.join(target,'portable-manifest.json'),'utf8'));
+ const names=listing.files.map(f=>f.relative_path);
+ assert.ok(names.includes('src/dashboard-cli.mjs'));
+ assert.ok(names.includes('src/review-hold-export.mjs'));
+ assert.ok(!names.some(name=>name.startsWith('src/prep-')||name.startsWith('src/review-bundle-')||
+  name==='src/review-zip-verify.mjs'));
+ assert.equal(verifyPortableMvp(target).status,'PORTABLE_MVP_INTEGRITY_PASS');
+});
+test('P5.59 synthetic bundle failed write cannot delete swapped unrelated owner directory',t=>{
+ const target=make(t),tmp=path.dirname(target),owner=path.join(tmp,'foreign-owner'),
+  partial=path.join(tmp,'partial-from-build'),marker='NEVER DELETE';
+ fs.mkdirSync(owner);fs.writeFileSync(path.join(owner,'marker.txt'),marker);
+ const before=fs.readFileSync(path.join(owner,'marker.txt'));
+ const original=fs.writeFileSync;let swapped=false;
+ try{
+  fs.writeFileSync=function(filename,...args){
+   if(filename===path.join(target,'portable-manifest.json')){
+    fs.renameSync(target,partial);fs.renameSync(owner,target);
+    swapped=true;throw Error('SYNTHETIC_MANIFEST_DISK_FAILURE');
+   }
+   return original.call(this,filename,...args);
+  };
+  assert.throws(()=>buildPortableMvp(target),/SYNTHETIC_MANIFEST_DISK_FAILURE/u);
+ }finally{fs.writeFileSync=original;}
+ assert.equal(swapped,true);
+ assert.deepEqual(fs.readFileSync(path.join(target,'marker.txt')),before);
+ assert.equal(fs.existsSync(path.join(partial,'src/dashboard-cli.mjs')),true);
+ assert.equal(fs.existsSync(path.join(partial,'portable-manifest.json')),false);
+});
