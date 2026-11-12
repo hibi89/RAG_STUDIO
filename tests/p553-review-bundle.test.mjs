@@ -10,6 +10,8 @@ import {fileURLToPath} from 'node:url';
 import {inspectCsvBytes} from '../src/local-csv-review.mjs';
 import {createLocalReviewBundle} from '../src/prep-review-bundle.mjs';
 import {verifyReviewBundle} from '../src/review-bundle-verify.mjs';
+import {exportVerifiedReviewZip} from '../src/review-bundle-zip.mjs';
+import {verifyOfflineReviewZip} from '../src/review-zip-verify.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const raw='주문번호,상품코드,수량,단가,매출\nA-001,N-01,2,100,200\nA-002,N-02,1,150,150\n';
 const fields=[['order_id','주문번호','text'],['sku','상품코드','text'],['quantity','수량','integer'],['unit_price_krw','단가','integer'],['amount_krw','매출','integer']].map(([key,source,type])=>({key,source,type,required:true}));
@@ -143,4 +145,21 @@ test('P5.56 original producer output is accepted, but rehashed paired forged KPI
  }
  fs.writeFileSync(manifestFile,JSON.stringify(manifest));
  assert.throws(()=>verifyReviewBundle(x.dest),/RAG_REVIEW_BUNDLE_INVALID/u);
+});
+
+
+test('P5.58 full original producer to ZIP to pre-extraction verifier stays source-bound',t=>{
+ const x=build(t),zip=path.join(x.tmp,'review.zip');
+ const before=fs.readFileSync(x.csv),policyBefore=fs.readFileSync(x.doc);
+ const zipped=exportVerifiedReviewZip(x.dest,zip);
+ assert.equal(zipped.status,'RAG_REVIEW_ZIP_CREATED_NOT_APPROVED');
+ assert.equal(zipped.files,11);
+ const verified=verifyOfflineReviewZip(zip);
+ assert.equal(verified.status,'RAG_REVIEW_ZIP_INTEGRITY_PASS_NOT_APPROVED');
+ assert.equal(verified.sha256,zipped.sha256);
+ assert.equal(verified.customer_data_approved,false);
+ assert.deepEqual(fs.readFileSync(x.csv),before);
+ assert.deepEqual(fs.readFileSync(x.doc),policyBefore);
+ fs.appendFileSync(zip,Buffer.from('CORRUPT'));
+ assert.throws(()=>verifyOfflineReviewZip(zip),/RAG_REVIEW_ZIP_INVALID/u);
 });
