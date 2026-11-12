@@ -1,3 +1,5 @@
+> **[OWNER-FINAL-BLUEPRINT-100 | 2026-11-13 KST · 사용자 확정]** 최종완성률은 **사용자 최종설계도 전체 100%**를 기준으로만 계산한다. AI 총괄/담당자의 임의 축소·가중치 조정·MVP/합성 CI/내부 기술 85·95%를 최종완성률로 전용 금지. REQ별 구현 경로·정확 SHA 실행 검증·미구현·미검증·사용자 승인 가중치 추적표를 갖춰 산정하고, 미비하면 공식 `UNASSESSED(재산정 대기)`. 기존 내부 점수/마커·등록이력·판매 HOLD 보존. 크몽 상품 원장은 해총 `kmong-productization`에 증빙과 함께 최신화. [공통 정본](https://github.com/hibi89/hackathon-command-center-2026/blob/kmong-productization/docs/strategy/FINAL_BLUEPRINT_COMPLETION_STANDARD_20261113.md). 문서 갱신 자체는 제품 완료나 배포가 아님.
+
 > **2026-10-28 해총 최종 공통 개발·검증 지시 / 소유자 최신 결정:** [전 프로젝트 개발 속도·검증 통합 정본](https://github.com/hibi89/hackathon-command-center-2026/blob/main/docs/DEV_ACCELERATION_AND_VERIFICATION_20261028.md). 현재 **KIC(+DL)·PayPal·UGREEN·LA만 활성 4개 작업 슬롯**, 이 브랜치는 **임시 대기(원본 보존, 폐기 아님)**. 다른 소유자 지시로 재개되지 않았다면 `ㄱ`만으로 자율적인 코드 수정/테스트 CI/배포를 시작하지 않는다. 재개 시 합의된 구현은 GPT-6 **Instant**, 최초 설계·난제·해총 최상위 검수는 높은 추론; 실제 기능 중심, GitHub 파일 단위 반복·다중 상태문서 복제·동일 SHA CI 폴링 줄임. 단일 안전 로컬 검증과 정확한 실행 SHA/PASS·FAIL·SKIP을 보고한다. 기존 제품 설계·권리·보안·사용자 승인·동결/복구·비공개 원본 보호 규칙은 보존한다. 본 공지는 개발 허가나 테스트 통과 주장 아님.
 
 # AGENTS.md — RAG Studio AX Edition 개발 규율
